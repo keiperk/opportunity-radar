@@ -32,7 +32,14 @@
       </div>
     </header>
 
+    <div class="fallback-banner" id="fallback-banner" hidden>
+      Showing the last known snapshot — live scan data is temporarily unavailable.
+    </div>
+
     <div class="detail-body">
+    <div class="loading-overlay" id="loading-overlay">
+      <p>Loading live scan data…</p>
+    </div>
     <div class="detail-columns">
 
       <!-- Left: Suggested Contact + How This Is Calculated -->
@@ -76,7 +83,7 @@
         <h3 class="section-label">Momentum Trend</h3>
         <div class="trend-card">
           <svg id="trend-svg" width="100%" height="160" aria-hidden="true"></svg>
-          <p class="fine-print">Illustrative trend leading to the current scan — only the latest point reflects a real pipeline run.</p>
+          <p class="fine-print" id="trend-caption">—</p>
         </div>
 
         <h3 class="section-label">Peer Comparison</h3>

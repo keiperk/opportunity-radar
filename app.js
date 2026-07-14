@@ -16,7 +16,7 @@ const viewReportBtn = document.getElementById('view-report-btn');
 
 let sortDirection = 'desc';
 let groupByTier = true;
-let selectedCompany = findCompany('EdVisorly') || companies[0];
+let selectedCompany = null;
 
 /* ── Radar (SVG) ── */
 function renderRadar() {
@@ -333,8 +333,21 @@ function renderScanSummary() {
   `).join('');
 }
 
-/* ── Init ── */
-renderRadar();
-renderList();
-renderInspector();
-renderScanSummary();
+/* ── Init: wait for live data before rendering anything that depends
+   on it (radar/list/inspector all read `companies`, which is empty
+   until the fetch resolves). ── */
+const loadingOverlayEl = document.getElementById('loading-overlay');
+const fallbackBannerEl = document.getElementById('fallback-banner');
+
+loadCompanyData().then(() => {
+  selectedCompany = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise)[0];
+  if (!selectedCompany) return; // no usable data even from fallback — leave the loading state up rather than render broken widgets
+
+  renderRadar();
+  renderList();
+  renderInspector();
+  renderScanSummary();
+
+  if (loadingOverlayEl) loadingOverlayEl.hidden = true;
+  if (fallbackBannerEl) fallbackBannerEl.hidden = dataSource !== 'fallback';
+});

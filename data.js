@@ -3,11 +3,18 @@
  * detail page. Formula matches the pipeline's `Calculate Index` node as of
  * the GitHub/HN fix: weights news .25 / reddit .20 / linkedin .25 /
  * github .15 / hn .15, each source capped independently before
- * normalizing. No live workflow connection — this is a static snapshot
- * from a pipeline rerun that includes real GitHub + Hacker News values.
+ * normalizing.
+ *
+ * Data is fetched live from the pipeline's published `radar_results`
+ * sheet (see CSV_URL below) — this is a real, ongoing connection, not a
+ * static snapshot. If the live fetch fails, FALLBACK_ROWS (a last-known-
+ * good snapshot) is used instead so the page never just breaks; callers
+ * can check `dataSource` to know which happened.
  */
 const CAPS = { news: 10, reddit: 10, linkedin: 15, github: 30, hn: 10 };
 const WEIGHTS = { news: 0.25, reddit: 0.20, linkedin: 0.25, github: 0.15, hn: 0.15 };
+
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTGAgujnKii4qOQYezhAMdwFcsAnLOeg_jnZtE8lOHm2dexXdH0tWtwqKeZbhPxov_Z9YzQGEH2mS2C/pub?gid=1454866921&single=true&output=csv';
 
 /*
  * Single source of truth for the accent color, shared by styles.css (via
@@ -30,34 +37,25 @@ const THEME = {
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
 
-const runMeta = {
-  run_id: '58',
-  run_ts: '2026-07-14T08:22:34.865-07:00',
-  workflow_status: 'success',
-};
-
-/*
- * Real data from radar_results run_id 58. discoverySource is now a real
- * pipeline field (tagged at the Merge Tracking + Discovery Companies
- * step) — every company here is 'discovered' because the tracked-
- * companies sheet was intentionally cleared during a pipeline rebuild,
- * not because the field is fake. Once tracked companies are re-added,
- * this will differentiate normally.
- */
-const rawCompanies = [
-  { company: 'Helsing', news: 9, reddit: 10, linkedin: 10, github: 30, hn: 20, discoverySource: 'discovered' },
-  { company: 'ORA Technologies', news: 10, reddit: 9, linkedin: 9, github: 30, hn: 20, discoverySource: 'discovered' },
-  { company: 'Auger', news: 9, reddit: 10, linkedin: 10, github: 30, hn: 2, discoverySource: 'discovered' },
-  { company: "Jesse & Ben's", news: 9, reddit: 10, linkedin: 10, github: 0, hn: 0, discoverySource: 'discovered' },
-  { company: 'Venice AI', news: 9, reddit: 8, linkedin: 10, github: 30, hn: 0, discoverySource: 'discovered' },
-  { company: 'Twenty', news: 10, reddit: 9, linkedin: 10, github: 30, hn: 3, discoverySource: 'discovered' },
-  { company: 'ZML', news: 9, reddit: 10, linkedin: 10, github: 30, hn: 20, discoverySource: 'discovered' },
-  { company: 'LaunchMeLoud', news: 9, reddit: 9, linkedin: 9, github: 0, hn: 0, discoverySource: 'discovered' },
-  { company: 'Attribute', news: 10, reddit: 9, linkedin: 9, github: 30, hn: 16, discoverySource: 'discovered' },
-  { company: 'Undo Capital', news: 9, reddit: 9, linkedin: 9, github: 0, hn: 0, discoverySource: 'discovered' },
-  { company: 'Nautis', news: 9, reddit: 9, linkedin: 9, github: 30, hn: 0, discoverySource: 'discovered' },
-  { company: 'Refiant AI', news: 9, reddit: 10, linkedin: 10, github: 0, hn: 2, discoverySource: 'discovered' },
+/* Last-known-good snapshot (pipeline run 60) — used only if the live
+   fetch fails, so the page degrades gracefully instead of breaking. */
+const FALLBACK_ROWS = [
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.743-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '10', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.744-07:00', company_canonical: 'auger', company_display: 'Auger', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '2', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.746-07:00', company_canonical: 'oratechnologies', company_display: 'ORA Technologies', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.747-07:00', company_canonical: 'jessebens', company_display: "Jesse & Ben's", news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '0', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.748-07:00', company_canonical: 'venice', company_display: 'Venice AI', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.749-07:00', company_canonical: 'twenty', company_display: 'Twenty', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '3', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.750-07:00', company_canonical: 'zml', company_display: 'ZML', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.751-07:00', company_canonical: 'attribute', company_display: 'Attribute', news_signals: '10', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '16', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.752-07:00', company_canonical: 'undocapital', company_display: 'Undo Capital', news_signals: '10', reddit_signals: '10', linkedin_signals: '9', github_signals: '0', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.754-07:00', company_canonical: 'nautis', company_display: 'Nautis', news_signals: '10', reddit_signals: '10', linkedin_signals: '9', github_signals: '30', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '60', run_ts: '2026-07-14T11:15:17.755-07:00', company_canonical: 'refiant', company_display: 'Refiant AI', news_signals: '10', reddit_signals: '10', linkedin_signals: '9', github_signals: '0', hn_signals: '2', discovery_source: 'discovered' },
 ];
+
+let companies = [];
+let runMeta = { run_id: null, run_ts: null };
+let dataSource = 'loading'; // 'loading' | 'live' | 'fallback'
 
 function computeIndex(news, reddit, linkedin, github, hn) {
   const n = Math.min(news, CAPS.news) / CAPS.news;
@@ -94,23 +92,6 @@ function tierClass(tier) {
   return 'rose';
 }
 
-const companies = rawCompanies.map((c) => {
-  const index = computeIndex(c.news, c.reddit, c.linkedin, c.github, c.hn);
-  const tier = tierOf(index);
-  return {
-    company: c.company,
-    news_signals: c.news,
-    reddit_signals: c.reddit,
-    linkedin_signals: c.linkedin,
-    github_signals: c.github,
-    hn_signals: c.hn,
-    discovery_source: c.discoverySource,
-    opportunity_index: Math.round(index * 100) / 100,
-    opportunity_index_precise: index,
-    tier,
-  };
-});
-
 function findCompany(name) {
   return companies.find((c) => c.company === name) || null;
 }
@@ -144,26 +125,6 @@ function generateWhyItMatters(c) {
   return `<strong>${escapeXml(c.company)}</strong> is showing ${tierPhrase} combined signal this scan — driven primarily by ${top.label.toLowerCase()} activity (${top.value} mentions) across news, community, and hiring channels. ${timingPhrase} That combination usually means ${growthPhrase}.`;
 }
 
-/*
- * Illustrative trend history leading to each company's real, current
- * index — only the final point reflects a real pipeline run. Deterministic
- * per company (seeded by name, same shape every load) rather than one
- * fixed curve reused for every company, so charts aren't visibly identical.
- */
-function generateTrendHistory(finalValue, seedKey) {
-  let seed = 0;
-  for (let i = 0; i < seedKey.length; i++) seed = (seed * 31 + seedKey.charCodeAt(i)) >>> 0;
-  const noise = (i) => {
-    const x = Math.sin(seed + i * 12.9898) * 43758.5453;
-    return x - Math.floor(x);
-  };
-  const ratios = [0.60, 0.75, 0.88].map((base, i) => {
-    const jitter = (noise(i) - 0.5) * 0.18;
-    return Math.max(0.35, Math.min(0.97, base + jitter));
-  });
-  return [finalValue * ratios[0], finalValue * ratios[1], finalValue * ratios[2], finalValue];
-}
-
 function hexToRgba(hex, alpha) {
   const n = parseInt(hex.replace('#', ''), 16);
   const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
@@ -172,4 +133,146 @@ function hexToRgba(hex, alpha) {
 
 function escapeXml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* ── Live data loading ──────────────────────────────────────────────── */
+
+/* Minimal CSV parser — handles quoted fields (embedded commas, escaped
+   quotes) since company names could contain either. */
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else {
+        field += ch;
+      }
+    } else if (ch === '"') {
+      inQuotes = true;
+    } else if (ch === ',') {
+      row.push(field);
+      field = '';
+    } else if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(field);
+      field = '';
+      if (row.length > 1 || row[0] !== '') rows.push(row);
+      row = [];
+    } else {
+      field += ch;
+    }
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  if (!rows.length) return [];
+
+  const header = rows[0].map((h) => h.trim());
+  return rows.slice(1)
+    .filter((r) => r.length === header.length)
+    .map((r) => {
+      const obj = {};
+      header.forEach((h, idx) => { obj[h] = r[idx]; });
+      return obj;
+    });
+}
+
+/* Rejects malformed rows — e.g. the discovery LLM has, at least once,
+   extracted an entire sentence as a "company name" instead of an actual
+   name. Real company names are short; anything wildly long is discarded
+   rather than shown as a fake company. */
+function isValidCompanyRow(row) {
+  if (!row.company_canonical || !row.company_display) return false;
+  if (row.company_display.length > 60) return false;
+  if (!row.run_id || !row.run_ts) return false;
+  return true;
+}
+
+/* Groups raw CSV rows by company, computing the current (latest-run)
+   snapshot per company plus its full real history (every past run) for
+   genuine trend charts — no synthetic/illustrative data involved. */
+function buildCompaniesFromRows(rows) {
+  const grouped = {};
+  rows.forEach((row) => {
+    const key = row.company_canonical;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(row);
+  });
+
+  let latestRunTs = null, latestRunId = null;
+
+  const built = Object.values(grouped).map((runs) => {
+    runs.sort((a, b) => new Date(a.run_ts) - new Date(b.run_ts));
+
+    const history = runs.map((r) => {
+      const index = computeIndex(
+        Number(r.news_signals) || 0,
+        Number(r.reddit_signals) || 0,
+        Number(r.linkedin_signals) || 0,
+        Number(r.github_signals) || 0,
+        Number(r.hn_signals) || 0
+      );
+      return { run_id: r.run_id, run_ts: r.run_ts, index };
+    });
+
+    const latest = runs[runs.length - 1];
+    const news = Number(latest.news_signals) || 0;
+    const reddit = Number(latest.reddit_signals) || 0;
+    const linkedin = Number(latest.linkedin_signals) || 0;
+    const github = Number(latest.github_signals) || 0;
+    const hn = Number(latest.hn_signals) || 0;
+    const index = computeIndex(news, reddit, linkedin, github, hn);
+
+    if (!latestRunTs || new Date(latest.run_ts) > new Date(latestRunTs)) {
+      latestRunTs = latest.run_ts;
+      latestRunId = latest.run_id;
+    }
+
+    return {
+      company: latest.company_display,
+      news_signals: news,
+      reddit_signals: reddit,
+      linkedin_signals: linkedin,
+      github_signals: github,
+      hn_signals: hn,
+      discovery_source: latest.discovery_source || 'tracked',
+      opportunity_index: Math.round(index * 100) / 100,
+      opportunity_index_precise: index,
+      tier: tierOf(index),
+      history,
+    };
+  });
+
+  return { companies: built, runMeta: { run_id: latestRunId, run_ts: latestRunTs } };
+}
+
+/* Fetches the live published sheet; falls back to the last-known-good
+   snapshot if the fetch fails or returns nothing usable. Always
+   resolves (never rejects) so callers don't need their own fallback. */
+function loadCompanyData() {
+  return fetch(CSV_URL)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      return res.text();
+    })
+    .then((text) => {
+      const rows = parseCSV(text).filter(isValidCompanyRow);
+      if (!rows.length) throw new Error('No valid rows in live data');
+      const built = buildCompaniesFromRows(rows);
+      companies = built.companies;
+      runMeta = built.runMeta;
+      dataSource = 'live';
+      return companies;
+    })
+    .catch((err) => {
+      console.warn('Live data fetch failed, using fallback snapshot:', err);
+      const rows = FALLBACK_ROWS.filter(isValidCompanyRow);
+      const built = buildCompaniesFromRows(rows);
+      companies = built.companies;
+      runMeta = built.runMeta;
+      dataSource = 'fallback';
+      return companies;
+    });
 }

@@ -6,242 +6,270 @@
 function getSelectedCompanyFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get('company');
-  return (name && findCompany(name)) || findCompany('EdVisorly') || companies[0];
+  return (name && findCompany(name)) || companies[0];
 }
 
-const c = getSelectedCompanyFromUrl();
-const cls = tierClass(c.tier);
+/* Everything below depends on live data, so it's wrapped in initDetailPage()
+   and only runs after loadCompanyData() resolves — company/detail.html's
+   old top-level code assumed `companies` was ready instantly, which broke
+   once data started loading asynchronously from the live sheet. */
+function initDetailPage() {
+  const c = getSelectedCompanyFromUrl();
+  if (!c) return; // no usable data even from fallback
+  const cls = tierClass(c.tier);
 
-/* ── Header ── */
-document.getElementById('detail-name').textContent = c.company;
-document.title = `${c.company} — Company Detail`;
+  /* ── Header ── */
+  document.getElementById('detail-name').textContent = c.company;
+  document.title = `${c.company} — Company Detail`;
 
-const tierBadge = document.getElementById('detail-tier-badge');
-tierBadge.textContent = c.tier.toUpperCase();
-tierBadge.className = 'tier-badge' + (cls ? ` tier-${cls}` : '');
+  const tierBadge = document.getElementById('detail-tier-badge');
+  tierBadge.textContent = c.tier.toUpperCase();
+  tierBadge.className = 'tier-badge' + (cls ? ` tier-${cls}` : '');
 
-const indexEl = document.getElementById('detail-index');
-indexEl.textContent = c.opportunity_index.toFixed(2);
-indexEl.style.color = cls === 'amber' ? 'var(--amber-deep)' : cls === 'rose' ? 'var(--rose-deep)' : 'var(--accent-deep)';
+  const indexEl = document.getElementById('detail-index');
+  indexEl.textContent = c.opportunity_index.toFixed(2);
+  indexEl.style.color = cls === 'amber' ? 'var(--amber-deep)' : cls === 'rose' ? 'var(--rose-deep)' : 'var(--accent-deep)';
 
-document.getElementById('detail-discovery-badge').hidden = c.discovery_source !== 'discovered';
+  document.getElementById('detail-discovery-badge').hidden = c.discovery_source !== 'discovered';
 
-/* ── Prev / Next company nav (ranked by opportunity_index, same order as the dashboard's default sort) ── */
-const rankedForNav = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise);
-const navIdx = rankedForNav.findIndex((co) => co.company === c.company);
-const prevCompany = rankedForNav[navIdx - 1];
-const nextCompany = rankedForNav[navIdx + 1];
+  /* ── Prev / Next company nav (ranked by opportunity_index, same order as the dashboard's default sort) ── */
+  const rankedForNav = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise);
+  const navIdx = rankedForNav.findIndex((co) => co.company === c.company);
+  const prevCompany = rankedForNav[navIdx - 1];
+  const nextCompany = rankedForNav[navIdx + 1];
 
-const prevBtn = document.getElementById('prev-company-btn');
-const nextBtn = document.getElementById('next-company-btn');
-if (prevCompany) {
-  prevBtn.textContent = `← ${prevCompany.company}`;
-  prevBtn.addEventListener('click', () => {
-    window.location.href = `detail.html?company=${encodeURIComponent(prevCompany.company)}`;
-  });
-} else {
-  prevBtn.disabled = true;
-}
-if (nextCompany) {
-  nextBtn.textContent = `${nextCompany.company} →`;
-  nextBtn.addEventListener('click', () => {
-    window.location.href = `detail.html?company=${encodeURIComponent(nextCompany.company)}`;
-  });
-} else {
-  nextBtn.disabled = true;
-}
+  const prevBtn = document.getElementById('prev-company-btn');
+  const nextBtn = document.getElementById('next-company-btn');
+  if (prevCompany) {
+    prevBtn.textContent = `← ${prevCompany.company}`;
+    prevBtn.disabled = false;
+    prevBtn.onclick = () => { window.location.href = `detail.html?company=${encodeURIComponent(prevCompany.company)}`; };
+  } else {
+    prevBtn.disabled = true;
+  }
+  if (nextCompany) {
+    nextBtn.textContent = `${nextCompany.company} →`;
+    nextBtn.disabled = false;
+    nextBtn.onclick = () => { window.location.href = `detail.html?company=${encodeURIComponent(nextCompany.company)}`; };
+  } else {
+    nextBtn.disabled = true;
+  }
 
-/* ── Signal Breakdown (compact rows — matches the dashboard's Company
-   Inspector so the same widget doesn't look like two different things
-   on two pages) ── */
-const sourceDefs = [
-  { label: 'News', key: 'source-news', value: c.news_signals, cap: CAPS.news },
-  { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit },
-  { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
-  { label: 'GitHub', key: 'source-github', value: c.github_signals, cap: CAPS.github },
-  { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
-];
-document.getElementById('breakdown-stack').innerHTML = sourceDefs.map((s) => `
-  <div class="mini-breakdown-row">
-    <div class="mini-breakdown-top"><span class="label">${s.label}</span><span class="value">${s.value}</span></div>
-    <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${Math.min(100, (s.value / s.cap) * 100).toFixed(0)}%"></div></div>
-  </div>
-`).join('');
-
-/* ── How This Is Calculated ──
-   News, Reddit, GitHub, and Hacker News are "leading" signals that can
-   appear before a role is posted; LinkedIn Jobs is the one "confirming"
-   signal, since it requires a role to already be public — labeled as two
-   groups here since the math panel has room to actually explain it. */
-const mathDefs = [
-  { label: 'News', key: 'source-news', value: c.news_signals, weight: WEIGHTS.news, cap: CAPS.news },
-  { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, weight: WEIGHTS.reddit, cap: CAPS.reddit },
-  { label: 'GitHub', key: 'source-github', value: c.github_signals, weight: WEIGHTS.github, cap: CAPS.github },
-  { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, weight: WEIGHTS.hn, cap: CAPS.hn },
-];
-const confirmingDefs = [
-  { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, weight: WEIGHTS.linkedin, cap: CAPS.linkedin },
-];
-let total = 0;
-function mathRow(d) {
-  const norm = Math.min(d.value, d.cap) / d.cap;
-  const contribution = norm * d.weight;
-  total += contribution;
-  return `<div class="math-row"><span class="math-label ${d.key}">${d.label}  ${d.value}/${d.cap}</span><span class="math-detail">${norm.toFixed(2)} × ${(d.weight * 100).toFixed(0)}% = ${contribution.toFixed(3)}</span></div>`;
-}
-document.getElementById('detail-math-rows').innerHTML = `
-  <span class="math-group-label">Leading signals</span>
-  ${mathDefs.map(mathRow).join('')}
-  <span class="math-group-label">Confirming signal</span>
-  ${confirmingDefs.map(mathRow).join('')}
-`;
-document.getElementById('detail-math-total').textContent = (Math.round(total * 100) / 100).toFixed(2);
-
-/* ── Momentum Trend chart (SVG) ── */
-function renderTrendChart() {
-  const history = generateTrendHistory(c.opportunity_index_precise, c.company);
-  const svgEl = document.getElementById('trend-svg');
-  const W = svgEl.getBoundingClientRect().width || 560, H = 140, PAD = 20, PAD_X = 24;
-  svgEl.setAttribute('viewBox', `0 0 ${W} 160`);
-  const min = Math.min(...history), max = Math.max(...history);
-  const range = Math.max(max - min, 0.001);
-  const usable = H - PAD * 2;
-  const usableW = W - PAD_X * 2;
-  const pts = history.map((v, i) => ({
-    x: PAD_X + (i * usableW) / (history.length - 1),
-    y: PAD + usable - ((v - min) / range) * usable,
-  }));
-
-  const areaCmds = `M ${pts[0].x.toFixed(1)} ${H} ` + pts.map((p) => `L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ') + ` L ${pts[pts.length - 1].x.toFixed(1)} ${H} Z`;
-  const lineCmds = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-  const dotsSvg = pts.map((p) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#ffffff" stroke="${THEME.trendAccent}" stroke-width="2" />`).join('');
-
-  document.getElementById('trend-svg').innerHTML = `
-    <path d="${areaCmds}" fill="${THEME.trendAccent}" opacity="0.14" />
-    <path d="${lineCmds}" fill="none" stroke="${THEME.trendAccent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-    ${dotsSvg}
-  `;
-}
-renderTrendChart();
-
-/* ── Peer Comparison ── */
-function renderPeerComparison() {
-  const svgEl = document.getElementById('peer-compare-svg');
-  const W = svgEl.getBoundingClientRect().width || 560, H = 56, PAD_X = 16;
-  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
-
-  const values = companies.map((co) => co.opportunity_index_precise);
-  const min = Math.min(...values), max = Math.max(...values);
-  const range = Math.max(max - min, 0.001);
-  const usableW = W - PAD_X * 2;
-  const xOf = (v) => PAD_X + ((v - min) / range) * usableW;
-  const cy = H / 2;
-
-  const ranked = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise);
-  const rank = ranked.findIndex((co) => co.company === c.company) + 1;
-  const lowerCount = companies.filter((co) => co.opportunity_index_precise < c.opportunity_index_precise).length;
-  const percentile = companies.length > 1 ? Math.round((lowerCount / (companies.length - 1)) * 100) : 100;
-
-  document.getElementById('peer-rank-headline').textContent = `Ranks #${rank} of ${companies.length} tracked companies`;
-  document.getElementById('peer-rank-sub').textContent = `Higher signal than ${percentile}% of other tracked companies this scan.`;
-
-  const dotsSvg = companies.map((co) => {
-    const cx = xOf(co.opportunity_index_precise).toFixed(1);
-    if (co.company === c.company) {
-      return `<circle cx="${cx}" cy="${cy}" r="8" fill="none" stroke="${THEME.accent}" stroke-width="1.5" stroke-dasharray="2 2" />
-              <circle cx="${cx}" cy="${cy}" r="5" fill="${THEME.accent}" />`;
-    }
-    return `<circle cx="${cx}" cy="${cy}" r="3.5" fill="${THEME.mutedDot}" stroke="#ffffff" stroke-width="1" />`;
-  }).join('');
-
-  svgEl.innerHTML = `
-    <line x1="${PAD_X}" y1="${cy}" x2="${W - PAD_X}" y2="${cy}" stroke="${THEME.border}" stroke-width="1" />
-    ${dotsSvg}
-  `;
-}
-renderPeerComparison();
-
-/* ── Signal Rank by Source ──
-   Framed by percentile, not raw rank — companies often tie at a source's
-   cap (e.g. linkedin capped at 15), so "#1 of N" would overstate precision
-   when several companies share that exact capped value. */
-function renderSourceRank() {
-  const SOURCE_DEFS = [
-    { key: 'news', label: 'News', field: 'news_signals', cls: 'source-news' },
-    { key: 'reddit', label: 'Reddit', field: 'reddit_signals', cls: 'source-reddit' },
-    { key: 'linkedin', label: 'LinkedIn', field: 'linkedin_signals', cls: 'source-linkedin' },
+  /* ── Signal Breakdown (compact rows — matches the dashboard's Company
+     Inspector so the same widget doesn't look like two different things
+     on two pages) ── */
+  const sourceDefs = [
+    { label: 'News', key: 'source-news', value: c.news_signals, cap: CAPS.news },
+    { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit },
+    { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
+    { label: 'GitHub', key: 'source-github', value: c.github_signals, cap: CAPS.github },
+    { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
   ];
-
-  const stats = SOURCE_DEFS.map((s) => {
-    const values = companies.map((co) => co[s.field]);
-    const selfValue = c[s.field];
-    const lowerCount = values.filter((v) => v < selfValue).length;
-    const percentile = companies.length > 1 ? Math.round((lowerCount / (companies.length - 1)) * 100) : 100;
-    return { ...s, selfValue, min: Math.min(...values), max: Math.max(...values), percentile };
-  });
-
-  const strongest = stats.reduce((a, b) => (b.percentile > a.percentile ? b : a));
-  document.getElementById('source-rank-headline').innerHTML =
-    `Strongest relative to peers: <strong>${strongest.label}</strong> — higher than ${strongest.percentile}% of tracked companies.`;
-
-  document.getElementById('source-rank-rows').innerHTML = stats.map((s) => `
-    <div class="source-rank-row">
-      <span class="source-pill ${s.cls} source-rank-row-label">${s.label}</span>
-      <svg class="source-rank-row-strip" data-source="${s.key}" height="20" aria-hidden="true"></svg>
-      <span class="source-rank-row-pct">Higher than ${s.percentile}%</span>
+  document.getElementById('breakdown-stack').innerHTML = sourceDefs.map((s) => `
+    <div class="mini-breakdown-row">
+      <div class="mini-breakdown-top"><span class="label">${s.label}</span><span class="value">${s.value}</span></div>
+      <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${Math.min(100, (s.value / s.cap) * 100).toFixed(0)}%"></div></div>
     </div>
   `).join('');
 
-  stats.forEach((s) => {
-    const svgEl = document.querySelector(`.source-rank-row-strip[data-source="${s.key}"]`);
-    const W = svgEl.getBoundingClientRect().width || 200, H = 20, PAD_X = 8;
-    svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    const range = Math.max(s.max - s.min, 0.001);
+  /* ── How This Is Calculated ──
+     News, Reddit, GitHub, and Hacker News are "leading" signals that can
+     appear before a role is posted; LinkedIn Jobs is the one "confirming"
+     signal, since it requires a role to already be public — labeled as two
+     groups here since the math panel has room to actually explain it. */
+  const mathDefs = [
+    { label: 'News', key: 'source-news', value: c.news_signals, weight: WEIGHTS.news, cap: CAPS.news },
+    { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, weight: WEIGHTS.reddit, cap: CAPS.reddit },
+    { label: 'GitHub', key: 'source-github', value: c.github_signals, weight: WEIGHTS.github, cap: CAPS.github },
+    { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, weight: WEIGHTS.hn, cap: CAPS.hn },
+  ];
+  const confirmingDefs = [
+    { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, weight: WEIGHTS.linkedin, cap: CAPS.linkedin },
+  ];
+  let total = 0;
+  function mathRow(d) {
+    const norm = Math.min(d.value, d.cap) / d.cap;
+    const contribution = norm * d.weight;
+    total += contribution;
+    return `<div class="math-row"><span class="math-label ${d.key}">${d.label}  ${d.value}/${d.cap}</span><span class="math-detail">${norm.toFixed(2)} × ${(d.weight * 100).toFixed(0)}% = ${contribution.toFixed(3)}</span></div>`;
+  }
+  document.getElementById('detail-math-rows').innerHTML = `
+    <span class="math-group-label">Leading signals</span>
+    ${mathDefs.map(mathRow).join('')}
+    <span class="math-group-label">Confirming signal</span>
+    ${confirmingDefs.map(mathRow).join('')}
+  `;
+  document.getElementById('detail-math-total').textContent = (Math.round(total * 100) / 100).toFixed(2);
+
+  /* ── Momentum Trend chart (SVG) — real scan history now, not a
+     synthetic illustrative curve. A company needs at least 2 real runs
+     to draw a line; with just 1, there's nothing to chart yet, so we
+     say so honestly instead of faking a trend. ── */
+  function renderTrendChart() {
+    const svgEl = document.getElementById('trend-svg');
+    const captionEl = document.getElementById('trend-caption');
+    const history = c.history || [];
+
+    if (history.length < 2) {
+      svgEl.innerHTML = '';
+      captionEl.textContent = 'Not enough scan history yet — check back after the next run.';
+      return;
+    }
+
+    const values = history.map((h) => h.index);
+    const W = svgEl.getBoundingClientRect().width || 560, H = 140, PAD = 20, PAD_X = 24;
+    svgEl.setAttribute('viewBox', `0 0 ${W} 160`);
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = Math.max(max - min, 0.001);
+    const usable = H - PAD * 2;
     const usableW = W - PAD_X * 2;
-    const xOf = (v) => PAD_X + ((v - s.min) / range) * usableW;
+    const pts = values.map((v, i) => ({
+      x: PAD_X + (i * usableW) / (values.length - 1),
+      y: PAD + usable - ((v - min) / range) * usable,
+    }));
+
+    const areaCmds = `M ${pts[0].x.toFixed(1)} ${H} ` + pts.map((p) => `L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ') + ` L ${pts[pts.length - 1].x.toFixed(1)} ${H} Z`;
+    const lineCmds = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+    const dotsSvg = pts.map((p) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#ffffff" stroke="${THEME.trendAccent}" stroke-width="2" />`).join('');
+
+    svgEl.innerHTML = `
+      <path d="${areaCmds}" fill="${THEME.trendAccent}" opacity="0.14" />
+      <path d="${lineCmds}" fill="none" stroke="${THEME.trendAccent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      ${dotsSvg}
+    `;
+    captionEl.textContent = `Real signal history across ${history.length} scans — every point is an actual pipeline run.`;
+  }
+  renderTrendChart();
+
+  /* ── Peer Comparison ── */
+  function renderPeerComparison() {
+    const svgEl = document.getElementById('peer-compare-svg');
+    const W = svgEl.getBoundingClientRect().width || 560, H = 56, PAD_X = 16;
+    svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    const values = companies.map((co) => co.opportunity_index_precise);
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = Math.max(max - min, 0.001);
+    const usableW = W - PAD_X * 2;
+    const xOf = (v) => PAD_X + ((v - min) / range) * usableW;
     const cy = H / 2;
 
+    const ranked = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise);
+    const rank = ranked.findIndex((co) => co.company === c.company) + 1;
+    const lowerCount = companies.filter((co) => co.opportunity_index_precise < c.opportunity_index_precise).length;
+    const percentile = companies.length > 1 ? Math.round((lowerCount / (companies.length - 1)) * 100) : 100;
+
+    document.getElementById('peer-rank-headline').textContent = `Ranks #${rank} of ${companies.length} tracked companies`;
+    document.getElementById('peer-rank-sub').textContent = `Higher signal than ${percentile}% of other tracked companies this scan.`;
+
     const dotsSvg = companies.map((co) => {
-      const cx = xOf(co[s.field]).toFixed(1);
+      const cx = xOf(co.opportunity_index_precise).toFixed(1);
       if (co.company === c.company) {
-        return `<circle cx="${cx}" cy="${cy}" r="5" fill="${THEME.accent}" stroke="#ffffff" stroke-width="1.5" />`;
+        return `<circle cx="${cx}" cy="${cy}" r="8" fill="none" stroke="${THEME.accent}" stroke-width="1.5" stroke-dasharray="2 2" />
+                <circle cx="${cx}" cy="${cy}" r="5" fill="${THEME.accent}" />`;
       }
-      return `<circle cx="${cx}" cy="${cy}" r="2.5" fill="${THEME.mutedDot}" />`;
+      return `<circle cx="${cx}" cy="${cy}" r="3.5" fill="${THEME.mutedDot}" stroke="#ffffff" stroke-width="1" />`;
     }).join('');
 
     svgEl.innerHTML = `
       <line x1="${PAD_X}" y1="${cy}" x2="${W - PAD_X}" y2="${cy}" stroke="${THEME.border}" stroke-width="1" />
       ${dotsSvg}
     `;
+  }
+  renderPeerComparison();
+
+  /* ── Signal Rank by Source ──
+     Framed by percentile, not raw rank — companies often tie at a source's
+     cap (e.g. linkedin capped at 15), so "#1 of N" would overstate precision
+     when several companies share that exact capped value. */
+  function renderSourceRank() {
+    const SOURCE_DEFS = [
+      { key: 'news', label: 'News', field: 'news_signals', cls: 'source-news' },
+      { key: 'reddit', label: 'Reddit', field: 'reddit_signals', cls: 'source-reddit' },
+      { key: 'linkedin', label: 'LinkedIn', field: 'linkedin_signals', cls: 'source-linkedin' },
+    ];
+
+    const stats = SOURCE_DEFS.map((s) => {
+      const values = companies.map((co) => co[s.field]);
+      const selfValue = c[s.field];
+      const lowerCount = values.filter((v) => v < selfValue).length;
+      const percentile = companies.length > 1 ? Math.round((lowerCount / (companies.length - 1)) * 100) : 100;
+      return { ...s, selfValue, min: Math.min(...values), max: Math.max(...values), percentile };
+    });
+
+    const strongest = stats.reduce((a, b) => (b.percentile > a.percentile ? b : a));
+    document.getElementById('source-rank-headline').innerHTML =
+      `Strongest relative to peers: <strong>${strongest.label}</strong> — higher than ${strongest.percentile}% of tracked companies.`;
+
+    document.getElementById('source-rank-rows').innerHTML = stats.map((s) => `
+      <div class="source-rank-row">
+        <span class="source-pill ${s.cls} source-rank-row-label">${s.label}</span>
+        <svg class="source-rank-row-strip" data-source="${s.key}" height="20" aria-hidden="true"></svg>
+        <span class="source-rank-row-pct">Higher than ${s.percentile}%</span>
+      </div>
+    `).join('');
+
+    stats.forEach((s) => {
+      const svgEl = document.querySelector(`.source-rank-row-strip[data-source="${s.key}"]`);
+      const W = svgEl.getBoundingClientRect().width || 200, H = 20, PAD_X = 8;
+      svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      const range = Math.max(s.max - s.min, 0.001);
+      const usableW = W - PAD_X * 2;
+      const xOf = (v) => PAD_X + ((v - s.min) / range) * usableW;
+      const cy = H / 2;
+
+      const dotsSvg = companies.map((co) => {
+        const cx = xOf(co[s.field]).toFixed(1);
+        if (co.company === c.company) {
+          return `<circle cx="${cx}" cy="${cy}" r="5" fill="${THEME.accent}" stroke="#ffffff" stroke-width="1.5" />`;
+        }
+        return `<circle cx="${cx}" cy="${cy}" r="2.5" fill="${THEME.mutedDot}" />`;
+      }).join('');
+
+      svgEl.innerHTML = `
+        <line x1="${PAD_X}" y1="${cy}" x2="${W - PAD_X}" y2="${cy}" stroke="${THEME.border}" stroke-width="1" />
+        ${dotsSvg}
+      `;
+    });
+  }
+  renderSourceRank();
+
+  /* ── Recommended Next Steps ── */
+  const NEXT_STEPS = [
+    { id: 'watchlist', label: 'Add to Watchlist', doneLabel: 'Added to Watchlist' },
+    { id: 'reminder', label: 'Set Re-scan Reminder', doneLabel: 'Reminder Set' },
+    { id: 'flag', label: 'Flag for Outreach Review', doneLabel: 'Flagged for Review' },
+  ];
+  const nextStepsEl = document.getElementById('next-steps-list');
+  nextStepsEl.innerHTML = NEXT_STEPS.map((s) => `
+    <button class="next-step-row" type="button" data-step="${s.id}">
+      <span class="next-step-check" aria-hidden="true"></span>
+      <span class="next-step-label">${s.label}</span>
+    </button>
+  `).join('');
+  nextStepsEl.querySelectorAll('.next-step-row').forEach((row) => {
+    const step = NEXT_STEPS.find((s) => s.id === row.dataset.step);
+    row.addEventListener('click', () => {
+      const isDone = row.classList.toggle('done');
+      row.querySelector('.next-step-label').textContent = isDone ? step.doneLabel : step.label;
+    });
   });
+
+  /* ── Why This Matters ── */
+  document.getElementById('detail-why-text').innerHTML = generateWhyItMatters(c);
+
+  /* ── Suggested Contact ── */
+  const emailHandle = c.company.toLowerCase().replace(/[^a-z0-9]+/g, '');
+  document.getElementById('detail-contact-title').textContent = `Engineering Recruiter · ${c.company}`;
+  document.getElementById('detail-contact-email').textContent = `jordan.reyes@${emailHandle}.com`;
 }
-renderSourceRank();
 
-/* ── Recommended Next Steps ── */
-const NEXT_STEPS = [
-  { id: 'watchlist', label: 'Add to Watchlist', doneLabel: 'Added to Watchlist' },
-  { id: 'reminder', label: 'Set Re-scan Reminder', doneLabel: 'Reminder Set' },
-  { id: 'flag', label: 'Flag for Outreach Review', doneLabel: 'Flagged for Review' },
-];
-const nextStepsEl = document.getElementById('next-steps-list');
-nextStepsEl.innerHTML = NEXT_STEPS.map((s) => `
-  <button class="next-step-row" type="button" data-step="${s.id}">
-    <span class="next-step-check" aria-hidden="true"></span>
-    <span class="next-step-label">${s.label}</span>
-  </button>
-`).join('');
-nextStepsEl.querySelectorAll('.next-step-row').forEach((row) => {
-  const step = NEXT_STEPS.find((s) => s.id === row.dataset.step);
-  row.addEventListener('click', () => {
-    const isDone = row.classList.toggle('done');
-    row.querySelector('.next-step-label').textContent = isDone ? step.doneLabel : step.label;
-  });
+/* ── Init: wait for live data before rendering. ── */
+const detailLoadingOverlayEl = document.getElementById('loading-overlay');
+const detailFallbackBannerEl = document.getElementById('fallback-banner');
+
+loadCompanyData().then(() => {
+  initDetailPage();
+  if (detailLoadingOverlayEl) detailLoadingOverlayEl.hidden = true;
+  if (detailFallbackBannerEl) detailFallbackBannerEl.hidden = dataSource !== 'fallback';
 });
-
-/* ── Why This Matters ── */
-document.getElementById('detail-why-text').innerHTML = generateWhyItMatters(c);
-
-/* ── Suggested Contact ── */
-const emailHandle = c.company.toLowerCase().replace(/[^a-z0-9]+/g, '');
-document.getElementById('detail-contact-title').textContent = `Engineering Recruiter · ${c.company}`;
-document.getElementById('detail-contact-email').textContent = `jordan.reyes@${emailHandle}.com`;

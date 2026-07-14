@@ -245,13 +245,44 @@ body {
    Body: 3-column layout
 ───────────────────────────────────────── */
 .dashboard-body {
+  position: relative;
   display: grid;
   grid-template-columns: 360px 1fr 320px;
   gap: 28px;
   align-items: start;
   flex: 1 0 0;
   padding: 24px 32px 48px;
+  min-height: 300px;
 }
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.loading-overlay p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.loading-overlay[hidden] { display: none; }
+
+.fallback-banner {
+  padding: 10px 32px;
+  background: var(--amber-tint);
+  color: var(--amber-deep);
+  font-size: 12px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+.fallback-banner[hidden] { display: none; }
 
 .card-header {
   display: flex;
@@ -976,6 +1007,8 @@ body {
 
 .detail-body {
   padding: 24px 32px 48px;
+  position: relative;
+  min-height: 400px;
 }
 
 .detail-columns {

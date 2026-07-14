@@ -26,6 +26,11 @@
       </div>
     </header>
 
+    <!-- ── Fallback banner (shown only if the live fetch failed) ── -->
+    <div class="fallback-banner" id="fallback-banner" hidden>
+      Showing the last known snapshot — live scan data is temporarily unavailable.
+    </div>
+
     <!-- ── Filter bar ── -->
     <div class="filter-bar">
       <div class="filter-search-wrap">
@@ -58,6 +63,10 @@
 
     <!-- ── Body: 3-column layout ── -->
     <div class="dashboard-body">
+
+      <div class="loading-overlay" id="loading-overlay">
+        <p>Loading live scan data…</p>
+      </div>
 
       <!-- Left: Radar + caption + Job Opportunity Signals -->
       <section class="radar-column" aria-label="Signal radar">
