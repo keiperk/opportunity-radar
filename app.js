@@ -143,11 +143,13 @@ function renderList() {
         <span class="source-pill source-hn">HN ${c.hn_signals}</span>
       </div>
       <div class="meter-track meter-track-segmented">
-        <div class="meter-segment source-news" style="width:${(contrib.news * 100).toFixed(1)}%"></div>
-        <div class="meter-segment source-reddit" style="width:${(contrib.reddit * 100).toFixed(1)}%"></div>
-        <div class="meter-segment source-linkedin" style="width:${(contrib.linkedin * 100).toFixed(1)}%"></div>
-        <div class="meter-segment source-github" style="width:${(contrib.github * 100).toFixed(1)}%"></div>
-        <div class="meter-segment source-hn" style="width:${(contrib.hn * 100).toFixed(1)}%"></div>
+        ${[
+          { label: 'News', cls: 'source-news', value: c.news_signals, cap: CAPS.news, pct: contrib.news * 100 },
+          { label: 'Reddit', cls: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit, pct: contrib.reddit * 100 },
+          { label: 'LinkedIn', cls: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin, pct: contrib.linkedin * 100 },
+          { label: 'GitHub', cls: 'source-github', value: c.github_signals, cap: CAPS.github, pct: contrib.github * 100 },
+          { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn, pct: contrib.hn * 100 },
+        ].map((s) => `<div class="meter-segment ${s.cls}" style="width:${s.pct.toFixed(1)}%" title="${s.label}: ${s.value}/${s.cap} mentions — ${s.pct.toFixed(1)}% of this company's score"></div>`).join('')}
       </div>
     `;
     row.addEventListener('click', () => selectCompany(c.company));
@@ -207,7 +209,7 @@ function renderInspectorTrend(c) {
   }
 
   const values = history.map((h) => h.index);
-  const W = svgEl.getBoundingClientRect().width || 260, H = 56, PAD = 8, PAD_X = 10;
+  const W = svgEl.getBoundingClientRect().width || 260, H = svgEl.getBoundingClientRect().height || 120, PAD = 10, PAD_X = 10;
   svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const min = Math.min(...values), max = Math.max(...values);
   const range = Math.max(max - min, 0.001);
