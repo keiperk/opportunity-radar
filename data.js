@@ -35,9 +35,6 @@ const THEME = {
   reddit: '#d9694f', // matches --reddit-red, used for the radar blips
   purple: '#9b7cc4', // matches --gauge-accent, used for the roles gauge ring
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
-  momentumUp: '#4a7546', // matches --green-deep, used for rising-momentum sparklines
-  momentumDown: '#cc2626', // matches --rose-deep, used for falling-momentum sparklines
-  momentumFlat: '#838ba0', // matches --text-muted, used for flat/no-change sparklines
 };
 
 /* Last-known-good snapshot (pipeline run 60) — used only if the live
