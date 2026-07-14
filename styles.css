@@ -721,7 +721,7 @@ body {
 
 .meter-track-segmented { display: flex; }
 
-.meter-segment { height: 100%; cursor: help; }
+.meter-segment { height: 100%; }
 .meter-segment.source-news     { background: var(--accent-deep); }
 .meter-segment.source-reddit   { background: var(--reddit-red); }
 .meter-segment.source-linkedin { background: var(--linkedin-blue); }
