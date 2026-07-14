@@ -104,6 +104,48 @@ function renderRadar() {
   });
 }
 
+/* ── Momentum: sparkline (flex-grows to fill the row) + delta chip since
+   the previous scan. Built from real accumulated run history (data.js),
+   not synthetic data — companies with only one recorded run get an honest
+   "First scan" label in the chart slot instead of a fabricated trend. */
+function renderMomentum(c) {
+  const h = c.history;
+  if (!h || h.length < 2) {
+    return { sparkHtml: `<span class="momentum-new-label">First scan</span>`, deltaHtml: '' };
+  }
+
+  const delta = h[h.length - 1].index - h[h.length - 2].index;
+  const dir = delta > 0.005 ? 'up' : delta < -0.005 ? 'down' : 'flat';
+  const color = dir === 'up' ? THEME.momentumUp : dir === 'down' ? THEME.momentumDown : THEME.momentumFlat;
+  const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '●';
+  const deltaLabel = dir === 'flat' ? 'Flat' : `${delta > 0 ? '+' : ''}${delta.toFixed(2)}`;
+
+  const recent = h.slice(-5);
+  const values = recent.map((p) => p.index);
+  const W = 100, H = 24, PAD_X = 4, PAD_Y = 3;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = Math.max(max - min, 0.001);
+  const usableW = W - PAD_X * 2, usableH = H - PAD_Y * 2;
+  const pts = values.map((v, i) => ({
+    x: PAD_X + (i * usableW) / Math.max(values.length - 1, 1),
+    y: PAD_Y + usableH - ((v - min) / range) * usableH,
+  }));
+  const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const last = pts[pts.length - 1];
+  const prevRunId = h[h.length - 2].run_id, curRunId = h[h.length - 1].run_id;
+
+  const sparkHtml = `
+    <svg class="momentum-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"
+      title="Change since previous scan (run ${prevRunId} → run ${curRunId})">
+      <path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+      <circle cx="${last.x.toFixed(1)}" cy="${last.y.toFixed(1)}" r="2.5" fill="${color}" />
+    </svg>
+  `;
+  const deltaHtml = `<span class="momentum-delta momentum-${dir}">${arrow} ${deltaLabel}</span>`;
+
+  return { sparkHtml, deltaHtml };
+}
+
 /* ── Ranked list ── */
 function renderList() {
   const query = searchInput.value.trim().toLowerCase();
@@ -126,6 +168,7 @@ function renderList() {
     const discoveryBadge = c.discovery_source === 'discovered'
       ? `<span class="discovery-badge" title="Newly discovered this scan — not on the existing tracked list">New Discovery</span>`
       : '';
+    const momentum = renderMomentum(c);
 
     row.innerHTML = `
       <div class="company-row-top">
@@ -133,7 +176,11 @@ function renderList() {
           <a class="company-row-name" href="detail.html?company=${encodeURIComponent(c.company)}">${escapeXml(c.company)}</a>
           ${discoveryBadge}
         </div>
-        <span class="company-row-index ${cls}">${c.opportunity_index.toFixed(2)}</span>
+        <div class="company-row-spark">${momentum.sparkHtml}</div>
+        <div class="company-row-right">
+          ${momentum.deltaHtml}
+          <span class="company-row-index ${cls}">${c.opportunity_index.toFixed(2)}</span>
+        </div>
       </div>
       <div class="company-row-sources">
         <span class="source-pill source-news">News ${c.news_signals}</span>
