@@ -209,8 +209,9 @@ function renderInspectorTrend(c) {
   }
 
   const values = history.map((h) => h.index);
-  const W = svgEl.getBoundingClientRect().width || 260, H = svgEl.getBoundingClientRect().height || 120, PAD = 10, PAD_X = 10;
+  const W = svgEl.getBoundingClientRect().width || 260, H = svgEl.getBoundingClientRect().height || 120, PAD = 4, PAD_X = 4;
   svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svgEl.setAttribute('preserveAspectRatio', 'none');
   const min = Math.min(...values), max = Math.max(...values);
   const range = Math.max(max - min, 0.001);
   const usable = H - PAD * 2;
