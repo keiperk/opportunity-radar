@@ -291,7 +291,6 @@ body {
 }
 
 .card-eyebrow {
-  padding-left: 4px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -430,15 +429,6 @@ body {
 
 .scan-summary-text strong { color: var(--text-primary); }
 
-.scan-summary-subhead {
-  display: block;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
 .variance-bar-row {
   display: flex;
   align-items: center;
@@ -568,8 +558,6 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-
-.list-heading .card-eyebrow { padding-left: 0; }
 
 .list-count {
   font-size: 12px;
