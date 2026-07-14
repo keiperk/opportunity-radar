@@ -261,9 +261,6 @@ function renderInspector() {
     </div>
   `).join('');
 
-  const top = sourceDefs.reduce((a, b) => (b.value > a.value ? b : a));
-  document.getElementById('strongest-signal-text').textContent = `${top.label} — ${top.value} mentions this scan`;
-
   renderInspectorTrend(c);
 
   /* News, Reddit, GitHub, and Hacker News are "leading" signals that can
