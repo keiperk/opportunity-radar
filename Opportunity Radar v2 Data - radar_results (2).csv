@@ -1,0 +1,13 @@
+run_id,run_ts,company_canonical,company_display,news_signals,reddit_signals,linkedin_signals,github_signals,hn_signals,discovery_source,opportunity_index
+58,2026-07-14T08:22:34.865-07:00,helsing,Helsing,9,10,10,30,20,discovered,0.89
+58,2026-07-14T08:22:34.869-07:00,oratechnologies,ORA Technologies,10,9,9,30,20,discovered,0.88
+58,2026-07-14T08:22:34.870-07:00,auger,Auger,9,10,10,30,2,discovered,0.77
+58,2026-07-14T08:22:34.872-07:00,jessebens,Jesse & Ben's,9,10,10,0,0,discovered,0.59
+58,2026-07-14T08:22:34.873-07:00,venice,Venice AI,9,8,10,30,0,discovered,0.7
+58,2026-07-14T08:22:34.874-07:00,twenty,Twenty,10,9,10,30,3,discovered,0.79
+58,2026-07-14T08:22:34.875-07:00,zml,ZML,9,10,10,30,20,discovered,0.89
+58,2026-07-14T08:22:34.876-07:00,launchmeloud,LaunchMeLoud,9,9,9,0,0,discovered,0.56
+58,2026-07-14T08:22:34.877-07:00,attribute,Attribute,10,9,9,30,16,discovered,0.88
+58,2026-07-14T08:22:34.878-07:00,undocapital,Undo Capital,9,9,9,0,0,discovered,0.56
+58,2026-07-14T08:22:34.879-07:00,nautis,Nautis,9,9,9,30,0,discovered,0.71
+58,2026-07-14T08:22:34.880-07:00,refiant,Refiant AI,9,10,10,0,2,discovered,0.62

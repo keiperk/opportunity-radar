@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Opportunity Radar Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="dashboard">
+
+    <!-- ── Header ── -->
+    <header class="dashboard-header">
+      <div class="header-titles">
+        <span class="header-eyebrow">Signal Detection · Live Scan</span>
+        <h1 class="header-title">Opportunity Radar</h1>
+        <p class="header-subtitle">Company momentum ranked by weighted signal strength across news, Reddit, and LinkedIn hiring activity.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" type="button">Refresh</button>
+        <button class="btn btn-outline" type="button">Export</button>
+      </div>
+    </header>
+
+    <!-- ── Filter bar ── -->
+    <div class="filter-bar">
+      <div class="filter-search-wrap">
+        <input
+          class="filter-search"
+          type="search"
+          id="search-input"
+          placeholder="Search companies…"
+          aria-label="Search companies"
+        />
+        <svg class="filter-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+          <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <button class="pill-btn" id="sort-toggle" type="button" aria-label="Toggle sort direction">
+        <span>Sort · Index</span>
+        <svg id="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <button class="pill-btn" id="group-toggle" type="button" aria-pressed="true">
+        <span>Group · Tier</span>
+      </button>
+
+      <button class="pill-btn pill-btn-clear" id="clear-filters" type="button">Clear</button>
+    </div>
+
+    <!-- ── Body: 3-column layout ── -->
+    <div class="dashboard-body">
+
+      <!-- Left: Radar + caption + Job Opportunity Signals -->
+      <section class="radar-column" aria-label="Signal radar">
+        <div class="radar-scope">
+          <svg id="radar-svg" viewBox="0 0 400 400" width="100%" height="100%" aria-hidden="true"></svg>
+        </div>
+        <p class="radar-caption">Distance from center reflects signal strength — closer means stronger momentum. The highlighted dot matches your current selection below.</p>
+
+        <div class="scan-summary-card">
+          <span class="scan-summary-subhead">Where to focus this scan</span>
+          <p class="scan-summary-text" id="scan-summary-variance-text">—</p>
+          <div id="scan-variance-bars"></div>
+        </div>
+
+        <div class="job-signals-card">
+          <div class="card-header">
+            <span class="card-eyebrow">Job Opportunity Signals</span>
+            <p class="card-subtitle">What this means for applicants</p>
+          </div>
+          <hr class="divider" />
+          <div class="gauge-row">
+            <div class="gauge-visual">
+              <svg id="roles-gauge" viewBox="0 0 100 100" width="72" height="72" aria-hidden="true"></svg>
+              <span class="gauge-center-value" id="open-roles-value">—</span>
+            </div>
+            <div class="gauge-info">
+              <span class="stat-label">Open Roles Detected</span>
+              <div class="gauge-momentum-row">
+                <span class="tier-badge" id="hiring-momentum-badge">—</span>
+                <span class="discovery-badge" id="gauge-discovery-badge" title="Newly discovered this scan — not on the existing tracked list" hidden>New Discovery</span>
+              </div>
+            </div>
+          </div>
+          <div class="callout-box" id="why-it-matters-box">
+            <span class="callout-label">Why it matters</span>
+            <p class="callout-text" id="why-it-matters-text"></p>
+          </div>
+          <p class="fine-print">Based on public hiring &amp; news signals — not a guarantee of open positions.</p>
+        </div>
+      </section>
+
+      <!-- Middle: Ranked list -->
+      <section class="list-column" aria-label="Ranked signal strength">
+        <div class="list-heading">
+          <span class="card-eyebrow">Ranked Signal Strength</span>
+          <span class="list-count" id="companies-tracked-count">— companies tracked</span>
+        </div>
+        <p class="list-hint">"New Discovery" marks companies surfaced automatically from breaking funding &amp; product news, rather than a manually tracked list.</p>
+        <div id="ranked-list"></div>
+        <p class="table-empty" id="list-empty" hidden>No companies match the current filters.</p>
+      </section>
+
+      <!-- Right: Company Inspector + Suggested Contact -->
+      <aside class="right-rail" aria-label="Company detail">
+        <div class="inspector-card">
+          <div class="card-header">
+            <span class="card-eyebrow">Company Inspector</span>
+            <p class="card-subtitle">Selected from Ranked Signal Strength</p>
+          </div>
+          <hr class="divider" />
+          <div class="inspector-title-row">
+            <h2 class="inspector-company-name" id="inspector-name">—</h2>
+          </div>
+          <div class="inspector-badge-row">
+            <span class="tier-badge" id="inspector-tier-badge">—</span>
+            <span class="inspector-index" id="inspector-index">—</span>
+            <span class="discovery-badge" id="inspector-discovery-badge" title="Newly discovered this scan — not on the existing tracked list" hidden>New Discovery</span>
+          </div>
+
+          <h3 class="section-label">Signal Breakdown</h3>
+          <div class="mini-breakdown" id="signal-breakdown"></div>
+
+          <div class="callout-box" id="strongest-signal-box">
+            <span class="callout-label">Strongest signal</span>
+            <p class="callout-text" id="strongest-signal-text">—</p>
+          </div>
+
+          <div class="math-panel" id="math-panel">
+            <span class="callout-label">How this is calculated</span>
+            <p class="math-caption">Each source is capped, normalized, then weighted:</p>
+            <div id="math-rows"></div>
+            <hr class="divider" />
+            <div class="math-total-row">
+              <span class="math-total-label">Total opportunity_index</span>
+              <span class="math-total-value" id="math-total-value">—</span>
+            </div>
+          </div>
+
+          <a class="btn btn-dark btn-full" id="view-report-btn" href="detail.html">View Full Report</a>
+        </div>
+
+        <div class="contact-card">
+          <div class="card-header">
+            <span class="card-eyebrow">Suggested Contact</span>
+            <p class="card-subtitle">Reach out to start a conversation</p>
+          </div>
+          <hr class="divider" />
+          <div class="contact-person-row">
+            <div class="contact-avatar">JR</div>
+            <div class="contact-person-info">
+              <p class="contact-name">Jordan Reyes</p>
+              <p class="contact-title" id="contact-title">Engineering Recruiter · —</p>
+            </div>
+          </div>
+          <div class="contact-detail-box">
+            <span class="contact-detail-label">Email</span>
+            <span class="contact-detail-value" id="contact-email">—</span>
+          </div>
+          <div class="contact-detail-box">
+            <span class="contact-detail-label">LinkedIn</span>
+            <span class="contact-detail-value">in/jordanreyes</span>
+          </div>
+          <button class="btn btn-dark btn-full" type="button">Send Introduction Email</button>
+          <p class="fine-print">Suggested contact based on public company data — verify details before reaching out.</p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

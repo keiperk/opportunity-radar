@@ -1,0 +1,61 @@
+run_id,run_ts,company_canonical,company_display,source,count
+58,2026-07-14T08:22:34.865-07:00,helsing,Helsing,reddit,10
+58,2026-07-14T08:22:34.869-07:00,oratechnologies,ORA Technologies,reddit,9
+58,2026-07-14T08:22:34.870-07:00,auger,Auger,reddit,10
+58,2026-07-14T08:22:34.872-07:00,jessebens,Jesse & Ben's,reddit,10
+58,2026-07-14T08:22:34.873-07:00,venice,Venice AI,reddit,8
+58,2026-07-14T08:22:34.874-07:00,twenty,Twenty,reddit,9
+58,2026-07-14T08:22:34.875-07:00,zml,ZML,reddit,10
+58,2026-07-14T08:22:34.876-07:00,launchmeloud,LaunchMeLoud,reddit,9
+58,2026-07-14T08:22:34.877-07:00,attribute,Attribute,reddit,9
+58,2026-07-14T08:22:34.878-07:00,undocapital,Undo Capital,reddit,9
+58,2026-07-14T08:22:34.879-07:00,nautis,Nautis,reddit,9
+58,2026-07-14T08:22:34.880-07:00,refiant,Refiant AI,reddit,10
+58,2026-07-14T08:22:34.865-07:00,helsing,Helsing,news,9
+58,2026-07-14T08:22:34.869-07:00,oratechnologies,ORA Technologies,news,10
+58,2026-07-14T08:22:34.870-07:00,auger,Auger,news,9
+58,2026-07-14T08:22:34.872-07:00,jessebens,Jesse & Ben's,news,9
+58,2026-07-14T08:22:34.873-07:00,venice,Venice AI,news,9
+58,2026-07-14T08:22:34.874-07:00,twenty,Twenty,news,10
+58,2026-07-14T08:22:34.875-07:00,zml,ZML,news,9
+58,2026-07-14T08:22:34.876-07:00,launchmeloud,LaunchMeLoud,news,9
+58,2026-07-14T08:22:34.877-07:00,attribute,Attribute,news,10
+58,2026-07-14T08:22:34.878-07:00,undocapital,Undo Capital,news,9
+58,2026-07-14T08:22:34.879-07:00,nautis,Nautis,news,9
+58,2026-07-14T08:22:34.880-07:00,refiant,Refiant AI,news,9
+58,2026-07-14T08:22:34.865-07:00,helsing,Helsing,linkedin_jobs,10
+58,2026-07-14T08:22:34.869-07:00,oratechnologies,ORA Technologies,linkedin_jobs,9
+58,2026-07-14T08:22:34.870-07:00,auger,Auger,linkedin_jobs,10
+58,2026-07-14T08:22:34.872-07:00,jessebens,Jesse & Ben's,linkedin_jobs,10
+58,2026-07-14T08:22:34.873-07:00,venice,Venice AI,linkedin_jobs,10
+58,2026-07-14T08:22:34.874-07:00,twenty,Twenty,linkedin_jobs,10
+58,2026-07-14T08:22:34.875-07:00,zml,ZML,linkedin_jobs,10
+58,2026-07-14T08:22:34.876-07:00,launchmeloud,LaunchMeLoud,linkedin_jobs,9
+58,2026-07-14T08:22:34.877-07:00,attribute,Attribute,linkedin_jobs,9
+58,2026-07-14T08:22:34.878-07:00,undocapital,Undo Capital,linkedin_jobs,9
+58,2026-07-14T08:22:34.879-07:00,nautis,Nautis,linkedin_jobs,9
+58,2026-07-14T08:22:34.880-07:00,refiant,Refiant AI,linkedin_jobs,10
+58,2026-07-14T08:22:34.865-07:00,helsing,Helsing,github,30
+58,2026-07-14T08:22:34.869-07:00,oratechnologies,ORA Technologies,github,30
+58,2026-07-14T08:22:34.870-07:00,auger,Auger,github,30
+58,2026-07-14T08:22:34.872-07:00,jessebens,Jesse & Ben's,github,0
+58,2026-07-14T08:22:34.873-07:00,venice,Venice AI,github,30
+58,2026-07-14T08:22:34.874-07:00,twenty,Twenty,github,30
+58,2026-07-14T08:22:34.875-07:00,zml,ZML,github,30
+58,2026-07-14T08:22:34.876-07:00,launchmeloud,LaunchMeLoud,github,0
+58,2026-07-14T08:22:34.877-07:00,attribute,Attribute,github,30
+58,2026-07-14T08:22:34.878-07:00,undocapital,Undo Capital,github,0
+58,2026-07-14T08:22:34.879-07:00,nautis,Nautis,github,30
+58,2026-07-14T08:22:34.880-07:00,refiant,Refiant AI,github,0
+58,2026-07-14T08:22:34.865-07:00,helsing,Helsing,hn,20
+58,2026-07-14T08:22:34.869-07:00,oratechnologies,ORA Technologies,hn,20
+58,2026-07-14T08:22:34.870-07:00,auger,Auger,hn,2
+58,2026-07-14T08:22:34.872-07:00,jessebens,Jesse & Ben's,hn,0
+58,2026-07-14T08:22:34.873-07:00,venice,Venice AI,hn,0
+58,2026-07-14T08:22:34.874-07:00,twenty,Twenty,hn,3
+58,2026-07-14T08:22:34.875-07:00,zml,ZML,hn,20
+58,2026-07-14T08:22:34.876-07:00,launchmeloud,LaunchMeLoud,hn,0
+58,2026-07-14T08:22:34.877-07:00,attribute,Attribute,hn,16
+58,2026-07-14T08:22:34.878-07:00,undocapital,Undo Capital,hn,0
+58,2026-07-14T08:22:34.879-07:00,nautis,Nautis,hn,0
+58,2026-07-14T08:22:34.880-07:00,refiant,Refiant AI,hn,2

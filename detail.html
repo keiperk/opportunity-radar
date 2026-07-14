@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Detail — Opportunity Radar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="detail-page">
+
+    <header class="detail-topbar">
+      <div class="detail-topbar-left">
+        <a class="back-link" href="index.html">← Back to Ranked Signal Strength</a>
+
+        <div class="detail-header">
+          <h1 class="detail-company-name" id="detail-name">—</h1>
+          <span class="tier-badge" id="detail-tier-badge">—</span>
+          <span class="detail-index" id="detail-index">—</span>
+          <span class="discovery-badge" id="detail-discovery-badge" title="Newly discovered this scan — not on the existing tracked list" hidden>New Discovery</span>
+        </div>
+        <p class="detail-subtitle">Detailed signal history, breakdown, and outreach info.</p>
+      </div>
+
+      <div class="detail-topbar-nav">
+        <button class="btn btn-outline" id="prev-company-btn" type="button">← Previous</button>
+        <button class="btn btn-outline" id="next-company-btn" type="button">Next →</button>
+      </div>
+    </header>
+
+    <div class="detail-body">
+    <div class="detail-columns">
+
+      <!-- Left: Suggested Contact + How This Is Calculated -->
+      <div class="detail-col detail-col-left">
+        <h3 class="section-label">Suggested Contact</h3>
+        <div class="contact-card contact-card-standalone">
+          <div class="contact-person-row" style="margin-top: 0;">
+            <div class="contact-avatar">JR</div>
+            <div class="contact-person-info">
+              <p class="contact-name">Jordan Reyes</p>
+              <p class="contact-title" id="detail-contact-title">Engineering Recruiter · —</p>
+            </div>
+          </div>
+          <div class="contact-detail-box">
+            <span class="contact-detail-label">Email</span>
+            <span class="contact-detail-value" id="detail-contact-email">—</span>
+          </div>
+          <div class="contact-detail-box">
+            <span class="contact-detail-label">LinkedIn</span>
+            <span class="contact-detail-value">in/jordanreyes</span>
+          </div>
+          <button class="btn btn-dark btn-full" type="button">Send Introduction Email</button>
+          <p class="fine-print">Suggested contact based on public company data — verify details before reaching out.</p>
+        </div>
+
+        <hr class="divider" />
+        <h3 class="section-label">How This Is Calculated</h3>
+        <div class="math-panel math-panel-standalone">
+          <p class="math-caption">Each source is capped, normalized, then weighted:</p>
+          <div id="detail-math-rows"></div>
+          <hr class="divider" />
+          <div class="math-total-row">
+            <span class="math-total-label">Total opportunity_index</span>
+            <span class="math-total-value" id="detail-math-total">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle: Momentum Trend -->
+      <div class="detail-col detail-col-mid">
+        <h3 class="section-label">Momentum Trend</h3>
+        <div class="trend-card">
+          <svg id="trend-svg" width="100%" height="160" aria-hidden="true"></svg>
+          <p class="fine-print">Illustrative trend leading to the current scan — only the latest point reflects a real pipeline run.</p>
+        </div>
+
+        <h3 class="section-label">Peer Comparison</h3>
+        <div class="peer-compare-card">
+          <p class="peer-compare-headline" id="peer-rank-headline">—</p>
+          <p class="peer-compare-sub" id="peer-rank-sub">—</p>
+          <svg id="peer-compare-svg" width="100%" height="56" aria-hidden="true"></svg>
+          <p class="fine-print">Positioned relative to the lowest- and highest-scoring companies in this scan.</p>
+        </div>
+
+        <h3 class="section-label">Signal Rank by Source</h3>
+        <div class="source-rank-card">
+          <p class="source-rank-headline" id="source-rank-headline">—</p>
+          <div id="source-rank-rows"></div>
+          <p class="fine-print">Shows which channel most sets this company apart from peers — useful for deciding where to verify the signal yourself.</p>
+        </div>
+      </div>
+
+      <!-- Right: Why This Matters + Recommended Next Steps + Signal Breakdown -->
+      <div class="detail-col detail-col-right">
+        <h3 class="section-label">Why This Matters</h3>
+        <div class="callout-box callout-box-standalone">
+          <p class="callout-text" id="detail-why-text"></p>
+        </div>
+
+        <h3 class="section-label" style="margin-top: 16px;">Recommended Next Steps</h3>
+        <div class="next-steps-card" id="next-steps-list"></div>
+
+        <h3 class="section-label" style="margin-top: 16px;">Signal Breakdown</h3>
+        <div class="breakdown-compact-card">
+          <div class="mini-breakdown" id="breakdown-stack"></div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="detail.js"></script>
+</body>
+</html>

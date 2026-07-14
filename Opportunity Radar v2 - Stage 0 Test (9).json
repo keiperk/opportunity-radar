@@ -1,0 +1,1384 @@
+{
+  "name": "Opportunity Radar v2 - Stage 0 Test",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        448
+      ],
+      "id": "d228e6f5-2328-4211-92e2-99df8a10320e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1ZoVd3i6whSavi8kpXWXZi8ApewOotjtL36Oi_11fGfY/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "companies",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZoVd3i6whSavi8kpXWXZi8ApewOotjtL36Oi_11fGfY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        352
+      ],
+      "id": "ee194f56-280c-4bbe-ae4d-d1feae156900",
+      "name": "Get Companies",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "x5X0EhnPFCMCK2WA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3de06832-904c-4a6a-b142-6072d852889a",
+              "name": "run_id",
+              "value": "= {{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "0d8b0881-8356-486e-a6c6-08c6ef115f1b",
+              "name": "=run_ts",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "19adfe56-65ff-444e-9780-a24dcedda537",
+              "name": "discovery_source",
+              "value": "tracked",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": "={{ true }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        352
+      ],
+      "id": "b18c9689-6c23-49ee-a5ce-bab9a955c76b",
+      "name": "Create Run Context"
+    },
+    {
+      "parameters": {
+        "jsCode": "function canonicalizeCompany(name) {\n  if (!name) return \"\";\n\n  return name\n    .toString()\n    .toLowerCase()\n    .normalize(\"NFKD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .replace(/\\b(inc|llc|ltd|corp|co|ai|labs?)\\b\\.?/g, \"\")\n    .replace(/[^a-z0-9]/g, \"\")\n    .trim();\n}\n\nreturn $input.all().map((item) => {\n  return {\n    json: {\n      ...item.json,\n      company_canonical: canonicalizeCompany(item.json.company_display)\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        448
+      ],
+      "id": "c6f19456-84d6-4b44-b4a8-3ac79a2f47b3",
+      "name": "Canonicalize Companies"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "d3ade02240a4d0acbd7e3c629726f6884fa5290b"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"q\": \"{{ $json.company_display }} reddit funding hiring\",\n  \"num\": 60\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2400,
+        144
+      ],
+      "id": "20852b86-5eba-4827-9c83-f9e22c2a6a91",
+      "name": "Fetch Reddit"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const upstream = $(\"Canonicalize Companies\").item.json;\n\nconst organicResults = Array.isArray($json.organic) ? $json.organic : [];\n\nreturn {\n  json: {\n    run_id: upstream.run_id,\n    run_ts: upstream.run_ts,\n    company_canonical: upstream.company_canonical,\n    company_display: upstream.company_display,\n    discovery_source: upstream.discovery_source,\n    source: \"reddit\",\n    count: organicResults.length\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        144
+      ],
+      "id": "a03974c5-0517-407f-b88f-282c6b489dad",
+      "name": "Normalize Reddit"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const upstream = $(\"Canonicalize Companies\").item.json;\n\nconst organicResults = Array.isArray($json.organic) ? $json.organic : [];\n\nreturn {\n  json: {\n    run_id: upstream.run_id,\n    run_ts: upstream.run_ts,\n    company_canonical: upstream.company_canonical,\n    company_display: upstream.company_display,\n    discovery_source: upstream.discovery_source,\n    source: \"news\",\n    count: organicResults.length\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        336
+      ],
+      "id": "35ea5ffd-557b-4854-b42a-245aea308dda",
+      "name": "Normalize News"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "d3ade02240a4d0acbd7e3c629726f6884fa5290b"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"q\": \"{{ $json.company_display }} funding product launch\",\n  \"num\": 60\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 500
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2400,
+        336
+      ],
+      "id": "1557f3c4-5d87-4bbf-ba18-5bf3ddb40fe8",
+      "name": "Fetch News"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ZoVd3i6whSavi8kpXWXZi8ApewOotjtL36Oi_11fGfY",
+          "mode": "list",
+          "cachedResultName": "Opportunity Radar v2 Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZoVd3i6whSavi8kpXWXZi8ApewOotjtL36Oi_11fGfY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2130141833,
+          "mode": "list",
+          "cachedResultName": "raw_signals",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZoVd3i6whSavi8kpXWXZi8ApewOotjtL36Oi_11fGfY/edit#gid=2130141833"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_id": "={{$json.run_id}}",
+            "run_ts": "={{$json.run_ts}}",
+            "company_canonical": "={{$json.company_canonical}}",
+            "company_display": "={{$json.company_display}}",
+            "source": "={{$json.source}}",
+            "count": "={{$json.count}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_id",
+              "displayName": "run_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "run_ts",
+              "displayName": "run_ts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company_canonical",
+              "displayName": "company_canonical",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company_display",
+              "displayName": "company_display",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "count",
+              "displayName": "count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2896,
+        544
+      ],
+      "id": "89bcc8d1-219e-448b-b650-5f98ddf22deb",
+      "name": "Write raw signals",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "x5X0EhnPFCMCK2WA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "d3ade02240a4d0acbd7e3c629726f6884fa5290b"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"q\": \"{{ $json.company_display }} jobs linkedin\",\n  \"num\": 60\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2400,
+        544
+      ],
+      "id": "c5fbce70-c468-4694-b8e8-1eb7e2a4513a",
+      "name": "Fetch LinkedIn Jobs"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const upstream = $(\"Canonicalize Companies\").item.json;\n\nconst organicResults = Array.isArray($json.organic) ? $json.organic : [];\n\nreturn {\n  json: {\n    run_id: upstream.run_id,\n    run_ts: upstream.run_ts,\n    company_canonical: upstream.company_canonical,\n    company_display: upstream.company_display,\n    discovery_source: upstream.discovery_source,\n    source: \"linkedin_jobs\",\n    count: organicResults.length\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        544
+      ],
+      "id": "e57471dd-60ba-4d7b-9f37-f5fa7f78af47",
+      "name": "Normalize LinkedIn Jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst grouped = {};\n\nfor (const item of allItems) {\n  const d = item.json;\n  const key = d.company_canonical;\n  if (!key) continue;\n\n  if (!grouped[key]) {\n    grouped[key] = {\n      run_id: d.run_id,\n      run_ts: d.run_ts,\n      company_canonical: d.company_canonical,\n      company_display: d.company_display,\n      discovery_source: d.discovery_source,\n      news_signals: 0,\n      reddit_signals: 0,\n      linkedin_signals: 0,\n      github_signals: 0,\n      hn_signals: 0\n    };\n  }\n\n  const count = Number(d.count) || 0;\n\n  if (d.source === 'news') grouped[key].news_signals += count;\n  else if (d.source === 'reddit') grouped[key].reddit_signals += count;\n  else if (d.source === 'linkedin_jobs') grouped[key].linkedin_signals += count;\n  else if (d.source === 'github') grouped[key].github_signals += count;\n  else if (d.source === 'hn') grouped[key].hn_signals += count;\n}\n\nreturn Object.values(grouped).map(row => ({ json: row }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        208
+      ],
+      "id": "5b56c875-baab-4e2e-b07d-7e73a58c91ac",
+      "name": "Aggregate Signals By Company"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const d = $json;\n\nconst weights = { news: 0.25, reddit: 0.2, linkedin: 0.25, github: 0.15, hn: 0.15 };\nconst caps = { news: 10, reddit: 10, linkedin: 15, github: 30, hn: 10 };\n\nconst newsNorm = Math.min(d.news_signals || 0, caps.news) / caps.news;\nconst redditNorm = Math.min(d.reddit_signals || 0, caps.reddit) / caps.reddit;\nconst linkedinNorm = Math.min(d.linkedin_signals || 0, caps.linkedin) / caps.linkedin;\nconst githubNorm = Math.min(d.github_signals || 0, caps.github) / caps.github;\nconst hnNorm = Math.min(d.hn_signals || 0, caps.hn) / caps.hn;\n\nconst opportunity_index =\n  newsNorm * weights.news +\n  redditNorm * weights.reddit +\n  linkedinNorm * weights.linkedin +\n  githubNorm * weights.github +\n  hnNorm * weights.hn;\n\nreturn {\n  json: {\n    ...d,\n    opportunity_index: Math.round(opportunity_index * 100) / 100\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3296,
+        208
+      ],
+      "id": "a9367808-2000-46e5-8dc2-ab1061aa9532",
+      "name": "Calculate Index"
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2896,
+        160
+      ],
+      "id": "842702d7-b769-4436-b30c-b8f0fb83ccad",
+      "name": "Merge Reddit + News"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ZoVd3i6whSavi8kpXWXZi8ApewOotjtL36Oi_11fGfY",
+          "mode": "list",
+          "cachedResultName": "Opportunity Radar v2 Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZoVd3i6whSavi8kpXWXZi8ApewOotjtL36Oi_11fGfY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1454866921,
+          "mode": "list",
+          "cachedResultName": "radar_results",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZoVd3i6whSavi8kpXWXZi8ApewOotjtL36Oi_11fGfY/edit#gid=1454866921"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_id": "={{ $json.run_id }}",
+            "company_canonical": "={{ $json.company_canonical }}",
+            "run_ts": "={{ $json.run_ts }}",
+            "company_display": "={{ $json.company_display }}",
+            "news_signals": "={{ $json.news_signals }}",
+            "reddit_signals": "={{ $json.reddit_signals }}",
+            "linkedin_signals": "={{ $json.linkedin_signals }}",
+            "opportunity_index": "={{ $json.opportunity_index }}",
+            "github_signals": "={{ $json.github_signals }}",
+            "hn_signals": "={{ $json.hn_signals }}",
+            "discovery_source": "={{ $json.discovery_source }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_id",
+              "displayName": "run_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "run_ts",
+              "displayName": "run_ts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_canonical",
+              "displayName": "company_canonical",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_display",
+              "displayName": "company_display",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "news_signals",
+              "displayName": "news_signals",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reddit_signals",
+              "displayName": "reddit_signals",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "linkedin_signals",
+              "displayName": "linkedin_signals",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "github_signals",
+              "displayName": "github_signals",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hn_signals",
+              "displayName": "hn_signals",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "discovery_source",
+              "displayName": "discovery_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "opportunity_index",
+              "displayName": "opportunity_index",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3504,
+        208
+      ],
+      "id": "6ccb700f-7332-4d71-a927-e0e61503f3cf",
+      "name": "Write Radar Results",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "x5X0EhnPFCMCK2WA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "d3ade02240a4d0acbd7e3c629726f6884fa5290b"
+            },
+            {}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"q\": \"startup raises Series A funding round\",\n  \"type\": \"news\",\n  \"num\": 100\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        544
+      ],
+      "id": "245620c6-aff3-4d43-8a2b-15cb44a7b039",
+      "name": "Fetch Discovery"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system"
+            },
+            {
+              "content": "==Extract company names from the following search results:\n\n{{ JSON.stringify($json.news.map(r => ({ title: r.title, snippet: r.snippet }))) }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "builtInTools": {},
+        "options": {
+          "instructions": "You are a data extraction assistant. You will be given a list of news article titles and snippets. Extract every distinct company name mentioned that appears to be a startup, private company, or business raising funding, launching a product, or hiring.\n\nDo not include investors, VC firms, universities, government agencies, or generic terms like \"the company\" without a proper name.\n\nExtract every company mentioned, even if uncertain. Only return an empty array if no company names appear anywhere in the text.\n\nReturn ONLY valid JSON, no markdown, no commentary, in this exact format:\n{\"companies\": [{\"company_name\": \"string\", \"source_snippet\": \"string\"}]}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        544
+      ],
+      "id": "11652f82-8e05-4ad0-9733-6524ac6773b3",
+      "name": "Extract Companies",
+      "credentials": {
+        "openAiApi": {
+          "id": "eNtUTZkyYC1l88lo",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allCompanies = [];\n\nfor (const item of $input.all()) {\n  const j = item.json;\n  let raw;\n\n  if (Array.isArray(j.output)) {\n    const msg = j.output.find(o => o.type === 'message');\n    raw = msg?.content?.[0]?.text;\n  }\n\n  if (!raw) continue;\n\n  let parsed;\n  try {\n    parsed = JSON.parse(raw);\n  } catch (e) {\n    continue;\n  }\n\n  const companies = parsed.companies || [];\n  for (const c of companies) {\n    if (!c.company_name) continue;\n    allCompanies.push({\n      json: {\n        company_display: c.company_name,\n        source_snippet: c.source_snippet || ''\n      }\n    });\n  }\n}\n\nreturn allCompanies;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        544
+      ],
+      "id": "0e749dfe-e628-4cdc-9e99-ba3658049c4d",
+      "name": "Parse extracted companies"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a9d8787d-1161-4a75-9fde-d2c4bc0df8aa",
+              "name": "run_id",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "e40cf3e6-2770-4670-9446-acc03f36f861",
+              "name": "run_ts",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "92b57e93-61d3-4d5c-8fe3-fa5ec853037a",
+              "name": "discovery_source",
+              "value": "discovered",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        560
+      ],
+      "id": "52c245b0-f976-47aa-845c-cd1db630eb6e",
+      "name": "Create Run Context (Discovery)"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1632,
+        448
+      ],
+      "id": "4d0237e0-a53f-49df-a5de-1f7e83428bcb",
+      "name": "Merge Tracking + Discovery Companies"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/search/repositories",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.company_display }}"
+            },
+            {
+              "name": "sort",
+              "value": "updated"
+            },
+            {
+              "name": "per_page",
+              "value": "30"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 4000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2400,
+        752
+      ],
+      "id": "42413dea-486a-4e90-94ec-c22aab88ea03",
+      "name": "Fetch GitHub",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LuhI7yfvAqBvBt6f",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "company_canonical",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        144
+      ],
+      "id": "1f2a033f-0cab-4744-bb47-c5e633c548df",
+      "name": "Remove Duplicates 1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "company_canonical",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        336
+      ],
+      "id": "1dcaf2a6-2bd7-4dae-9f88-26f75ab2b080",
+      "name": "Remove Duplicates 2"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "company_canonical",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        752
+      ],
+      "id": "80af367d-b0a5-48cc-8f02-bc7575dfaded",
+      "name": "Remove Duplicates 4"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "company_canonical",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        544
+      ],
+      "id": "af4c1b9a-b615-4905-a8b8-73370b6d581d",
+      "name": "Remove Duplicates 3"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const upstream = $(\"Canonicalize Companies\").item.json;\n\nconst items = Array.isArray($json.items) ? $json.items : [];\n\nreturn {\n  json: {\n    run_id: upstream.run_id,\n    run_ts: upstream.run_ts,\n    company_canonical: upstream.company_canonical,\n    company_display: upstream.company_display,\n    discovery_source: upstream.discovery_source,\n    source: \"github\",\n    count: items.length\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        752
+      ],
+      "id": "4ddbc14a-2a2d-4948-99ec-7b0551dda4c5",
+      "name": "Normalize GitHub"
+    },
+    {
+      "parameters": {
+        "url": "https://hn.algolia.com/api/v1/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.company_display }} startup"
+            },
+            {
+              "name": "tags",
+              "value": "story"
+            },
+            {
+              "name": "numericFilters",
+              "value": "created_at_i>1704067200"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 2500
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2400,
+        976
+      ],
+      "id": "80c089c0-9bc6-436c-850d-f638b6bb5f2d",
+      "name": "Fetch HN"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "company_canonical",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        976
+      ],
+      "id": "28ffcb9c-a2ce-4eef-81e4-cb84ef0e009b",
+      "name": "Remove Duplicates 5"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const upstream = $(\"Canonicalize Companies\").item.json;\n\nconst hits = Array.isArray($json.hits) ? $json.hits : [];\n\nreturn {\n  json: {\n    run_id: upstream.run_id,\n    run_ts: upstream.run_ts,\n    company_canonical: upstream.company_canonical,\n    company_display: upstream.company_display,\n    discovery_source: upstream.discovery_source,\n    source: \"hn\",\n    count: hits.length\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        976
+      ],
+      "id": "ad2b5ac5-f34b-47e5-9133-25c665c944eb",
+      "name": "Normalize HN"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "d3ade02240a4d0acbd7e3c629726f6884fa5290b"
+            },
+            {}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"q\": \"startup launches AI product\",\n  \"type\": \"news\",\n  \"num\": 100\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        768
+      ],
+      "id": "93ad44ff-2354-4139-8716-3faebde7f2cd",
+      "name": "Fetch Discovery 2"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system"
+            },
+            {
+              "content": "==Extract company names from the following search results:\n\n{{ JSON.stringify($json.news.map(r => ({ title: r.title, snippet: r.snippet }))) }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "builtInTools": {},
+        "options": {
+          "instructions": "You are a data extraction assistant. You will be given a list of news article titles and snippets. Extract every distinct company name mentioned that appears to be a startup, private company, or business raising funding, launching a product, or hiring.\n\nDo not include investors, VC firms, universities, government agencies, or generic terms like \"the company\" without a proper name.\n\nExtract every company mentioned, even if uncertain. Only return an empty array if no company names appear anywhere in the text.\n\nReturn ONLY valid JSON, no markdown, no commentary, in this exact format:\n{\"companies\": [{\"company_name\": \"string\", \"source_snippet\": \"string\"}]}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        768
+      ],
+      "id": "43c5351a-c76d-45b7-bbe6-7c9d6b745739",
+      "name": "Extract Companies 2",
+      "credentials": {
+        "openAiApi": {
+          "id": "eNtUTZkyYC1l88lo",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allCompanies = [];\n\nfor (const item of $input.all()) {\n  const j = item.json;\n  let raw;\n\n  if (Array.isArray(j.output)) {\n    const msg = j.output.find(o => o.type === 'message');\n    raw = msg?.content?.[0]?.text;\n  }\n\n  if (!raw) continue;\n\n  let parsed;\n  try {\n    parsed = JSON.parse(raw);\n  } catch (e) {\n    continue;\n  }\n\n  const companies = parsed.companies || [];\n  for (const c of companies) {\n    if (!c.company_name) continue;\n    allCompanies.push({\n      json: {\n        company_display: c.company_name,\n        source_snippet: c.source_snippet || ''\n      }\n    });\n  }\n}\n\nreturn allCompanies;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        768
+      ],
+      "id": "581ee518-2b30-4b55-b80d-d25474fbe577",
+      "name": "Parse extracted companies 2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1248,
+        560
+      ],
+      "id": "b4d2b46c-2228-462e-be07-95a6f369052e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        752
+      ],
+      "id": "68bcc290-d651-446e-927d-e272f9deb905",
+      "name": "Limit",
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Companies",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Discovery",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Discovery 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Companies": {
+      "main": [
+        [
+          {
+            "node": "Create Run Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Run Context": {
+      "main": [
+        [
+          {
+            "node": "Merge Tracking + Discovery Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Canonicalize Companies": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates 4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Remove Duplicates 1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Remove Duplicates 3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Remove Duplicates 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Remove Duplicates 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Reddit": {
+      "main": [
+        [
+          {
+            "node": "Normalize Reddit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Reddit": {
+      "main": [
+        [
+          {
+            "node": "Write raw signals",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Reddit + News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch News": {
+      "main": [
+        [
+          {
+            "node": "Normalize News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize News": {
+      "main": [
+        [
+          {
+            "node": "Write raw signals",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Reddit + News",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Fetch LinkedIn Jobs": {
+      "main": [
+        [
+          {
+            "node": "Normalize LinkedIn Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize LinkedIn Jobs": {
+      "main": [
+        [
+          {
+            "node": "Write raw signals",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Reddit + News",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Aggregate Signals By Company": {
+      "main": [
+        [
+          {
+            "node": "Calculate Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Reddit + News": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Signals By Company",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Index": {
+      "main": [
+        [
+          {
+            "node": "Write Radar Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Discovery": {
+      "main": [
+        [
+          {
+            "node": "Extract Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Companies": {
+      "main": [
+        [
+          {
+            "node": "Parse extracted companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse extracted companies": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Run Context (Discovery)": {
+      "main": [
+        [
+          {
+            "node": "Merge Tracking + Discovery Companies",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Tracking + Discovery Companies": {
+      "main": [
+        [
+          {
+            "node": "Canonicalize Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates 1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Reddit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates 2": {
+      "main": [
+        [
+          {
+            "node": "Fetch News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates 4": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch GitHub": {
+      "main": [
+        [
+          {
+            "node": "Normalize GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates 3": {
+      "main": [
+        [
+          {
+            "node": "Fetch LinkedIn Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize GitHub": {
+      "main": [
+        [
+          {
+            "node": "Merge Reddit + News",
+            "type": "main",
+            "index": 3
+          },
+          {
+            "node": "Write raw signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates 5": {
+      "main": [
+        [
+          {
+            "node": "Fetch HN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch HN": {
+      "main": [
+        [
+          {
+            "node": "Normalize HN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize HN": {
+      "main": [
+        [
+          {
+            "node": "Merge Reddit + News",
+            "type": "main",
+            "index": 4
+          },
+          {
+            "node": "Write raw signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Discovery 2": {
+      "main": [
+        [
+          {
+            "node": "Extract Companies 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Companies 2": {
+      "main": [
+        [
+          {
+            "node": "Parse extracted companies 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse extracted companies 2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create Run Context (Discovery)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Fetch GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7d43d0d6-dd10-4057-80a8-31845e16ac2f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d4abf95a1a8dfba7f576394388c63ef43f83184394432244616507a6e80d88fe"
+  },
+  "nodeGroups": [],
+  "id": "br2qV2sTcCDw3kwZ",
+  "tags": []
+}
