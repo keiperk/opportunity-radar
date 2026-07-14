@@ -192,6 +192,44 @@ function renderRolesGauge(value, max) {
   `;
 }
 
+/* ── Momentum Trend (miniature): same real-history logic as the detail
+   page's full trend chart, just sized for the right rail. Needs at least
+   2 real runs to draw a line — with just 1, there's nothing to chart yet. */
+function renderInspectorTrend(c) {
+  const svgEl = document.getElementById('inspector-trend-svg');
+  const captionEl = document.getElementById('inspector-trend-caption');
+  const history = c.history || [];
+
+  if (history.length < 2) {
+    svgEl.innerHTML = '';
+    captionEl.textContent = 'Not enough scan history yet — check back after the next run.';
+    return;
+  }
+
+  const values = history.map((h) => h.index);
+  const W = svgEl.getBoundingClientRect().width || 260, H = 56, PAD = 8, PAD_X = 10;
+  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = Math.max(max - min, 0.001);
+  const usable = H - PAD * 2;
+  const usableW = W - PAD_X * 2;
+  const pts = values.map((v, i) => ({
+    x: PAD_X + (i * usableW) / (values.length - 1),
+    y: PAD + usable - ((v - min) / range) * usable,
+  }));
+
+  const areaCmds = `M ${pts[0].x.toFixed(1)} ${H} ` + pts.map((p) => `L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ') + ` L ${pts[pts.length - 1].x.toFixed(1)} ${H} Z`;
+  const lineCmds = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const last = pts[pts.length - 1];
+
+  svgEl.innerHTML = `
+    <path d="${areaCmds}" fill="${THEME.trendAccent}" opacity="0.14" />
+    <path d="${lineCmds}" fill="none" stroke="${THEME.trendAccent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="${last.x.toFixed(1)}" cy="${last.y.toFixed(1)}" r="2.5" fill="#ffffff" stroke="${THEME.trendAccent}" stroke-width="1.5" />
+  `;
+  captionEl.textContent = `Real signal history across ${history.length} scans.`;
+}
+
 /* ── Right rail: Inspector / Job Signals / Contact ── */
 function renderInspector() {
   const c = selectedCompany;
@@ -222,6 +260,8 @@ function renderInspector() {
 
   const top = sourceDefs.reduce((a, b) => (b.value > a.value ? b : a));
   document.getElementById('strongest-signal-text').textContent = `${top.label} — ${top.value} mentions this scan`;
+
+  renderInspectorTrend(c);
 
   /* News, Reddit, GitHub, and Hacker News are "leading" signals that can
      appear before a role is posted; LinkedIn Jobs is the one "confirming"

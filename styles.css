@@ -1103,6 +1103,13 @@ body {
 .callout-box-standalone { margin-top: 0; }
 .math-panel-standalone { margin-top: 0; }
 
+.inspector-trend-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+}
+
 .contact-card-standalone { padding: 20px; }
 
 .next-steps-card {
