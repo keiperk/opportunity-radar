@@ -456,7 +456,7 @@ body {
   overflow: hidden;
 }
 
-.variance-bar-fill { height: 100%; border-radius: var(--radius-sm); opacity: 0.75; }
+.variance-bar-fill { height: 100%; border-radius: var(--radius-sm); opacity: 0.9; }
 .variance-bar-fill.source-news     { background: var(--news-color); }
 .variance-bar-fill.source-reddit   { background: var(--reddit-red); }
 .variance-bar-fill.source-linkedin { background: var(--linkedin-blue); }
@@ -698,7 +698,7 @@ body {
   height: 5px;
   border-radius: 50%;
   background: var(--accent);
-  opacity: 0.75;
+  opacity: 0.9;
 }
 
 .source-pill.source-news::before      { background: var(--news-color); }
@@ -708,7 +708,7 @@ body {
 .source-pill.source-hn::before       { background: var(--hn-color); }
 
 .meter-track {
-  height: 4px;
+  height: 5px;
   border-radius: var(--radius-sm);
   background: var(--track-bg);
   overflow: hidden;
@@ -722,15 +722,17 @@ body {
 
 .meter-fill.amber { background: var(--amber-deep); }
 .meter-fill.rose  { background: var(--rose-deep); }
-.meter-fill.source-news     { background: var(--news-color); opacity: 0.75; }
-.meter-fill.source-reddit   { background: var(--reddit-red); opacity: 0.75; }
-.meter-fill.source-linkedin { background: var(--linkedin-blue); opacity: 0.75; }
-.meter-fill.source-github   { background: var(--github-color); opacity: 0.75; }
-.meter-fill.source-hn       { background: var(--hn-color); opacity: 0.75; }
+.meter-fill.source-news     { background: var(--news-color); opacity: 0.9; }
+.meter-fill.source-reddit   { background: var(--reddit-red); opacity: 0.9; }
+.meter-fill.source-linkedin { background: var(--linkedin-blue); opacity: 0.9; }
+.meter-fill.source-github   { background: var(--github-color); opacity: 0.9; }
+.meter-fill.source-hn       { background: var(--hn-color); opacity: 0.9; }
 
-.meter-track-segmented { display: flex; height: 7px; background: transparent; }
+.meter-track-segmented { display: flex; height: 8px; background: transparent; }
 
-.meter-segment { height: 100%; opacity: 0.75; }
+.meter-segment { height: 100%; opacity: 0.9; }
+.meter-segment:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.meter-segment:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 .meter-segment.source-news     { background: var(--news-color); }
 .meter-segment.source-reddit   { background: var(--reddit-red); }
 .meter-segment.source-linkedin { background: var(--linkedin-blue); }
@@ -850,7 +852,7 @@ body {
   border-radius: 50%;
   margin-right: 6px;
   background: var(--accent-deep);
-  opacity: 0.75;
+  opacity: 0.9;
 }
 
 .math-label.source-news::before      { background: var(--news-color); }

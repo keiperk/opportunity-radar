@@ -170,7 +170,7 @@ function renderList() {
           { label: 'LinkedIn', cls: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin, pct: contrib.linkedin * 100 },
           { label: 'GitHub', cls: 'source-github', value: c.github_signals, cap: CAPS.github, pct: contrib.github * 100 },
           { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn, pct: contrib.hn * 100 },
-        ].map((s) => `<div class="meter-segment ${s.cls}" style="width:${s.pct.toFixed(1)}%" title="${s.label}: ${s.value}/${s.cap} mentions — ${s.pct.toFixed(1)}% of this company's score"></div>`).join('')}
+        ].filter((s) => s.pct > 0).map((s) => `<div class="meter-segment ${s.cls}" style="width:${s.pct.toFixed(1)}%" title="${s.label}: ${s.value}/${s.cap} mentions — ${s.pct.toFixed(1)}% of this company's score"></div>`).join('')}
       </div>
     `;
     row.addEventListener('click', () => selectCompany(c.company));
