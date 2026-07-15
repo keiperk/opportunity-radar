@@ -363,37 +363,6 @@ clearButton.addEventListener('click', () => {
   renderList();
 });
 
-/* ── Scan Summary: which source is actually worth comparing candidates
-   by this scan. News/Reddit/LinkedIn commonly cluster near their caps
-   for every company (little to no spread), so they don't help tell
-   candidates apart — whichever source has real spread is the one worth
-   checking before deciding who to contact first. ── */
-function renderScanSummary() {
-  const SOURCE_FIELDS = [
-    { key: 'news_signals', label: 'News', cls: 'source-news' },
-    { key: 'reddit_signals', label: 'Reddit', cls: 'source-reddit' },
-    { key: 'linkedin_signals', label: 'LinkedIn', cls: 'source-linkedin' },
-    { key: 'github_signals', label: 'GitHub', cls: 'source-github' },
-    { key: 'hn_signals', label: 'Hacker News', cls: 'source-hn' },
-  ];
-  const ranges = SOURCE_FIELDS.map((s) => {
-    const values = companies.map((c) => c[s.key]);
-    return { ...s, range: Math.max(...values) - Math.min(...values) };
-  });
-  const maxRange = Math.max(...ranges.map((s) => s.range), 1);
-  const widest = ranges.reduce((a, b) => (b.range > a.range ? b : a));
-
-  document.getElementById('scan-summary-variance-text').innerHTML =
-    `<strong>${widest.label}</strong> has the widest spread this scan — the most reliable source for telling candidates apart before you decide who to contact.`;
-
-  document.getElementById('scan-variance-bars').innerHTML = ranges.map((s) => `
-    <div class="variance-bar-row${s.range === maxRange ? ' is-widest' : ''}">
-      <span class="variance-bar-label">${s.label}</span>
-      <div class="variance-bar-track"><div class="variance-bar-fill ${s.cls}" style="width:${((s.range / maxRange) * 100).toFixed(0)}%"></div></div>
-    </div>
-  `).join('');
-}
-
 /* ── Init: wait for live data before rendering anything that depends
    on it (radar/list/inspector all read `companies`, which is empty
    until the fetch resolves). ── */
@@ -407,7 +376,6 @@ loadCompanyData().then(() => {
   renderRadar();
   renderList();
   renderInspector();
-  renderScanSummary();
 
   if (loadingOverlayEl) loadingOverlayEl.hidden = true;
   if (fallbackBannerEl) fallbackBannerEl.hidden = dataSource !== 'fallback';

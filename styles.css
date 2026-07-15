@@ -410,56 +410,6 @@ body {
   line-height: 1.5;
 }
 
-.scan-summary-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-}
-
-.scan-summary-text {
-  margin: 0;
-  font-size: 11px;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
-
-.scan-summary-text strong { color: var(--text-primary); }
-
-.variance-bar-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 3px 0;
-}
-
-.variance-bar-label {
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--text-secondary);
-}
-
-.variance-bar-row.is-widest .variance-bar-label {
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
-.variance-bar-track {
-  height: 5px;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  overflow: hidden;
-}
-
-.variance-bar-fill { height: 100%; border-radius: var(--radius-sm); opacity: 0.9; }
-.variance-bar-fill.source-news     { background: var(--news-color); }
-.variance-bar-fill.source-reddit   { background: var(--reddit-red); }
-.variance-bar-fill.source-linkedin { background: var(--linkedin-blue); }
-.variance-bar-fill.source-github   { background: var(--github-color); }
-.variance-bar-fill.source-hn       { background: var(--hn-color); }
 
 .job-signals-card,
 .inspector-card,
