@@ -1,3 +1,13 @@
+/* ── Font demo (Space Grotesk headings / JetBrains Mono numerals) ──
+   To back out: delete this block, delete the two font-family rules
+   below that reference these variables (search "--font-heading" and
+   "--font-mono"), and revert the Google Fonts <link> in index.html/
+   detail.html back to just Inter. Nothing else depends on this. */
+:root {
+  --font-heading: 'Space Grotesk', 'Inter', Arial, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Inter', monospace;
+}
+
 /* ── Design tokens (matched to the Figma mockups) ── */
 :root {
   --bg:              #eff3f6;
@@ -109,6 +119,15 @@ body {
   line-height: 34px;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+/* Font demo — see the --font-heading/--font-mono block near the top of
+   this file for how to back this out. */
+.header-title,
+.company-row-name,
+.inspector-company-name,
+.detail-company-name {
+  font-family: var(--font-heading);
 }
 
 .header-subtitle {
@@ -595,6 +614,15 @@ body {
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+}
+
+/* Font demo — see the --font-heading/--font-mono block near the top of
+   this file for how to back this out. */
+.company-row-index,
+.inspector-index,
+.detail-index,
+.gauge-center-value {
+  font-family: var(--font-mono);
 }
 
 .company-row-index {
