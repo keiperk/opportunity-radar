@@ -306,6 +306,11 @@ body {
   color: var(--text-secondary);
 }
 
+/* Card-subtitle used as a second line under an "outside" widget title
+   (section-label), rather than inside a card-header — needs its own
+   bottom margin to separate it from the box that follows. */
+.widget-subtitle { margin-bottom: 10px; }
+
 .divider {
   margin: 12px 0;
   border: none;
