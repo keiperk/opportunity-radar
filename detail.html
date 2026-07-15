@@ -42,7 +42,7 @@
     </div>
     <div class="detail-columns">
 
-      <!-- Left: Suggested Contact + How This Is Calculated -->
+      <!-- Left: Suggested Contact + Signal Breakdown -->
       <div class="detail-col detail-col-left">
         <h3 class="section-label">Suggested Contact</h3>
         <div class="contact-card contact-card-standalone">
@@ -65,15 +65,9 @@
           <p class="fine-print">Suggested contact based on public company data — verify details before reaching out.</p>
         </div>
 
-        <h3 class="section-label">How This Is Calculated</h3>
-        <div class="math-panel math-panel-standalone">
-          <p class="math-caption">Each source is capped, normalized, then weighted:</p>
-          <div id="detail-math-rows"></div>
-          <hr class="divider" />
-          <div class="math-total-row">
-            <span class="math-total-label">Total opportunity_index</span>
-            <span class="math-total-value" id="detail-math-total">—</span>
-          </div>
+        <h3 class="section-label">Signal Breakdown</h3>
+        <div class="breakdown-compact-card">
+          <div class="mini-breakdown" id="breakdown-stack"></div>
         </div>
       </div>
 
@@ -101,7 +95,7 @@
         </div>
       </div>
 
-      <!-- Right: Why This Matters + Recommended Next Steps + Signal Breakdown -->
+      <!-- Right: Why This Matters + Recommended Next Steps -->
       <div class="detail-col detail-col-right">
         <h3 class="section-label">Why This Matters</h3>
         <div class="callout-box callout-box-standalone">
@@ -110,11 +104,6 @@
 
         <h3 class="section-label" style="margin-top: 16px;">Recommended Next Steps</h3>
         <div class="next-steps-card" id="next-steps-list"></div>
-
-        <h3 class="section-label" style="margin-top: 16px;">Signal Breakdown</h3>
-        <div class="breakdown-compact-card">
-          <div class="mini-breakdown" id="breakdown-stack"></div>
-        </div>
       </div>
 
     </div>

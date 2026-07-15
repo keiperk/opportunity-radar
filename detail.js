@@ -72,35 +72,6 @@ function initDetailPage() {
     </div>
   `).join('');
 
-  /* ── How This Is Calculated ──
-     News, Reddit, GitHub, and Hacker News are "leading" signals that can
-     appear before a role is posted; LinkedIn Jobs is the one "confirming"
-     signal, since it requires a role to already be public — labeled as two
-     groups here since the math panel has room to actually explain it. */
-  const mathDefs = [
-    { label: 'News', key: 'source-news', value: c.news_signals, weight: WEIGHTS.news, cap: CAPS.news },
-    { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, weight: WEIGHTS.reddit, cap: CAPS.reddit },
-    { label: 'GitHub', key: 'source-github', value: c.github_signals, weight: WEIGHTS.github, cap: CAPS.github },
-    { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, weight: WEIGHTS.hn, cap: CAPS.hn },
-  ];
-  const confirmingDefs = [
-    { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, weight: WEIGHTS.linkedin, cap: CAPS.linkedin },
-  ];
-  let total = 0;
-  function mathRow(d) {
-    const norm = Math.min(d.value, d.cap) / d.cap;
-    const contribution = norm * d.weight;
-    total += contribution;
-    return `<div class="math-row"><span class="math-label ${d.key}">${d.label}  ${d.value}/${d.cap}</span><span class="math-detail">${norm.toFixed(2)} × ${(d.weight * 100).toFixed(0)}% = ${contribution.toFixed(3)}</span></div>`;
-  }
-  document.getElementById('detail-math-rows').innerHTML = `
-    <span class="math-group-label">Leading signals</span>
-    ${mathDefs.map(mathRow).join('')}
-    <span class="math-group-label">Confirming signal</span>
-    ${confirmingDefs.map(mathRow).join('')}
-  `;
-  document.getElementById('detail-math-total').textContent = (Math.round(total * 100) / 100).toFixed(2);
-
   /* ── Momentum Trend chart (SVG) — real scan history now, not a
      synthetic illustrative curve. A company needs at least 2 real runs
      to draw a line; with just 1, there's nothing to chart yet, so we
