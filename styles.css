@@ -302,6 +302,7 @@ body {
 .card-subtitle {
   margin: 0;
   font-size: 11px;
+  font-weight: 400;
   color: var(--text-secondary);
 }
 
@@ -327,7 +328,7 @@ body {
 
 .fine-print {
   margin: 8px 0 0;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.4;
@@ -406,7 +407,8 @@ body {
 
 .radar-caption {
   margin: 0;
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -739,6 +741,11 @@ body {
   margin-bottom: 6px;
 }
 
+/* Signal Breakdown on the main page is now single-line rows (no bars),
+   so it doesn't need the same generous gap detail.html's bar-based
+   breakdown does — scoped to this id so detail.html is unaffected. */
+#signal-breakdown.mini-breakdown { gap: 0; margin-bottom: 0; }
+
 .mini-breakdown-row {
   display: flex;
   flex-direction: column;
@@ -766,7 +773,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 3px 0;
+  padding: 2px 0;
   font-size: 12px;
   line-height: 16px;
 }
@@ -813,6 +820,7 @@ body {
 .math-caption {
   margin: 2px 0 10px;
   font-size: 11px;
+  font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -910,6 +918,7 @@ body {
 .contact-title {
   margin: 2px 0 0;
   font-size: 11px;
+  font-weight: 400;
   color: var(--text-secondary);
 }
 
@@ -978,7 +987,7 @@ body {
   display: inline-block;
   font-size: 11px;
   line-height: 16px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-secondary);
   text-decoration: none;
 }
@@ -1063,7 +1072,8 @@ body {
 
 .peer-compare-sub {
   margin: 4px 0 14px;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 400;
   color: var(--text-secondary);
 }
 
@@ -1076,7 +1086,8 @@ body {
 
 .source-rank-headline {
   margin: 0 0 12px;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 400;
   color: var(--text-secondary);
 }
 
@@ -1122,7 +1133,7 @@ body {
 .inspector-trend-card #inspector-trend-svg {
   display: block;
   width: 100%;
-  height: 160px;
+  height: 80px;
 }
 
 .contact-card-standalone { padding: 20px; }
