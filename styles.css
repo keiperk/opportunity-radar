@@ -248,7 +248,7 @@ body {
 .dashboard-body {
   position: relative;
   display: grid;
-  grid-template-columns: 360px 1fr 320px;
+  grid-template-columns: 350px 1fr 350px;
   gap: 28px;
   align-items: start;
   flex: 1 0 0;
@@ -328,7 +328,8 @@ body {
 .fine-print {
   margin: 8px 0 0;
   font-size: 10px;
-  color: var(--text-muted);
+  font-weight: 400;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
@@ -515,7 +516,8 @@ body {
 .list-hint {
   margin: 4px 0 12px;
   font-size: 11px;
-  color: var(--text-muted);
+  font-weight: 400;
+  color: var(--text-secondary);
 }
 
 .tier-group {
@@ -786,7 +788,7 @@ body {
 .signal-confidence-label { flex: 1 0 0; color: var(--text-secondary); }
 
 .signal-confidence-value { color: var(--text-primary); font-weight: 700; }
-.signal-confidence-cap   { color: var(--text-muted); font-weight: 400; }
+.signal-confidence-cap   { color: var(--text-secondary); font-weight: 400; }
 
 .signal-confidence-flag {
   font-size: 9px;
@@ -1020,7 +1022,7 @@ body {
 
 .detail-columns {
   display: grid;
-  grid-template-columns: 330px 1fr 330px;
+  grid-template-columns: 350px 1fr 350px;
   gap: 30px;
   align-items: start;
 }
