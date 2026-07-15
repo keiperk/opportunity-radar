@@ -136,7 +136,6 @@ function renderList() {
 
   function renderRow(c) {
     const cls = tierClass(c.tier);
-    const contrib = computeContributions(c);
     const row = document.createElement('div');
     row.className = 'company-row' + (c.company === selectedCompany.company ? ' selected' : '');
     row.dataset.company = c.company;
@@ -164,13 +163,20 @@ function renderList() {
         <span class="source-pill source-hn">HN ${c.hn_signals}</span>
       </div>
       <div class="meter-track meter-track-segmented">
-        ${[
-          { label: 'News', cls: 'source-news', value: c.news_signals, cap: CAPS.news, pct: contrib.news * 100 },
-          { label: 'Reddit', cls: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit, pct: contrib.reddit * 100 },
-          { label: 'LinkedIn', cls: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin, pct: contrib.linkedin * 100 },
-          { label: 'GitHub', cls: 'source-github', value: c.github_signals, cap: CAPS.github, pct: contrib.github * 100 },
-          { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn, pct: contrib.hn * 100 },
-        ].filter((s) => s.pct > 0).map((s) => `<div class="meter-segment ${s.cls}" style="width:${s.pct.toFixed(1)}%" title="${s.label}: ${s.value}/${s.cap} mentions — ${s.pct.toFixed(1)}% of this company's score"></div>`).join('')}
+        ${(() => {
+          const rawTotal = c.news_signals + c.reddit_signals + c.linkedin_signals + c.github_signals + c.hn_signals;
+          return [
+            { label: 'News', cls: 'source-news', value: c.news_signals, cap: CAPS.news },
+            { label: 'Reddit', cls: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit },
+            { label: 'LinkedIn', cls: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
+            { label: 'GitHub', cls: 'source-github', value: c.github_signals, cap: CAPS.github },
+            { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
+          ]
+            .map((s) => ({ ...s, pct: rawTotal > 0 ? (s.value / rawTotal) * 100 : 0 }))
+            .filter((s) => s.pct > 0)
+            .map((s) => `<div class="meter-segment ${s.cls}" style="width:${s.pct.toFixed(1)}%" title="${s.label}: ${s.value}/${s.cap} mentions — ${s.pct.toFixed(1)}% of this company's raw signal volume"></div>`)
+            .join('');
+        })()}
       </div>
     `;
     row.addEventListener('click', () => selectCompany(c.company));
