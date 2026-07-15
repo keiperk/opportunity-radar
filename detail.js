@@ -135,8 +135,8 @@ function initDetailPage() {
     const lowerCount = companies.filter((co) => co.opportunity_index_precise < c.opportunity_index_precise).length;
     const percentile = companies.length > 1 ? Math.round((lowerCount / (companies.length - 1)) * 100) : 100;
 
-    document.getElementById('peer-rank-headline').textContent = `Ranks #${rank} of ${companies.length} tracked companies`;
-    document.getElementById('peer-rank-sub').textContent = `Higher signal than ${percentile}% of other tracked companies this scan.`;
+    document.getElementById('peer-rank-headline').innerHTML = `Ranks #<span class="num">${rank}</span> of <span class="num">${companies.length}</span> tracked companies`;
+    document.getElementById('peer-rank-sub').innerHTML = `Higher signal than <span class="num">${percentile}%</span> of other tracked companies this scan.`;
 
     /* Highlighted dot uses this company's own tier color rather than a
        generic accent — a small, purposeful splash of color instead of
@@ -188,13 +188,13 @@ function initDetailPage() {
 
     const strongest = stats.reduce((a, b) => (b.percentile > a.percentile ? b : a));
     document.getElementById('source-rank-headline').innerHTML =
-      `Strongest relative to peers: <strong>${strongest.label}</strong> — higher than ${strongest.percentile}% of tracked companies.`;
+      `Strongest relative to peers: <strong>${strongest.label}</strong> — higher than <span class="num">${strongest.percentile}%</span> of tracked companies.`;
 
     document.getElementById('source-rank-rows').innerHTML = stats.map((s) => `
       <div class="source-rank-row">
         <span class="source-pill ${s.cls} source-rank-row-label">${s.label}</span>
         <svg class="source-rank-row-strip" data-source="${s.key}" height="20" aria-hidden="true"></svg>
-        <span class="source-rank-row-pct">Higher than ${s.percentile}%</span>
+        <span class="source-rank-row-pct">Higher than <span class="num">${s.percentile}%</span></span>
       </div>
     `).join('');
 

@@ -8,6 +8,10 @@
   --font-mono:    'JetBrains Mono', 'Inter', monospace;
 }
 
+/* Wraps every dynamically-inserted numeric value across both pages
+   (app.js/detail.js) — search ".num" in either file to find them all. */
+.num { font-family: var(--font-mono); }
+
 /* ── Design tokens (matched to the Figma mockups) ── */
 :root {
   --bg:              #eff3f6;
@@ -776,7 +780,7 @@ body {
 }
 
 .mini-breakdown-top .label { color: var(--text-secondary); }
-.mini-breakdown-top .value { color: var(--text-primary); font-weight: 700; }
+.mini-breakdown-top .value { color: var(--text-primary); font-weight: 700; font-family: var(--font-mono); }
 
 /* Company Inspector's Signal Breakdown (main page only) — deliberately
    text-first, not another bar chart: the ranked-list row already shows
@@ -809,8 +813,8 @@ body {
 
 .signal-confidence-label { flex: 1 0 0; color: var(--text-secondary); }
 
-.signal-confidence-value { color: var(--text-primary); font-weight: 700; }
-.signal-confidence-cap   { color: var(--text-secondary); font-weight: 400; }
+.signal-confidence-value { color: var(--text-primary); font-weight: 700; font-family: var(--font-mono); }
+.signal-confidence-cap   { color: var(--text-secondary); font-weight: 400; font-family: var(--font-mono); }
 
 .signal-confidence-flag {
   font-size: 9px;
@@ -897,6 +901,7 @@ body {
   font-size: 12px;
   font-weight: 700;
   color: var(--accent-deep);
+  font-family: var(--font-mono);
 }
 
 .inspector-card .btn-dark { margin-top: 16px; }

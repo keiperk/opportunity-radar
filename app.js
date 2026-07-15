@@ -116,7 +116,7 @@ function renderMomentumBadge(c) {
   const delta = h[h.length - 1].index - h[h.length - 2].index;
   const dir = delta > 0.005 ? 'up' : delta < -0.005 ? 'down' : 'flat';
   const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '●';
-  const label = dir === 'flat' ? 'Flat' : `${delta > 0 ? '+' : ''}${delta.toFixed(2)}`;
+  const label = dir === 'flat' ? 'Flat' : `<span class="num">${delta > 0 ? '+' : ''}${delta.toFixed(2)}</span>`;
 
   return `<span class="momentum-delta momentum-${dir}" title="Change since previous scan">${arrow} ${label}</span>`;
 }
@@ -131,7 +131,7 @@ function renderList() {
 
   rankedListEl.innerHTML = '';
   listEmptyEl.hidden = sorted.length !== 0;
-  companiesTrackedCountEl.textContent = `${companies.length} companies tracked`;
+  companiesTrackedCountEl.innerHTML = `<span class="num">${companies.length}</span> companies tracked`;
 
   function renderRow(c) {
     const cls = tierClass(c.tier);
@@ -155,11 +155,11 @@ function renderList() {
         </div>
       </div>
       <div class="company-row-sources">
-        <span class="source-pill source-news">News ${c.news_signals}</span>
-        <span class="source-pill source-reddit">Reddit ${c.reddit_signals}</span>
-        <span class="source-pill source-linkedin">LinkedIn ${c.linkedin_signals}</span>
-        <span class="source-pill source-github">GitHub ${c.github_signals}</span>
-        <span class="source-pill source-hn">HN ${c.hn_signals}</span>
+        <span class="source-pill source-news">News <span class="num">${c.news_signals}</span></span>
+        <span class="source-pill source-reddit">Reddit <span class="num">${c.reddit_signals}</span></span>
+        <span class="source-pill source-linkedin">LinkedIn <span class="num">${c.linkedin_signals}</span></span>
+        <span class="source-pill source-github">GitHub <span class="num">${c.github_signals}</span></span>
+        <span class="source-pill source-hn">HN <span class="num">${c.hn_signals}</span></span>
       </div>
       <div class="meter-track meter-track-segmented">
         ${(() => {
@@ -198,7 +198,7 @@ function renderList() {
     group.className = 'tier-group';
     const header = document.createElement('div');
     header.className = 'tier-group-header';
-    header.innerHTML = `<span class="tier-group-dot ${cls}"></span><span class="tier-group-label ${cls}">${tierName.toUpperCase()} — ${members.length}</span>`;
+    header.innerHTML = `<span class="tier-group-dot ${cls}"></span><span class="tier-group-label ${cls}">${tierName.toUpperCase()} — <span class="num">${members.length}</span></span>`;
     group.appendChild(header);
     members.forEach((c) => group.appendChild(renderRow(c)));
     rankedListEl.appendChild(group);
@@ -313,7 +313,7 @@ function renderInspector() {
     const norm = Math.min(d.value, d.cap) / d.cap;
     const contribution = norm * d.weight;
     total += contribution;
-    return `<div class="math-row"><span class="math-label ${d.key}">${d.label}  ${d.value}/${d.cap}</span><span class="math-detail">${norm.toFixed(2)} × ${(d.weight * 100).toFixed(0)}% = ${contribution.toFixed(3)}</span></div>`;
+    return `<div class="math-row"><span class="math-label ${d.key}">${d.label}  <span class="num">${d.value}/${d.cap}</span></span><span class="math-detail num">${norm.toFixed(2)} × ${(d.weight * 100).toFixed(0)}% = ${contribution.toFixed(3)}</span></div>`;
   }
   const rowsHtml = `
     <span class="math-group-label">Leading signals</span>

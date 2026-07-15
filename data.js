@@ -122,7 +122,7 @@ function generateWhyItMatters(c) {
   const timingPhrase = SOURCE_TIMING[top.key] === 'leading'
     ? `That's a leading signal — it can show up before any role is publicly posted, so you may be finding this one early.`
     : `That's a confirming signal — LinkedIn activity like this usually means a role is already posted, so the opportunity is real but timing is less in your favor.`;
-  return `<strong>${escapeXml(c.company)}</strong> is showing ${tierPhrase} combined signal this scan — driven primarily by ${top.label.toLowerCase()} activity (${top.value} mentions) across news, community, and hiring channels. ${timingPhrase} That combination usually means ${growthPhrase}.`;
+  return `<strong>${escapeXml(c.company)}</strong> is showing ${tierPhrase} combined signal this scan — driven primarily by ${top.label.toLowerCase()} activity (<span class="num">${top.value}</span> mentions) across news, community, and hiring channels. ${timingPhrase} That combination usually means ${growthPhrase}.`;
 }
 
 function hexToRgba(hex, alpha) {
