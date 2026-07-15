@@ -197,9 +197,9 @@ function initDetailPage() {
       const dotsSvg = companies.map((co) => {
         const cx = xOf(co[s.field]).toFixed(1);
         if (co.company === c.company) {
-          return `<circle cx="${cx}" cy="${cy}" r="5" fill="${THEME.accent}" stroke="#ffffff" stroke-width="1.5" />`;
+          return `<circle cx="${cx}" cy="${cy}" r="3" fill="${THEME.accent}" stroke="#ffffff" stroke-width="1.5" />`;
         }
-        return `<circle cx="${cx}" cy="${cy}" r="2.5" fill="${THEME.mutedDot}" />`;
+        return `<circle cx="${cx}" cy="${cy}" r="3" fill="${THEME.mutedDot}" />`;
       }).join('');
 
       svgEl.innerHTML = `
