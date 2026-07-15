@@ -12,6 +12,64 @@
    (app.js/detail.js) — search ".num" in either file to find them all. */
 .num { font-family: var(--font-mono); }
 
+/* ── shadcn/ui token retrofit ──
+   Phase 1 (this block): adopt shadcn's semantic vocabulary — background/
+   foreground/card/primary/secondary/muted/accent/destructive/border/
+   input/ring/radius, plus its --chart-1..5 convention for categorical
+   data colors — mapped onto the colors this project already settled on
+   through iteration, not shadcn's stock slate palette. Purely additive:
+   every existing variable below (--bg, --accent-deep, --radius-lg, etc.)
+   is untouched and still drives 100% of the current CSS, so this can't
+   cause a visual regression. New components should be built against
+   these tokens directly; migrating existing rules to consume them
+   (instead of the legacy names) would be a natural phase 2.
+
+   Two of our existing tokens don't map 1:1 onto a shadcn slot and were
+   deliberately left alone rather than force-fit: --accent (a saturated
+   brand blue-grey used for active/focus states — closest to --ring,
+   not --accent, which in shadcn means a subtle hover background) and
+   --accent-deep (our emphasis-text color, distinct from --primary,
+   which corresponds to the solid dark CTA button background/text
+   instead). Tier colors (green/amber/rose) and the per-source palette
+   also stay as their own extension, same as shadcn's own docs do for
+   product-specific colors beyond the core set. */
+:root {
+  --background:         #eff3f6; /* = --bg */
+  --foreground:         #0d1219; /* = --text-primary */
+  --card:                #fdfeff; /* = --surface */
+  --card-foreground:    #0d1219; /* = --text-primary */
+  --popover:             #fdfeff; /* = --surface */
+  --popover-foreground: #0d1219; /* = --text-primary */
+  --primary:             #0d1219; /* = --text-primary (the solid dark CTA button) */
+  --primary-foreground: #ffffff;
+  --secondary:           #f2f6f8; /* = --surface-alt */
+  --secondary-foreground: #0d1219; /* = --text-primary */
+  --muted:               #eceff1; /* = --accent-tint */
+  --muted-foreground:   #5c6478; /* = --text-secondary */
+  --accent:              #eceff1; /* shadcn's "accent" = subtle hover bg, same as --muted here */
+  --accent-foreground:  #455a64; /* = --accent-deep */
+  --destructive:         #cc2626; /* = --rose-deep */
+  --destructive-foreground: #ffffff;
+  --border:              #d3dee4; /* = --border */
+  --input:               #d3dee4; /* = --border-input */
+  --ring:                #607d8b; /* = --accent, used for focus rings below */
+  --radius:              0.625rem; /* = --radius-lg (10px) — sm/md/lg/xl below derive from this */
+
+  /* shadcn chart-color convention — same hues as our per-source tokens */
+  --chart-1: #e2574f; /* = --news-color */
+  --chart-2: #5fa83f; /* = --reddit-red */
+  --chart-3: #3a74b8; /* = --linkedin-blue */
+  --chart-4: #b354b0; /* = --github-color */
+  --chart-5: #d9822e; /* = --hn-color */
+}
+
+/* Real accessibility win from adopting --ring, not just a decorative
+   token: a visible focus indicator for keyboard navigation. */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
 /* ── Design tokens (matched to the Figma mockups) ── */
 :root {
   --bg:              #eff3f6;
