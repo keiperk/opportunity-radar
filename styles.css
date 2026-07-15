@@ -676,7 +676,7 @@ body {
 .meter-fill.source-github   { background: var(--github-color); opacity: 0.9; }
 .meter-fill.source-hn       { background: var(--hn-color); opacity: 0.9; }
 
-.meter-track-segmented { display: flex; height: 8px; }
+.meter-track-segmented { display: flex; height: 5px; }
 
 .meter-segment { height: 100%; opacity: 0.9; }
 .meter-segment:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
