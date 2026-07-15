@@ -65,10 +65,15 @@ function initDetailPage() {
     { label: 'GitHub', key: 'source-github', value: c.github_signals, cap: CAPS.github },
     { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
   ];
+  /* Bar width is scaled against the highest cap among these 5 sources
+     (not each source's own cap) — otherwise a value of 10 at its cap of
+     10 and a value of 30 at its cap of 30 would render as the same
+     100%-width bar, even though 30 is three times as many mentions. */
+  const maxCap = Math.max(...sourceDefs.map((s) => s.cap));
   document.getElementById('breakdown-stack').innerHTML = sourceDefs.map((s) => `
     <div class="mini-breakdown-row">
       <div class="mini-breakdown-top"><span class="label">${s.label}</span><span class="value">${s.value}</span></div>
-      <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${Math.min(100, (s.value / s.cap) * 100).toFixed(0)}%"></div></div>
+      <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${Math.min(100, (s.value / maxCap) * 100).toFixed(0)}%"></div></div>
     </div>
   `).join('');
 

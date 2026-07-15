@@ -134,8 +134,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
-  padding: 8px 16px;
+  height: 32px;
+  padding: 6px 14px;
   border: none;
   border-radius: var(--radius-lg);
   font-family: inherit;
@@ -143,24 +143,23 @@ body {
   font-weight: 600;
   line-height: 20px;
   cursor: pointer;
-  box-shadow: var(--shadow-btn);
   text-decoration: none;
   box-sizing: border-box;
 }
 
 .btn-outline {
   background: var(--surface);
-  color: var(--text-primary);
-  border: 1px solid var(--border-input);
+  color: #cccccc;
+  border: 1px solid var(--border);
 }
-
-.header-actions .btn-outline { color: #cccccc; }
 
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
+/* The one exception to the site-wide neutral button treatment — the
+   primary CTA on Suggested Contact stays a solid dark button. */
 .btn-dark {
   background: var(--text-primary);
   color: #ffffff;
@@ -216,16 +215,15 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--border-input);
-  border-radius: var(--radius-md);
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: var(--shadow-btn);
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #cccccc;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -241,7 +239,6 @@ body {
 
 .pill-btn-clear {
   background: var(--control-bg);
-  border: none;
 }
 
 /* ─────────────────────────────────────────
