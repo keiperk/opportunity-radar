@@ -452,7 +452,7 @@ body {
   flex: 1 0 0;
   height: 5px;
   border-radius: var(--radius-sm);
-  background: var(--track-bg);
+  background: transparent;
   overflow: hidden;
 }
 
@@ -710,7 +710,7 @@ body {
 .meter-track {
   height: 5px;
   border-radius: var(--radius-sm);
-  background: var(--track-bg);
+  background: transparent;
   overflow: hidden;
 }
 
@@ -728,7 +728,7 @@ body {
 .meter-fill.source-github   { background: var(--github-color); opacity: 0.9; }
 .meter-fill.source-hn       { background: var(--hn-color); opacity: 0.9; }
 
-.meter-track-segmented { display: flex; height: 8px; background: transparent; }
+.meter-track-segmented { display: flex; height: 8px; }
 
 .meter-segment { height: 100%; opacity: 0.9; }
 .meter-segment:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
