@@ -12,7 +12,6 @@ const rankedListEl = document.getElementById('ranked-list');
 const listEmptyEl = document.getElementById('list-empty');
 const companiesTrackedCountEl = document.getElementById('companies-tracked-count');
 const radarSvg = document.getElementById('radar-svg');
-const viewReportBtn = document.getElementById('view-report-btn');
 
 let sortDirection = 'desc';
 let groupByTier = true;
@@ -337,8 +336,6 @@ function renderInspector() {
   const emailHandle = c.company.toLowerCase().replace(/[^a-z0-9]+/g, '');
   document.getElementById('contact-title').textContent = `Engineering Recruiter · ${c.company}`;
   document.getElementById('contact-email').textContent = `jordan.reyes@${emailHandle}.com`;
-
-  if (viewReportBtn) viewReportBtn.href = `detail.html?company=${encodeURIComponent(c.company)}`;
 }
 
 function selectCompany(companyName) {
