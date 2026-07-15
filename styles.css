@@ -154,6 +154,8 @@ body {
   border: 1px solid var(--border-input);
 }
 
+.header-actions .btn-outline { color: #cccccc; }
+
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
