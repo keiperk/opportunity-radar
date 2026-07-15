@@ -32,11 +32,11 @@
   --track-bg:        #d9d9d9;
   --control-bg:      #e9eff2;
 
-  --news-color:      #ff9b9b;
-  --linkedin-blue:   #72a8e9;
-  --reddit-red:      #8ed665;
-  --github-color:    #e58fde;
-  --hn-color:        #f0c243;
+  --news-color:      #e2574f;
+  --linkedin-blue:   #3a74b8;
+  --reddit-red:      #5fa83f;
+  --github-color:    #b354b0;
+  --hn-color:        #cf9a1f;
   --gauge-accent:      #9b7cc4;
   --gauge-accent-deep: #6b4f96;
   --gauge-accent-tint: #f2edf8;
@@ -753,6 +753,52 @@ body {
 
 .mini-breakdown-top .label { color: var(--text-secondary); }
 .mini-breakdown-top .value { color: var(--text-primary); font-weight: 700; }
+
+/* Company Inspector's Signal Breakdown (main page only) — deliberately
+   text-first, not another bar chart: the ranked-list row already shows
+   a proportional bar for this same company, so repeating it here would
+   just be decoration. The one thing this view adds that nothing else
+   on the page does is the "At cap" flag — a real trust signal, since a
+   capped source may be undercounting actual activity. */
+.signal-confidence-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.signal-confidence-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.signal-confidence-dot.source-news     { background: var(--news-color); }
+.signal-confidence-dot.source-reddit   { background: var(--reddit-red); }
+.signal-confidence-dot.source-linkedin { background: var(--linkedin-blue); }
+.signal-confidence-dot.source-github   { background: var(--github-color); }
+.signal-confidence-dot.source-hn       { background: var(--hn-color); }
+
+.signal-confidence-label { flex: 1 0 0; color: var(--text-secondary); }
+
+.signal-confidence-value { color: var(--text-primary); font-weight: 700; }
+.signal-confidence-cap   { color: var(--text-muted); font-weight: 400; }
+
+.signal-confidence-flag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--amber-deep);
+  background: var(--amber-tint);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
 
 .math-panel {
   margin-top: 16px;

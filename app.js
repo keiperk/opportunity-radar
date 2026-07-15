@@ -281,12 +281,17 @@ function renderInspector() {
     { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
   ];
   const breakdownEl = document.getElementById('signal-breakdown');
-  breakdownEl.innerHTML = sourceDefs.map((s) => `
-    <div class="mini-breakdown-row">
-      <div class="mini-breakdown-top"><span class="label">${s.label}</span><span class="value">${s.value}</span></div>
-      <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${Math.min(100, (s.value / s.cap) * 100).toFixed(0)}%"></div></div>
-    </div>
-  `).join('');
+  breakdownEl.innerHTML = sourceDefs.map((s) => {
+    const atCap = s.value >= s.cap;
+    return `
+      <div class="signal-confidence-row">
+        <span class="signal-confidence-dot ${s.key}"></span>
+        <span class="signal-confidence-label">${s.label}</span>
+        <span class="signal-confidence-value">${s.value}<span class="signal-confidence-cap">/${s.cap}</span></span>
+        ${atCap ? `<span class="signal-confidence-flag" title="This source hit its scoring cap — real activity may be higher than what's shown">At cap</span>` : ''}
+      </div>
+    `;
+  }).join('');
 
   renderInspectorTrend(c);
 
