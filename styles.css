@@ -286,6 +286,7 @@ body {
 .fallback-banner[hidden] { display: none; }
 
 .card-eyebrow {
+  padding-left: 3px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -307,6 +308,7 @@ body {
 
 .section-label {
   margin: 18px 0 10px;
+  padding-left: 3px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.8px;
@@ -381,7 +383,6 @@ body {
 .radar-column {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .radar-scope {
@@ -394,7 +395,7 @@ body {
 }
 
 .radar-caption {
-  margin: 0;
+  margin: 16px 0 0;
   font-size: 11px;
   font-weight: 400;
   color: var(--text-secondary);
@@ -697,7 +698,6 @@ body {
 .right-rail {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .inspector-title-row { margin-top: 14px; }
@@ -1110,11 +1110,6 @@ body {
 
 .callout-box-standalone { margin-top: 0; }
 .math-panel-standalone { margin-top: 0; }
-
-/* Snug up the gap between the "How this is calculated" heading and its
-   box on the main page specifically — .section-label's default 10px
-   bottom margin is more than this pairing needs. */
-.section-label + #math-panel { margin-top: -6px; }
 
 .inspector-trend-card {
   background: var(--surface);
