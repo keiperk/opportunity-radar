@@ -214,7 +214,7 @@ function initDetailPage() {
         .filter((co) => co.company !== c.company)
         .map((co) => `<circle cx="${xOf(co[s.field]).toFixed(1)}" cy="${cy}" r="3" fill="${THEME.mutedDot}" />`)
         .join('');
-      const highlightSvg = `<circle cx="${xOf(c[s.field]).toFixed(1)}" cy="${cy}" r="3" fill="var(${s.colorVar})" stroke="#ffffff" stroke-width="1.5" />`;
+      const highlightSvg = `<circle cx="${xOf(c[s.field]).toFixed(1)}" cy="${cy}" r="4.5" fill="var(${s.colorVar})" stroke="#ffffff" stroke-width="1.5" />`;
 
       svgEl.innerHTML = `
         <line x1="${PAD_X}" y1="${cy}" x2="${W - PAD_X}" y2="${cy}" stroke="${THEME.border}" stroke-width="1" />
