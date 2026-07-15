@@ -285,12 +285,6 @@ body {
 
 .fallback-banner[hidden] { display: none; }
 
-.card-header {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
 .card-eyebrow {
   font-size: 11px;
   font-weight: 700;
@@ -299,17 +293,6 @@ body {
   color: var(--accent-deep);
 }
 
-.card-subtitle {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-
-/* Card-subtitle used as a second line under an "outside" widget title
-   (section-label), rather than inside a card-header — needs its own
-   bottom margin to separate it from the box that follows. */
-.widget-subtitle { margin-bottom: 10px; }
 
 .divider {
   margin: 12px 0;
