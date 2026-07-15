@@ -35,7 +35,7 @@
   --linkedin-blue:   #4a7fc7;
   --reddit-red:      #d9694f;
   --github-color:    #3d444d;
-  --hn-color:        #c97a3d;
+  --hn-color:        #f2994a;
   --gauge-accent:      #9b7cc4;
   --gauge-accent-deep: #6b4f96;
   --gauge-accent-tint: #f2edf8;
@@ -724,9 +724,9 @@ body {
 .meter-fill.source-github   { background: var(--github-color); }
 .meter-fill.source-hn       { background: var(--hn-color); }
 
-.meter-track-segmented { display: flex; height: 10px; }
+.meter-track-segmented { display: flex; height: 7px; }
 
-.meter-segment { height: 100%; opacity: 0.6; }
+.meter-segment { height: 100%; opacity: 0.25; }
 .meter-segment.source-news     { background: var(--accent-deep); }
 .meter-segment.source-reddit   { background: var(--reddit-red); }
 .meter-segment.source-linkedin { background: var(--linkedin-blue); }
