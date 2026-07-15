@@ -933,6 +933,14 @@ body {
   color: var(--text-primary);
 }
 
+.contact-detail-value-linkedin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contact-detail-value-linkedin svg { flex-shrink: 0; }
+
 .contact-card .btn-dark { margin-top: 12px; }
 
 /* ─────────────────────────────────────────
