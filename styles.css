@@ -669,7 +669,7 @@ body {
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 .momentum-delta.momentum-up   { color: var(--green-deep); }
