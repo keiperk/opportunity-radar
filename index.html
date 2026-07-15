@@ -116,6 +116,33 @@
 
       <!-- Right: Company Inspector + Suggested Contact -->
       <aside class="right-rail" aria-label="Company detail">
+        <div class="inspector-card">
+          <div class="card-header">
+            <span class="card-eyebrow">Company Inspector</span>
+            <p class="card-subtitle">Selected from Ranked Company Signal Strength</p>
+          </div>
+          <hr class="divider" />
+          <div class="inspector-title-row">
+            <h2 class="inspector-company-name" id="inspector-name">—</h2>
+          </div>
+          <div class="inspector-badge-row">
+            <span class="tier-badge" id="inspector-tier-badge">—</span>
+            <span class="inspector-index" id="inspector-index">—</span>
+            <span class="discovery-badge" id="inspector-discovery-badge" title="Newly discovered this scan — not on the existing tracked list" hidden>New Discovery</span>
+          </div>
+
+          <h3 class="section-label">Signal Breakdown</h3>
+          <div class="mini-breakdown" id="signal-breakdown"></div>
+
+          <h3 class="section-label">Momentum Trend</h3>
+          <div class="inspector-trend-card">
+            <svg id="inspector-trend-svg" aria-hidden="true"></svg>
+            <p class="fine-print" id="inspector-trend-caption">—</p>
+          </div>
+
+          <a class="btn btn-dark btn-full" id="view-report-btn" href="detail.html">View Full Report</a>
+        </div>
+
         <div class="contact-card">
           <div class="card-header">
             <span class="card-eyebrow">Suggested Contact</span>
@@ -141,42 +168,15 @@
           <p class="fine-print">Suggested contact based on public company data — verify details before reaching out.</p>
         </div>
 
-        <div class="inspector-card">
-          <div class="card-header">
-            <span class="card-eyebrow">Company Inspector</span>
-            <p class="card-subtitle">Selected from Ranked Company Signal Strength</p>
-          </div>
+        <h3 class="section-label">How this is calculated</h3>
+        <div class="math-panel math-panel-standalone" id="math-panel">
+          <p class="math-caption">Each source is capped, normalized, then weighted:</p>
+          <div id="math-rows"></div>
           <hr class="divider" />
-          <div class="inspector-title-row">
-            <h2 class="inspector-company-name" id="inspector-name">—</h2>
+          <div class="math-total-row">
+            <span class="math-total-label">Total opportunity_index</span>
+            <span class="math-total-value" id="math-total-value">—</span>
           </div>
-          <div class="inspector-badge-row">
-            <span class="tier-badge" id="inspector-tier-badge">—</span>
-            <span class="inspector-index" id="inspector-index">—</span>
-            <span class="discovery-badge" id="inspector-discovery-badge" title="Newly discovered this scan — not on the existing tracked list" hidden>New Discovery</span>
-          </div>
-
-          <h3 class="section-label">Signal Breakdown</h3>
-          <div class="mini-breakdown" id="signal-breakdown"></div>
-
-          <h3 class="section-label">Momentum Trend</h3>
-          <div class="inspector-trend-card">
-            <svg id="inspector-trend-svg" aria-hidden="true"></svg>
-            <p class="fine-print" id="inspector-trend-caption">—</p>
-          </div>
-
-          <div class="math-panel" id="math-panel">
-            <span class="callout-label">How this is calculated</span>
-            <p class="math-caption">Each source is capped, normalized, then weighted:</p>
-            <div id="math-rows"></div>
-            <hr class="divider" />
-            <div class="math-total-row">
-              <span class="math-total-label">Total opportunity_index</span>
-              <span class="math-total-value" id="math-total-value">—</span>
-            </div>
-          </div>
-
-          <a class="btn btn-dark btn-full" id="view-report-btn" href="detail.html">View Full Report</a>
         </div>
       </aside>
 
