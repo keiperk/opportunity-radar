@@ -649,6 +649,13 @@ body {
   text-decoration: underline;
 }
 
+.company-row-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 .company-row-index {
   font-size: 15px;
   font-weight: 700;
@@ -657,6 +664,16 @@ body {
 
 .company-row-index.amber { color: var(--amber-deep); }
 .company-row-index.rose  { color: var(--rose-deep); }
+
+.momentum-delta {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.momentum-delta.momentum-up   { color: var(--green-deep); }
+.momentum-delta.momentum-down { color: var(--rose-deep); }
+.momentum-delta.momentum-flat { color: var(--text-muted); }
 
 .company-row-sources {
   display: flex;

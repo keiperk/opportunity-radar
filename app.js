@@ -104,6 +104,24 @@ function renderRadar() {
   });
 }
 
+/* ── Change-since-last-scan badge: delta between the two most recent real
+   runs in c.history. Omitted entirely for companies with fewer than 2
+   runs recorded — there's nothing to compare yet (the "New Discovery"
+   badge already covers that case). Deliberately just a colored arrow +
+   number, no sparkline — an earlier attempt at a full per-row sparkline
+   (see git history) was reverted as too much visual noise for this list. */
+function renderMomentumBadge(c) {
+  const h = c.history || [];
+  if (h.length < 2) return '';
+
+  const delta = h[h.length - 1].index - h[h.length - 2].index;
+  const dir = delta > 0.005 ? 'up' : delta < -0.005 ? 'down' : 'flat';
+  const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '●';
+  const label = dir === 'flat' ? 'Flat' : `${delta > 0 ? '+' : ''}${delta.toFixed(2)}`;
+
+  return `<span class="momentum-delta momentum-${dir}" title="Change since previous scan">${arrow} ${label}</span>`;
+}
+
 /* ── Ranked list ── */
 function renderList() {
   const query = searchInput.value.trim().toLowerCase();
@@ -133,7 +151,10 @@ function renderList() {
           <a class="company-row-name" href="detail.html?company=${encodeURIComponent(c.company)}">${escapeXml(c.company)}</a>
           ${discoveryBadge}
         </div>
-        <span class="company-row-index ${cls}">${c.opportunity_index.toFixed(2)}</span>
+        <div class="company-row-right">
+          ${renderMomentumBadge(c)}
+          <span class="company-row-index ${cls}">${c.opportunity_index.toFixed(2)}</span>
+        </div>
       </div>
       <div class="company-row-sources">
         <span class="source-pill source-news">News ${c.news_signals}</span>
