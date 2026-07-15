@@ -32,7 +32,7 @@ const THEME = {
   rose: '#f87171',
   border: '#d3dee4', // matches --border, used for gauge track
   mutedDot: '#9aa7ae', // matches --peer-muted-dot, used for peer comparison dots
-  reddit: '#d9694f', // matches --reddit-red, used for the radar blips
+  reddit: '#5fa83f', // matches --reddit-red, used for the radar blips
   purple: '#9b7cc4', // matches --gauge-accent, used for the roles gauge ring
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
@@ -64,18 +64,6 @@ function computeIndex(news, reddit, linkedin, github, hn) {
   const g = Math.min(github, CAPS.github) / CAPS.github;
   const h = Math.min(hn, CAPS.hn) / CAPS.hn;
   return n * WEIGHTS.news + r * WEIGHTS.reddit + l * WEIGHTS.linkedin + g * WEIGHTS.github + h * WEIGHTS.hn;
-}
-
-/* Each source's actual weighted contribution to opportunity_index — the
-   5 parts that sum to the composite score shown in the math panel. */
-function computeContributions(c) {
-  return {
-    news: (Math.min(c.news_signals, CAPS.news) / CAPS.news) * WEIGHTS.news,
-    reddit: (Math.min(c.reddit_signals, CAPS.reddit) / CAPS.reddit) * WEIGHTS.reddit,
-    linkedin: (Math.min(c.linkedin_signals, CAPS.linkedin) / CAPS.linkedin) * WEIGHTS.linkedin,
-    github: (Math.min(c.github_signals, CAPS.github) / CAPS.github) * WEIGHTS.github,
-    hn: (Math.min(c.hn_signals, CAPS.hn) / CAPS.hn) * WEIGHTS.hn,
-  };
 }
 
 function tierOf(idx) {

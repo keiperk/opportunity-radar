@@ -46,7 +46,11 @@
   --secondary-foreground: #0d1219; /* = --text-primary */
   --muted:               #eceff1; /* = --accent-tint */
   --muted-foreground:   #5c6478; /* = --text-secondary */
-  --accent:              #eceff1; /* shadcn's "accent" = subtle hover bg, same as --muted here */
+  /* No separate --accent slot: shadcn's "accent" (a subtle hover bg) would
+     be the same value as --muted above, and this project already has an
+     unrelated --accent (brand blue-grey, #607d8b) declared below — reusing
+     the name here would silently shadow one or the other depending on
+     source order. --muted covers shadcn's accent role instead. */
   --accent-foreground:  #455a64; /* = --accent-deep */
   --destructive:         #cc2626; /* = --rose-deep */
   --destructive-foreground: #ffffff;
@@ -101,7 +105,6 @@
   --rose-deep:       #cc2626;
   --rose-tint:       #fde2e2;
 
-  --track-bg:        #d9d9d9;
   --control-bg:      #e9eff2;
 
   --news-color:      #e2574f;
@@ -278,7 +281,6 @@ body {
   font-family: inherit;
   font-size: 13px;
   color: var(--text-primary);
-  outline: none;
 }
 
 .filter-search::placeholder { color: var(--text-secondary); }
