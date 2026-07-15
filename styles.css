@@ -33,8 +33,8 @@
   --control-bg:      #e9eff2;
 
   --news-color:      #ff9b9b;
-  --linkedin-blue:   #8ed665;
-  --reddit-red:      #72a8e9;
+  --linkedin-blue:   #72a8e9;
+  --reddit-red:      #8ed665;
   --github-color:    #e58fde;
   --hn-color:        #f0c243;
   --gauge-accent:      #9b7cc4;
@@ -456,7 +456,7 @@ body {
   overflow: hidden;
 }
 
-.variance-bar-fill { height: 100%; border-radius: var(--radius-sm); }
+.variance-bar-fill { height: 100%; border-radius: var(--radius-sm); opacity: 0.75; }
 .variance-bar-fill.source-news     { background: var(--news-color); }
 .variance-bar-fill.source-reddit   { background: var(--reddit-red); }
 .variance-bar-fill.source-linkedin { background: var(--linkedin-blue); }
@@ -698,6 +698,7 @@ body {
   height: 5px;
   border-radius: 50%;
   background: var(--accent);
+  opacity: 0.75;
 }
 
 .source-pill.source-news::before      { background: var(--news-color); }
@@ -721,15 +722,15 @@ body {
 
 .meter-fill.amber { background: var(--amber-deep); }
 .meter-fill.rose  { background: var(--rose-deep); }
-.meter-fill.source-news     { background: var(--news-color); }
-.meter-fill.source-reddit   { background: var(--reddit-red); }
-.meter-fill.source-linkedin { background: var(--linkedin-blue); }
-.meter-fill.source-github   { background: var(--github-color); }
-.meter-fill.source-hn       { background: var(--hn-color); }
+.meter-fill.source-news     { background: var(--news-color); opacity: 0.75; }
+.meter-fill.source-reddit   { background: var(--reddit-red); opacity: 0.75; }
+.meter-fill.source-linkedin { background: var(--linkedin-blue); opacity: 0.75; }
+.meter-fill.source-github   { background: var(--github-color); opacity: 0.75; }
+.meter-fill.source-hn       { background: var(--hn-color); opacity: 0.75; }
 
-.meter-track-segmented { display: flex; height: 7px; }
+.meter-track-segmented { display: flex; height: 7px; background: transparent; }
 
-.meter-segment { height: 100%; opacity: 0.25; }
+.meter-segment { height: 100%; opacity: 0.75; }
 .meter-segment.source-news     { background: var(--news-color); }
 .meter-segment.source-reddit   { background: var(--reddit-red); }
 .meter-segment.source-linkedin { background: var(--linkedin-blue); }
@@ -849,6 +850,7 @@ body {
   border-radius: 50%;
   margin-right: 6px;
   background: var(--accent-deep);
+  opacity: 0.75;
 }
 
 .math-label.source-news::before      { background: var(--news-color); }
