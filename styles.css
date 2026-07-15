@@ -1098,8 +1098,9 @@ body {
 .source-rank-row + .source-rank-row { border-top: 1px solid var(--border); }
 
 .source-rank-row-label {
-  width: 68px;
+  width: 84px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .source-rank-row-pct {

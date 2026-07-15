@@ -138,18 +138,29 @@ function initDetailPage() {
     document.getElementById('peer-rank-headline').textContent = `Ranks #${rank} of ${companies.length} tracked companies`;
     document.getElementById('peer-rank-sub').textContent = `Higher signal than ${percentile}% of other tracked companies this scan.`;
 
-    const dotsSvg = companies.map((co) => {
-      const cx = xOf(co.opportunity_index_precise).toFixed(1);
-      if (co.company === c.company) {
-        return `<circle cx="${cx}" cy="${cy}" r="8" fill="none" stroke="${THEME.accent}" stroke-width="1.5" stroke-dasharray="2 2" />
-                <circle cx="${cx}" cy="${cy}" r="5" fill="${THEME.accent}" />`;
-      }
-      return `<circle cx="${cx}" cy="${cy}" r="3.5" fill="${THEME.mutedDot}" stroke="#ffffff" stroke-width="1" />`;
-    }).join('');
+    /* Highlighted dot uses this company's own tier color rather than a
+       generic accent — a small, purposeful splash of color instead of
+       decoration for decoration's sake. Drawn in its own pass, after all
+       muted dots, so it isn't painted over when other companies tie on
+       the exact same value (a real possibility — several often share a
+       capped max). */
+    const tierDotVar = cls === 'amber' ? '--amber-deep' : cls === 'rose' ? '--rose-deep' : '--green-deep';
+    const mutedDotsSvg = companies
+      .filter((co) => co.company !== c.company)
+      .map((co) => {
+        const cx = xOf(co.opportunity_index_precise).toFixed(1);
+        return `<circle cx="${cx}" cy="${cy}" r="3.5" fill="${THEME.mutedDot}" stroke="#ffffff" stroke-width="1" />`;
+      }).join('');
+    const selfCx = xOf(c.opportunity_index_precise).toFixed(1);
+    const highlightSvg = `
+      <circle cx="${selfCx}" cy="${cy}" r="8" fill="none" stroke="var(${tierDotVar})" stroke-width="1.5" stroke-dasharray="2 2" />
+      <circle cx="${selfCx}" cy="${cy}" r="5" fill="var(${tierDotVar})" />
+    `;
 
     svgEl.innerHTML = `
       <line x1="${PAD_X}" y1="${cy}" x2="${W - PAD_X}" y2="${cy}" stroke="${THEME.border}" stroke-width="1" />
-      ${dotsSvg}
+      ${mutedDotsSvg}
+      ${highlightSvg}
     `;
   }
   renderPeerComparison();
@@ -160,9 +171,11 @@ function initDetailPage() {
      when several companies share that exact capped value. */
   function renderSourceRank() {
     const SOURCE_DEFS = [
-      { key: 'news', label: 'News', field: 'news_signals', cls: 'source-news' },
-      { key: 'reddit', label: 'Reddit', field: 'reddit_signals', cls: 'source-reddit' },
-      { key: 'linkedin', label: 'LinkedIn', field: 'linkedin_signals', cls: 'source-linkedin' },
+      { key: 'news', label: 'News', field: 'news_signals', cls: 'source-news', colorVar: '--news-color' },
+      { key: 'reddit', label: 'Reddit', field: 'reddit_signals', cls: 'source-reddit', colorVar: '--reddit-red' },
+      { key: 'linkedin', label: 'LinkedIn', field: 'linkedin_signals', cls: 'source-linkedin', colorVar: '--linkedin-blue' },
+      { key: 'github', label: 'GitHub', field: 'github_signals', cls: 'source-github', colorVar: '--github-color' },
+      { key: 'hn', label: 'Hacker News', field: 'hn_signals', cls: 'source-hn', colorVar: '--hn-color' },
     ];
 
     const stats = SOURCE_DEFS.map((s) => {
@@ -194,17 +207,19 @@ function initDetailPage() {
       const xOf = (v) => PAD_X + ((v - s.min) / range) * usableW;
       const cy = H / 2;
 
-      const dotsSvg = companies.map((co) => {
-        const cx = xOf(co[s.field]).toFixed(1);
-        if (co.company === c.company) {
-          return `<circle cx="${cx}" cy="${cy}" r="3" fill="${THEME.accent}" stroke="#ffffff" stroke-width="1.5" />`;
-        }
-        return `<circle cx="${cx}" cy="${cy}" r="3" fill="${THEME.mutedDot}" />`;
-      }).join('');
+      /* Muted dots first, highlighted dot drawn last (on top) — otherwise
+         a tie with another company at the exact same value paints over
+         the highlight, since several companies often share a capped max. */
+      const mutedDotsSvg = companies
+        .filter((co) => co.company !== c.company)
+        .map((co) => `<circle cx="${xOf(co[s.field]).toFixed(1)}" cy="${cy}" r="3" fill="${THEME.mutedDot}" />`)
+        .join('');
+      const highlightSvg = `<circle cx="${xOf(c[s.field]).toFixed(1)}" cy="${cy}" r="3" fill="var(${s.colorVar})" stroke="#ffffff" stroke-width="1.5" />`;
 
       svgEl.innerHTML = `
         <line x1="${PAD_X}" y1="${cy}" x2="${W - PAD_X}" y2="${cy}" stroke="${THEME.border}" stroke-width="1" />
-        ${dotsSvg}
+        ${mutedDotsSvg}
+        ${highlightSvg}
       `;
     });
   }
