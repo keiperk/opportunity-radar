@@ -30,7 +30,7 @@ function renderRadar() {
   svg += `<line x1="${CX}" y1="20" x2="${CX}" y2="380" stroke="${ringColor}" stroke-width="1" />`;
   svg += `<circle cx="${CX}" cy="${CY}" r="3" fill="${THEME.dark}" />`;
 
-  const FONT_SIZE = 9.5, CHAR_W = FONT_SIZE * 0.58, LINE_H = FONT_SIZE * 1.2;
+  const FONT_SIZE = 11.5, CHAR_W = FONT_SIZE * 0.58, LINE_H = FONT_SIZE * 1.2;
   const labels = [];
 
   companies.forEach((c, i) => {
@@ -39,7 +39,7 @@ function renderRadar() {
     const radius = MIN_R + (1 - c.opportunity_index) * (MAX_R - MIN_R);
     const cosV = Math.cos(angleRad), sinV = Math.sin(angleRad);
     const px = CX + radius * cosV, py = CY + radius * sinV;
-    const diameter = 8 + c.opportunity_index * 4;
+    const diameter = 11 + c.opportunity_index * 5;
     const opacity = 0.55 + c.opportunity_index * 0.45;
     const isSelected = c.company === selectedCompany.company;
 
