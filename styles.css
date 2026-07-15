@@ -233,7 +233,7 @@ body {
 
 .pill-btn[aria-pressed="true"] {
   background: var(--accent-tint);
-  border-color: var(--accent);
+  border-color: var(--border);
   color: var(--accent-deep);
 }
 
