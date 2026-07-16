@@ -60,13 +60,13 @@
   --radius:              0.625rem; /* = --radius-lg (10px) — sm/md/lg/xl below derive from this */
 
   /* shadcn chart-color convention — same hues as our per-source tokens */
-  --chart-1: #e2574f; /* = --news-color */
-  --chart-2: #5fa83f; /* = --reddit-red */
-  --chart-3: #3a74b8; /* = --linkedin-blue */
-  --chart-4: #b354b0; /* = --github-color */
-  --chart-5: #d9822e; /* = --hn-color */
-  --chart-6: #0f9b8e; /* = --exec-hire-color */
-  --chart-7: #c9a227; /* = --funding-color */
+  --chart-1: #bf635e; /* = --news-color */
+  --chart-2: #5e864d; /* = --reddit-red */
+  --chart-3: #4c6c91; /* = --linkedin-blue */
+  --chart-4: #955d94; /* = --github-color */
+  --chart-5: #ac7847; /* = --hn-color */
+  --chart-6: #267069; /* = --exec-hire-color */
+  --chart-7: #9a8541; /* = --funding-color */
 }
 
 /* Real accessibility win from adopting --ring, not just a decorative
@@ -109,13 +109,13 @@
 
   --control-bg:      #e9eff2;
 
-  --news-color:      #e2574f;
-  --linkedin-blue:   #3a74b8;
-  --reddit-red:      #5fa83f;
-  --github-color:    #b354b0;
-  --hn-color:        #d9822e;
-  --exec-hire-color: #0f9b8e;
-  --funding-color:   #c9a227;
+  --news-color:      #bf635e;
+  --linkedin-blue:   #4c6c91;
+  --reddit-red:      #5e864d;
+  --github-color:    #955d94;
+  --hn-color:        #ac7847;
+  --exec-hire-color: #267069;
+  --funding-color:   #9a8541;
   --gauge-accent:      #9b7cc4;
   --gauge-accent-deep: #6b4f96;
   --gauge-accent-tint: #f2edf8;

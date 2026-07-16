@@ -36,7 +36,7 @@ const THEME = {
   rose: '#f87171',
   border: '#d3dee4', // matches --border, used for gauge track
   mutedDot: '#9aa7ae', // matches --peer-muted-dot, used for peer comparison dots
-  reddit: '#5fa83f', // matches --reddit-red, used for the radar blips
+  reddit: '#5e864d', // matches --reddit-red, used for the radar blips
   purple: '#9b7cc4', // matches --gauge-accent, used for the roles gauge ring
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
