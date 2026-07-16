@@ -495,8 +495,12 @@ body {
   font-size: var(--text-2xs);
   font-weight: 700;
   letter-spacing: 0.4px;
-  background: var(--accent-tint);
-  color: var(--accent-deep);
+  /* Reuses the purple hue ramp (same one github uses) instead of a
+     separate standalone purple -- keeps the "New Discovery" badge its
+     original light-purple identity without reintroducing a whole new
+     color for it. */
+  background: var(--hue-purple-tint-2);
+  color: var(--hue-purple-dark);
 }
 
 .discovery-badge[hidden] { display: none; }
