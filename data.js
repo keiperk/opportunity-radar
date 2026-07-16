@@ -37,13 +37,16 @@ const THEME = {
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
 
-/* Last-known-good snapshot (pipeline runs 59-87) — used only if the live
+/* Last-known-good snapshot (pipeline runs 59-88) — used only if the live
    fetch fails, so the page degrades gracefully instead of breaking.
    Full multi-run history (not just the latest run) so Momentum Trend
    charts still have real data to plot even in fallback mode. Refreshed
-   2026-07-15 from the live sheet; the 2 rows the pipeline mangled into
-   full sentences instead of company names were dropped, matching what
-   isValidCompanyRow does to live data anyway. */
+   2026-07-15 from the live sheet; dropped 2 rows the discovery LLM
+   mangled into full sentences instead of company names (matching what
+   isValidCompanyRow does to live data), plus one near-duplicate — run
+   70's "Unspecified AI startup by former Target executive" and run
+   72's "AI startup launched by former Target executive" are the same
+   real discovery named differently across runs; kept the newer one. */
 const FALLBACK_ROWS = [
   { run_id: '59', run_ts: '2026-07-14T09:42:07.029-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '9', reddit_signals: '0', linkedin_signals: '10', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
   { run_id: '59', run_ts: '2026-07-14T09:42:07.033-07:00', company_canonical: 'auger', company_display: 'Auger', news_signals: '10', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '2', discovery_source: 'discovered' },
@@ -256,6 +259,20 @@ const FALLBACK_ROWS = [
   { run_id: '87', run_ts: '2026-07-15T16:40:52.607-07:00', company_canonical: 'nautis', company_display: 'Nautis', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '0', discovery_source: 'discovered' },
   { run_id: '87', run_ts: '2026-07-15T16:40:52.608-07:00', company_canonical: 'allbirds', company_display: 'Allbirds', news_signals: '10', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '1', discovery_source: 'discovered' },
   { run_id: '87', run_ts: '2026-07-15T16:40:52.609-07:00', company_canonical: 'alibaba', company_display: 'Alibaba', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '5', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.347-07:00', company_canonical: 'emergent', company_display: 'Emergent', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.348-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.351-07:00', company_canonical: 'cyclops', company_display: 'Cyclops', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.352-07:00', company_canonical: 'auger', company_display: 'Auger', news_signals: '10', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '2', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.353-07:00', company_canonical: 'oratechnologies', company_display: 'ORA Technologies', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.354-07:00', company_canonical: 'jessebens', company_display: "Jesse & Ben's", news_signals: '10', reddit_signals: '9', linkedin_signals: '10', github_signals: '0', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.355-07:00', company_canonical: 'venice', company_display: 'Venice AI', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.356-07:00', company_canonical: 'launchmeloud', company_display: 'LaunchMeLoud', news_signals: '9', reddit_signals: '10', linkedin_signals: '9', github_signals: '0', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.357-07:00', company_canonical: 'zml', company_display: 'ZML', news_signals: '10', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '20', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.358-07:00', company_canonical: 'attribute', company_display: 'Attribute', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '14', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.360-07:00', company_canonical: 'undocapital', company_display: 'Undo Capital', news_signals: '10', reddit_signals: '9', linkedin_signals: '9', github_signals: '0', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.361-07:00', company_canonical: 'nautis', company_display: 'Nautis', news_signals: '7', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '0', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.362-07:00', company_canonical: 'allbirds', company_display: 'Allbirds', news_signals: '10', reddit_signals: '10', linkedin_signals: '9', github_signals: '30', hn_signals: '1', discovery_source: 'discovered' },
+  { run_id: '88', run_ts: '2026-07-15T17:06:21.363-07:00', company_canonical: 'alibaba', company_display: 'Alibaba', news_signals: '10', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '5', discovery_source: 'discovered' },
 ];
 
 let companies = [];
