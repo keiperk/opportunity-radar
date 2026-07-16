@@ -190,8 +190,6 @@ function renderList() {
       <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
       <div class="company-row-detail"><div class="company-row-detail-inner">${detailHtml}</div></div>
     `;
-    row.addEventListener('click', () => selectCompany(c.company));
-    row.querySelector('.company-row-name').addEventListener('click', (e) => e.stopPropagation());
     return row;
   }
 
