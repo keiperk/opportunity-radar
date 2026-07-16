@@ -722,6 +722,25 @@ body {
   text-overflow: ellipsis;
 }
 
+.meter-values {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.meter-value { opacity: 0.85; }
+
+.meter-value.source-news       { color: var(--news-color); }
+.meter-value.source-reddit     { color: var(--reddit-red); }
+.meter-value.source-linkedin   { color: var(--linkedin-blue); }
+.meter-value.source-github     { color: var(--github-color); }
+.meter-value.source-hn         { color: var(--hn-color); }
+.meter-value.source-exec_hire  { color: var(--exec-hire-color); }
+.meter-value.source-funding    { color: var(--funding-color); }
+
 .source-legend {
   display: flex;
   flex-wrap: wrap;
@@ -798,7 +817,7 @@ body {
 .meter-fill.source-github   { background: var(--github-color); opacity: 0.9; }
 .meter-fill.source-hn       { background: var(--hn-color); opacity: 0.9; }
 
-.meter-track-segmented { display: flex; height: 5px; margin-top: 16px; }
+.meter-track-segmented { display: flex; height: 5px; }
 
 .meter-segment { height: 100%; opacity: 0.9; }
 .meter-segment:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }

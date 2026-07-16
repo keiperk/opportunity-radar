@@ -167,24 +167,31 @@ function renderList() {
         </div>
       </div>
       <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
-      <div class="meter-track meter-track-segmented">
-        ${(() => {
-          const rawTotal = c.news_signals + c.reddit_signals + c.linkedin_signals + c.github_signals + c.hn_signals + c.exec_hire_signals + c.funding_signals;
-          return [
-            { label: 'News', cls: 'source-news', value: c.news_signals, cap: CAPS.news },
-            { label: 'Reddit', cls: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit },
-            { label: 'LinkedIn', cls: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
-            { label: 'GitHub', cls: 'source-github', value: c.github_signals, cap: CAPS.github },
-            { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
-            { label: 'Executive Hires', cls: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire },
-            { label: 'Funding', cls: 'source-funding', value: c.funding_signals, cap: CAPS.funding },
-          ]
-            .map((s) => ({ ...s, pct: rawTotal > 0 ? (s.value / rawTotal) * 100 : 0 }))
-            .filter((s) => s.pct > 0)
-            .map((s) => `<div class="meter-segment ${s.cls}" style="width:${s.pct.toFixed(1)}%" title="${s.label}: ${s.value}/${s.cap} mentions — ${s.pct.toFixed(1)}% of this company's raw signal volume"></div>`)
-            .join('');
-        })()}
-      </div>
+      ${(() => {
+        const rawTotal = c.news_signals + c.reddit_signals + c.linkedin_signals + c.github_signals + c.hn_signals + c.exec_hire_signals + c.funding_signals;
+        const active = [
+          { label: 'News', cls: 'source-news', value: c.news_signals, cap: CAPS.news },
+          { label: 'Reddit', cls: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit },
+          { label: 'LinkedIn', cls: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
+          { label: 'GitHub', cls: 'source-github', value: c.github_signals, cap: CAPS.github },
+          { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
+          { label: 'Executive Hires', cls: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire },
+          { label: 'Funding', cls: 'source-funding', value: c.funding_signals, cap: CAPS.funding },
+        ]
+          .map((s) => ({ ...s, pct: rawTotal > 0 ? (s.value / rawTotal) * 100 : 0 }))
+          .filter((s) => s.pct > 0);
+
+        const valuesHtml = active
+          .map((s) => `<span class="meter-value ${s.cls}" title="${s.label}: ${s.value}/${s.cap} mentions">${s.value}</span>`)
+          .join('');
+        const segmentsHtml = active
+          .map((s) => `<div class="meter-segment ${s.cls}" style="width:${s.pct.toFixed(1)}%" title="${s.label}: ${s.value}/${s.cap} mentions — ${s.pct.toFixed(1)}% of this company's raw signal volume"></div>`)
+          .join('');
+        return `
+          <div class="meter-values">${valuesHtml}</div>
+          <div class="meter-track meter-track-segmented">${segmentsHtml}</div>
+        `;
+      })()}
     `;
     row.addEventListener('click', () => selectCompany(c.company));
     row.querySelector('.company-row-name').addEventListener('click', (e) => e.stopPropagation());
