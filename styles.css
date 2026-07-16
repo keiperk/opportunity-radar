@@ -722,6 +722,71 @@ body {
   text-overflow: ellipsis;
 }
 
+/* Progressive disclosure: the per-source breakdown stays collapsed
+   until you hover a row, so the list stays calm at rest but the "where
+   does this number come from" detail is one hover away instead of
+   locked behind a click into Company Inspector. */
+.company-row-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px 16px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.18s ease, opacity 0.15s ease, margin-top 0.18s ease;
+}
+
+.company-row:hover .company-row-detail,
+.company-row:focus-within .company-row-detail {
+  max-height: 140px;
+  opacity: 1;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.row-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row-detail-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+}
+
+.row-detail-label.source-news       { color: var(--news-color); }
+.row-detail-label.source-reddit     { color: var(--reddit-red); }
+.row-detail-label.source-linkedin   { color: var(--linkedin-blue); }
+.row-detail-label.source-github     { color: var(--github-color); }
+.row-detail-label.source-hn         { color: var(--hn-color); }
+.row-detail-label.source-exec_hire  { color: var(--exec-hire-color); }
+.row-detail-label.source-funding    { color: var(--funding-color); }
+
+.row-detail-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.row-detail-cap {
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.row-detail-contrib {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.row-detail-contrib::before { content: '→ '; }
+
 .source-pill {
   display: inline-flex;
   align-items: center;

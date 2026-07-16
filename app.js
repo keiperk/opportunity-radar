@@ -155,6 +155,26 @@ function renderList() {
       ? `<span class="discovery-badge" title="Newly discovered this scan — not on the existing tracked list">New Discovery</span>`
       : '';
 
+    const sourceDefs = [
+      { label: 'News', cls: 'source-news', value: c.news_signals, cap: CAPS.news, weight: WEIGHTS.news },
+      { label: 'Reddit', cls: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit, weight: WEIGHTS.reddit },
+      { label: 'LinkedIn', cls: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin, weight: WEIGHTS.linkedin },
+      { label: 'GitHub', cls: 'source-github', value: c.github_signals, cap: CAPS.github, weight: WEIGHTS.github },
+      { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn, weight: WEIGHTS.hn },
+      { label: 'Executive Hires', cls: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire, weight: WEIGHTS.exec_hire },
+      { label: 'Funding', cls: 'source-funding', value: c.funding_signals, cap: CAPS.funding, weight: WEIGHTS.funding },
+    ];
+    const detailHtml = sourceDefs.map((s) => {
+      const norm = Math.min(s.value, s.cap) / s.cap;
+      const contribution = norm * s.weight;
+      return `
+        <div class="row-detail-item">
+          <span class="row-detail-label ${s.cls}">${s.label}</span>
+          <span class="row-detail-value">${s.value}<span class="row-detail-cap">/${s.cap}</span> <span class="row-detail-contrib">${contribution.toFixed(3).replace(/^0\./, '.')}</span></span>
+        </div>
+      `;
+    }).join('');
+
     row.innerHTML = `
       <div class="company-row-top">
         <div class="company-row-name-group">
@@ -167,6 +187,7 @@ function renderList() {
         </div>
       </div>
       <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
+      <div class="company-row-detail">${detailHtml}</div>
     `;
     row.addEventListener('click', () => selectCompany(c.company));
     row.querySelector('.company-row-name').addEventListener('click', (e) => e.stopPropagation());
