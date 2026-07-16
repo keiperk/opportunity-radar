@@ -722,12 +722,35 @@ body {
   text-overflow: ellipsis;
 }
 
-.company-row-sources {
+.source-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 16px;
-  margin: 16px 0 8px;
+  gap: 6px 14px;
+  margin: 4px 0 12px;
 }
+
+.source-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.source-legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.source-legend-dot.source-news       { background: var(--news-color); }
+.source-legend-dot.source-reddit     { background: var(--reddit-red); }
+.source-legend-dot.source-linkedin   { background: var(--linkedin-blue); }
+.source-legend-dot.source-github     { background: var(--github-color); }
+.source-legend-dot.source-hn         { background: var(--hn-color); }
+.source-legend-dot.source-exec_hire  { background: var(--exec-hire-color); }
+.source-legend-dot.source-funding    { background: var(--funding-color); }
 
 .source-pill {
   display: inline-flex;
@@ -775,7 +798,7 @@ body {
 .meter-fill.source-github   { background: var(--github-color); opacity: 0.9; }
 .meter-fill.source-hn       { background: var(--hn-color); opacity: 0.9; }
 
-.meter-track-segmented { display: flex; height: 5px; }
+.meter-track-segmented { display: flex; height: 5px; margin-top: 16px; }
 
 .meter-segment { height: 100%; opacity: 0.9; }
 .meter-segment:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }

@@ -167,15 +167,6 @@ function renderList() {
         </div>
       </div>
       <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
-      <div class="company-row-sources">
-        <span class="source-pill source-news">News <span class="num">${c.news_signals}</span></span>
-        <span class="source-pill source-reddit">Reddit <span class="num">${c.reddit_signals}</span></span>
-        <span class="source-pill source-linkedin">LinkedIn <span class="num">${c.linkedin_signals}</span></span>
-        <span class="source-pill source-github">GitHub <span class="num">${c.github_signals}</span></span>
-        <span class="source-pill source-hn">HN <span class="num">${c.hn_signals}</span></span>
-        <span class="source-pill source-exec_hire">Exec Hires <span class="num">${c.exec_hire_signals}</span></span>
-        <span class="source-pill source-funding">Funding <span class="num">${c.funding_signals}</span></span>
-      </div>
       <div class="meter-track meter-track-segmented">
         ${(() => {
           const rawTotal = c.news_signals + c.reddit_signals + c.linkedin_signals + c.github_signals + c.hn_signals + c.exec_hire_signals + c.funding_signals;
