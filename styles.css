@@ -65,6 +65,8 @@
   --chart-3: #3a74b8; /* = --linkedin-blue */
   --chart-4: #b354b0; /* = --github-color */
   --chart-5: #d9822e; /* = --hn-color */
+  --chart-6: #0f9b8e; /* = --exec-hire-color */
+  --chart-7: #c9a227; /* = --funding-color */
 }
 
 /* Real accessibility win from adopting --ring, not just a decorative
@@ -112,6 +114,8 @@
   --reddit-red:      #5fa83f;
   --github-color:    #b354b0;
   --hn-color:        #d9822e;
+  --exec-hire-color: #0f9b8e;
+  --funding-color:   #c9a227;
   --gauge-accent:      #9b7cc4;
   --gauge-accent-deep: #6b4f96;
   --gauge-accent-tint: #f2edf8;
@@ -747,6 +751,8 @@ body {
 .source-pill.source-linkedin::before { background: var(--linkedin-blue); }
 .source-pill.source-github::before   { background: var(--github-color); }
 .source-pill.source-hn::before       { background: var(--hn-color); }
+.source-pill.source-exec_hire::before { background: var(--exec-hire-color); }
+.source-pill.source-funding::before  { background: var(--funding-color); }
 
 .meter-track {
   height: 5px;
@@ -780,6 +786,8 @@ body {
 
 .meter-segment.source-github   { background: var(--github-color); }
 .meter-segment.source-hn       { background: var(--hn-color); }
+.meter-segment.source-exec_hire { background: var(--exec-hire-color); }
+.meter-segment.source-funding   { background: var(--funding-color); }
 
 .table-empty {
   margin: 0;
@@ -879,6 +887,8 @@ body {
 .signal-confidence-dot.source-linkedin { background: var(--linkedin-blue); }
 .signal-confidence-dot.source-github   { background: var(--github-color); }
 .signal-confidence-dot.source-hn       { background: var(--hn-color); }
+.signal-confidence-dot.source-exec_hire { background: var(--exec-hire-color); }
+.signal-confidence-dot.source-funding   { background: var(--funding-color); }
 
 .signal-confidence-label { flex: 1 0 0; color: var(--text-secondary); }
 
@@ -952,6 +962,8 @@ body {
 .math-label.source-linkedin::before { background: var(--linkedin-blue); }
 .math-label.source-github::before   { background: var(--github-color); }
 .math-label.source-hn::before       { background: var(--hn-color); }
+.math-label.source-exec_hire::before { background: var(--exec-hire-color); }
+.math-label.source-funding::before   { background: var(--funding-color); }
 
 .math-total-row {
   display: flex;

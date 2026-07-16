@@ -65,8 +65,10 @@ function initDetailPage() {
     { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
     { label: 'GitHub', key: 'source-github', value: c.github_signals, cap: CAPS.github },
     { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
+    { label: 'Executive Hires', key: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire },
+    { label: 'Funding', key: 'source-funding', value: c.funding_signals, cap: CAPS.funding },
   ];
-  /* Bar width is scaled against the highest cap among these 5 sources
+  /* Bar width is scaled against the highest cap among these sources
      (not each source's own cap) — otherwise a value of 10 at its cap of
      10 and a value of 30 at its cap of 30 would render as the same
      100%-width bar, even though 30 is three times as many mentions. */
@@ -177,6 +179,8 @@ function initDetailPage() {
       { key: 'linkedin', label: 'LinkedIn', field: 'linkedin_signals', cls: 'source-linkedin', colorVar: '--linkedin-blue' },
       { key: 'github', label: 'GitHub', field: 'github_signals', cls: 'source-github', colorVar: '--github-color' },
       { key: 'hn', label: 'Hacker News', field: 'hn_signals', cls: 'source-hn', colorVar: '--hn-color' },
+      { key: 'exec_hire', label: 'Executive Hires', field: 'exec_hire_signals', cls: 'source-exec_hire', colorVar: '--exec-hire-color' },
+      { key: 'funding', label: 'Funding', field: 'funding_signals', cls: 'source-funding', colorVar: '--funding-color' },
     ];
 
     const stats = SOURCE_DEFS.map((s) => {

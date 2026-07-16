@@ -30,7 +30,19 @@ function renderRadar() {
   svg += `<line x1="${CX}" y1="20" x2="${CX}" y2="380" stroke="${ringColor}" stroke-width="1" />`;
   svg += `<circle cx="${CX}" cy="${CY}" r="3" fill="${THEME.dark}" />`;
 
-  const FONT_SIZE = 11.5, CHAR_W = FONT_SIZE * 0.58, LINE_H = FONT_SIZE * 1.2;
+  const FONT_SIZE = 11.5, LINE_H = FONT_SIZE * 1.2, LABEL_GAP = 6, MAX_LABEL_W = 130;
+  const measureCtx = document.createElement('canvas').getContext('2d');
+  measureCtx.font = `600 ${FONT_SIZE}px Inter, sans-serif`;
+  /* Discovered-company names can run very long (40+ chars); left unchecked
+     their label boxes run off the chart edge and collide with neighboring
+     labels. Truncate what's shown on the radar itself — the full name is
+     still used for selection and still shown everywhere else. */
+  function truncateLabel(text) {
+    if (measureCtx.measureText(text).width <= MAX_LABEL_W) return text;
+    let t = text;
+    while (t.length > 1 && measureCtx.measureText(t + '…').width > MAX_LABEL_W) t = t.slice(0, -1);
+    return t + '…';
+  }
   const labels = [];
 
   companies.forEach((c, i) => {
@@ -54,7 +66,7 @@ function renderRadar() {
     if (cosV > 0.3) anchor = 'start';
     else if (cosV < -0.3) anchor = 'end';
 
-    labels.push({ company: c.company, cosV, sinV, anchor, diameter, labelR });
+    labels.push({ company: c.company, label: truncateLabel(c.company), cosV, sinV, anchor, diameter, labelR });
   });
 
   /* Label collision avoidance: push overlapping labels further out along
@@ -70,8 +82,8 @@ function renderRadar() {
   }
   function bbox(l) {
     const { x, y } = labelPos(l);
-    const w = l.company.length * CHAR_W;
-    const left = l.anchor === 'start' ? x : l.anchor === 'end' ? x - w : x - w / 2;
+    const w = measureCtx.measureText(l.label).width + LABEL_GAP;
+    const left = (l.anchor === 'start' ? x : l.anchor === 'end' ? x - w : x - w / 2) - LABEL_GAP / 2;
     return { left, right: left + w, top: y - LINE_H, bottom: y + LINE_H * 0.3 };
   }
   function overlaps(a, b) {
@@ -79,12 +91,12 @@ function renderRadar() {
     return A.left < B.right && A.right > B.left && A.top < B.bottom && A.bottom > B.top;
   }
 
-  for (let pass = 0; pass < 8; pass++) {
+  for (let pass = 0; pass < 30; pass++) {
     let moved = false;
     for (let i = 0; i < labels.length; i++) {
       for (let j = 0; j < i; j++) {
         if (overlaps(labels[i], labels[j])) {
-          labels[i].labelR += 9;
+          labels[i].labelR += 12;
           moved = true;
         }
       }
@@ -94,7 +106,7 @@ function renderRadar() {
 
   labels.forEach((l) => {
     const { x, y } = labelPos(l);
-    svg += `<text data-company="${l.company}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${l.anchor}" font-size="${FONT_SIZE}" font-weight="600" font-family="Inter, sans-serif" fill="${THEME.dark}" style="cursor:pointer">${escapeXml(l.company)}</text>`;
+    svg += `<text data-company="${l.company}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${l.anchor}" font-size="${FONT_SIZE}" font-weight="600" font-family="Inter, sans-serif" fill="${THEME.dark}" style="cursor:pointer"><title>${escapeXml(l.company)}</title>${escapeXml(l.label)}</text>`;
   });
 
   radarSvg.innerHTML = svg;
@@ -161,16 +173,20 @@ function renderList() {
         <span class="source-pill source-linkedin">LinkedIn <span class="num">${c.linkedin_signals}</span></span>
         <span class="source-pill source-github">GitHub <span class="num">${c.github_signals}</span></span>
         <span class="source-pill source-hn">HN <span class="num">${c.hn_signals}</span></span>
+        <span class="source-pill source-exec_hire">Exec Hires <span class="num">${c.exec_hire_signals}</span></span>
+        <span class="source-pill source-funding">Funding <span class="num">${c.funding_signals}</span></span>
       </div>
       <div class="meter-track meter-track-segmented">
         ${(() => {
-          const rawTotal = c.news_signals + c.reddit_signals + c.linkedin_signals + c.github_signals + c.hn_signals;
+          const rawTotal = c.news_signals + c.reddit_signals + c.linkedin_signals + c.github_signals + c.hn_signals + c.exec_hire_signals + c.funding_signals;
           return [
             { label: 'News', cls: 'source-news', value: c.news_signals, cap: CAPS.news },
             { label: 'Reddit', cls: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit },
             { label: 'LinkedIn', cls: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
             { label: 'GitHub', cls: 'source-github', value: c.github_signals, cap: CAPS.github },
             { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
+            { label: 'Executive Hires', cls: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire },
+            { label: 'Funding', cls: 'source-funding', value: c.funding_signals, cap: CAPS.funding },
           ]
             .map((s) => ({ ...s, pct: rawTotal > 0 ? (s.value / rawTotal) * 100 : 0 }))
             .filter((s) => s.pct > 0)
@@ -279,6 +295,8 @@ function renderInspector() {
     { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
     { label: 'GitHub', key: 'source-github', value: c.github_signals, cap: CAPS.github },
     { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
+    { label: 'Executive Hires', key: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire },
+    { label: 'Funding', key: 'source-funding', value: c.funding_signals, cap: CAPS.funding },
   ];
   const breakdownEl = document.getElementById('signal-breakdown');
   breakdownEl.innerHTML = sourceDefs.map((s) => {
@@ -305,6 +323,8 @@ function renderInspector() {
     { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, weight: WEIGHTS.reddit, cap: CAPS.reddit },
     { label: 'GitHub', key: 'source-github', value: c.github_signals, weight: WEIGHTS.github, cap: CAPS.github },
     { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, weight: WEIGHTS.hn, cap: CAPS.hn },
+    { label: 'Executive Hires', key: 'source-exec_hire', value: c.exec_hire_signals, weight: WEIGHTS.exec_hire, cap: CAPS.exec_hire },
+    { label: 'Funding', key: 'source-funding', value: c.funding_signals, weight: WEIGHTS.funding, cap: CAPS.funding },
   ];
   const confirmingDefs = [
     { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, weight: WEIGHTS.linkedin, cap: CAPS.linkedin },

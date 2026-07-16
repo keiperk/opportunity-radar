@@ -1,9 +1,12 @@
 /*
  * Shared data + scoring logic for the Opportunity Radar dashboard and
- * detail page. Formula matches the pipeline's `Calculate Index` node as of
- * the GitHub/HN fix: weights news .25 / reddit .20 / linkedin .25 /
- * github .15 / hn .15, each source capped independently before
- * normalizing.
+ * detail page. Formula matches the pipeline's `Calculate Index` node,
+ * updated to add funding and exec_hire as sources: weights news .15 /
+ * reddit .10 / linkedin .15 / github .10 / hn .10 / exec_hire .15 /
+ * funding .25, each source capped independently before normalizing.
+ * NOTE: as of 2026-07-14 the published sheet has a funding_signals
+ * column but it isn't populated yet, and has no exec_hire_signals
+ * column at all — both read as 0 here until the pipeline catches up.
  *
  * Data is fetched live from the pipeline's published `radar_results`
  * sheet (see CSV_URL below) — this is a real, ongoing connection, not a
@@ -11,8 +14,8 @@
  * good snapshot) is used instead so the page never just breaks; callers
  * can check `dataSource` to know which happened.
  */
-const CAPS = { news: 10, reddit: 10, linkedin: 15, github: 30, hn: 10 };
-const WEIGHTS = { news: 0.25, reddit: 0.20, linkedin: 0.25, github: 0.15, hn: 0.15 };
+const CAPS = { news: 10, reddit: 10, linkedin: 15, github: 30, hn: 10, exec_hire: 10, funding: 10 };
+const WEIGHTS = { news: 0.15, reddit: 0.10, linkedin: 0.15, github: 0.10, hn: 0.10, exec_hire: 0.15, funding: 0.25 };
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTGAgujnKii4qOQYezhAMdwFcsAnLOeg_jnZtE8lOHm2dexXdH0tWtwqKeZbhPxov_Z9YzQGEH2mS2C/pub?gid=1454866921&single=true&output=csv';
 
@@ -307,13 +310,16 @@ let companies = [];
 let runMeta = { run_id: null, run_ts: null };
 let dataSource = 'loading'; // 'loading' | 'live' | 'fallback'
 
-function computeIndex(news, reddit, linkedin, github, hn) {
+function computeIndex(news, reddit, linkedin, github, hn, execHire, funding) {
   const n = Math.min(news, CAPS.news) / CAPS.news;
   const r = Math.min(reddit, CAPS.reddit) / CAPS.reddit;
   const l = Math.min(linkedin, CAPS.linkedin) / CAPS.linkedin;
   const g = Math.min(github, CAPS.github) / CAPS.github;
   const h = Math.min(hn, CAPS.hn) / CAPS.hn;
-  return n * WEIGHTS.news + r * WEIGHTS.reddit + l * WEIGHTS.linkedin + g * WEIGHTS.github + h * WEIGHTS.hn;
+  const e = Math.min(execHire, CAPS.exec_hire) / CAPS.exec_hire;
+  const f = Math.min(funding, CAPS.funding) / CAPS.funding;
+  return n * WEIGHTS.news + r * WEIGHTS.reddit + l * WEIGHTS.linkedin + g * WEIGHTS.github + h * WEIGHTS.hn
+    + e * WEIGHTS.exec_hire + f * WEIGHTS.funding;
 }
 
 function tierOf(idx) {
@@ -358,7 +364,10 @@ function getCompanyBlurb(c) {
  * grouped as "leading" — the earlier, more valuable signal for finding
  * opportunities before they become job postings.
  */
-const SOURCE_TIMING = { news: 'leading', reddit: 'leading', github: 'leading', hn: 'leading', linkedin: 'confirming' };
+const SOURCE_TIMING = {
+  news: 'leading', reddit: 'leading', github: 'leading', hn: 'leading',
+  exec_hire: 'leading', funding: 'leading', linkedin: 'confirming',
+};
 
 function generateWhyItMatters(c) {
   const sources = [
@@ -367,6 +376,8 @@ function generateWhyItMatters(c) {
     { key: 'linkedin', label: 'LinkedIn', value: c.linkedin_signals },
     { key: 'github', label: 'GitHub', value: c.github_signals },
     { key: 'hn', label: 'Hacker News', value: c.hn_signals },
+    { key: 'exec_hire', label: 'Executive Hires', value: c.exec_hire_signals },
+    { key: 'funding', label: 'Funding', value: c.funding_signals },
   ];
   const top = sources.reduce((a, b) => (b.value > a.value ? b : a));
   const tierPhrase = c.tier.toLowerCase();
@@ -480,7 +491,9 @@ function buildCompaniesFromRows(rows) {
         Number(r.reddit_signals) || 0,
         Number(r.linkedin_signals) || 0,
         Number(r.github_signals) || 0,
-        Number(r.hn_signals) || 0
+        Number(r.hn_signals) || 0,
+        Number(r.exec_hire_signals) || 0,
+        Number(r.funding_signals) || 0
       );
       return { run_id: r.run_id, run_ts: r.run_ts, index };
     });
@@ -491,7 +504,9 @@ function buildCompaniesFromRows(rows) {
     const linkedin = Number(latest.linkedin_signals) || 0;
     const github = Number(latest.github_signals) || 0;
     const hn = Number(latest.hn_signals) || 0;
-    const index = computeIndex(news, reddit, linkedin, github, hn);
+    const execHire = Number(latest.exec_hire_signals) || 0;
+    const funding = Number(latest.funding_signals) || 0;
+    const index = computeIndex(news, reddit, linkedin, github, hn, execHire, funding);
 
     if (!latestRunTs || new Date(latest.run_ts) > new Date(latestRunTs)) {
       latestRunTs = latest.run_ts;
@@ -506,6 +521,8 @@ function buildCompaniesFromRows(rows) {
       linkedin_signals: linkedin,
       github_signals: github,
       hn_signals: hn,
+      exec_hire_signals: execHire,
+      funding_signals: funding,
       discovery_source: latest.discovery_source || 'tracked',
       opportunity_index: Math.round(index * 100) / 100,
       opportunity_index_precise: index,
