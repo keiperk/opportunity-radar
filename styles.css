@@ -61,14 +61,16 @@
   --ring:                var(--accent); /* used for focus rings below */
   --radius:              0.625rem; /* = --radius-lg (10px) — sm/md/lg/xl below derive from this */
 
-  /* shadcn chart-color convention — same hues as our per-source tokens */
-  --chart-1: #bf635e; /* = --news-color */
-  --chart-2: #5e864d; /* = --reddit-red */
-  --chart-3: #4c6c91; /* = --linkedin-blue */
-  --chart-4: #955d94; /* = --github-color */
-  --chart-5: #ac7847; /* = --hn-color */
-  --chart-6: #267069; /* = --exec-hire-color */
-  --chart-7: #9a8541; /* = --funding-color */
+  /* shadcn chart-color convention — same hues as our per-source tokens.
+     Aliased via var() so this can't go stale the way the hardcoded
+     copies here previously did after a source color changed. */
+  --chart-1: var(--news-color);
+  --chart-2: var(--reddit-red);
+  --chart-3: var(--linkedin-blue);
+  --chart-4: var(--github-color);
+  --chart-5: var(--hn-color);
+  --chart-6: var(--exec-hire-color);
+  --chart-7: var(--funding-color);
 }
 
 /* Real accessibility win from adopting --ring, not just a decorative
@@ -104,25 +106,70 @@
   --accent-tint:     #e7ecee;
   --callout-tint:    var(--bg);
 
-  --green:           #6f9d6a;
-  --green-deep:      #4e6e4a;
-  --green-tint:      #e9f0e9;
+  /* ── Hue ramp: 7 core hues, each with dark / base(100%) / tint-1 / tint-2,
+     derived via one consistent formula — dark = hue mixed 30% toward
+     black; tint-1 = hue mixed 50% toward white; tint-2 = hue mixed 85%
+     toward white — not independently hand-picked per hue. Every semantic
+     name below (--green, --news-color, etc.) just aliases whichever
+     shade of whichever hue that role needs; every rule elsewhere in this
+     file that consumes those semantic names is unchanged. */
+  --hue-red:           #bf635e;
+  --hue-red-dark:      #864542;
+  --hue-red-tint-1:    #dfb1af;
+  --hue-red-tint-2:    #f5e8e7;
 
-  --amber:           #f59e0b;
-  --amber-deep:      #ac6f08;
-  --amber-tint:      #fef0da;
+  --hue-green:         #5e864d;
+  --hue-green-dark:    #425e36;
+  --hue-green-tint-1:  #afc3a6;
+  --hue-green-tint-2:  #e7ede4;
 
-  --rose:            #f87171;
-  --rose-deep:       #ae4f4f;
-  --rose-tint:       #feeaea;
+  --hue-blue:          #4c6c91;
+  --hue-blue-dark:     #354c66;
+  --hue-blue-tint-1:   #a6b6c8;
+  --hue-blue-tint-2:   #e4e9ef;
 
-  --news-color:      #bf635e;
-  --linkedin-blue:   #4c6c91;
-  --reddit-red:      #5e864d;
-  --github-color:    #955d94;
-  --hn-color:        #ac7847;
-  --exec-hire-color: #267069;
-  --funding-color:   #9a8541;
+  --hue-purple:        #955d94;
+  --hue-purple-dark:   #684168;
+  --hue-purple-tint-1: #caaeca;
+  --hue-purple-tint-2: #efe7ef;
+
+  --hue-orange:        #dd914a;
+  --hue-orange-dark:   #9b6634;
+  --hue-orange-tint-1: #eec8a5;
+  --hue-orange-tint-2: #faefe4;
+
+  --hue-yellow:        #e1d270;
+  --hue-yellow-dark:   #9e934e;
+  --hue-yellow-tint-1: #f0e9b8;
+  --hue-yellow-tint-2: #fbf8ea;
+
+  --hue-teal:          #267069;
+  --hue-teal-dark:     #1b4e4a;
+  --hue-teal-tint-1:   #93b8b4;
+  --hue-teal-tint-2:   #deeae9;
+
+  /* Tier status colors — reuse the same hues as the source palette below
+     (rose=red, green=green, amber=orange) instead of maintaining 3 more
+     standalone shades. */
+  --green:           var(--hue-green);
+  --green-deep:      var(--hue-green-dark);
+  --green-tint:      var(--hue-green-tint-2);
+
+  --amber:           var(--hue-orange);
+  --amber-deep:      var(--hue-orange-dark);
+  --amber-tint:      var(--hue-orange-tint-2);
+
+  --rose:            var(--hue-red);
+  --rose-deep:       var(--hue-red-dark);
+  --rose-tint:       var(--hue-red-tint-2);
+
+  --news-color:      var(--hue-red);
+  --linkedin-blue:   var(--hue-blue);
+  --reddit-red:      var(--hue-green);
+  --github-color:    var(--hue-purple);
+  --hn-color:        var(--hue-orange);
+  --exec-hire-color: var(--hue-teal);
+  --funding-color:   var(--hue-yellow);
   --trend-accent:    var(--green);
   --peer-muted-dot:  var(--text-secondary);
 
@@ -647,12 +694,12 @@ body {
 
 .company-row:hover {
   background: var(--surface);
-  border-color: var(--accent);
+  border-color: var(--text-secondary);
 }
 
 .company-row.selected {
   background: var(--surface);
-  border-color: var(--accent);
+  border-color: var(--text-secondary);
 }
 
 .company-row-top {

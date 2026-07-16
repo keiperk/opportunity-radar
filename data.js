@@ -36,8 +36,6 @@ const THEME = {
   accentTint: '#e7ecee', // matches --accent-tint
   dark: '#0d1219', // matches --text-primary
   radarLabel: '#333333', // radar dot text labels — softer than THEME.dark
-  amber: '#f59e0b',
-  rose: '#f87171',
   border: '#d3dee4', // matches --border, used for gauge track
   mutedDot: '#838ba0', // matches --peer-muted-dot, used for peer comparison dots
   reddit: '#5e864d', // matches --reddit-red, used for the radar blips
