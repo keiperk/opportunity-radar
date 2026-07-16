@@ -167,9 +167,6 @@ function renderList() {
         </div>
       </div>
       <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
-      <div class="meter-track company-row-meter">
-        <div class="meter-fill ${cls}" style="width:${(c.opportunity_index * 100).toFixed(0)}%" title="Combined signal strength: ${c.opportunity_index.toFixed(2).replace(/^0\./, '.')} — see Company Inspector for the full per-source breakdown"></div>
-      </div>
     `;
     row.addEventListener('click', () => selectCompany(c.company));
     row.querySelector('.company-row-name').addEventListener('click', (e) => e.stopPropagation());

@@ -722,8 +722,6 @@ body {
   text-overflow: ellipsis;
 }
 
-.company-row-meter { margin-top: 16px; }
-
 .source-pill {
   display: inline-flex;
   align-items: center;
@@ -762,8 +760,6 @@ body {
   background: var(--accent-deep);
 }
 
-.meter-fill.amber { background: var(--amber-deep); }
-.meter-fill.rose  { background: var(--rose-deep); }
 .meter-fill.source-news     { background: var(--news-color); opacity: 0.9; }
 .meter-fill.source-reddit   { background: var(--reddit-red); opacity: 0.9; }
 .meter-fill.source-linkedin { background: var(--linkedin-blue); opacity: 0.9; }
