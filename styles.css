@@ -924,6 +924,8 @@ body {
 .meter-fill.source-linkedin { background: var(--linkedin-blue); opacity: 0.9; }
 .meter-fill.source-github   { background: var(--github-color); opacity: 0.9; }
 .meter-fill.source-hn       { background: var(--hn-color); opacity: 0.9; }
+.meter-fill.source-exec_hire { background: var(--exec-hire-color); opacity: 0.9; }
+.meter-fill.source-funding   { background: var(--funding-color); opacity: 0.9; }
 
 .table-empty {
   margin: 0;
