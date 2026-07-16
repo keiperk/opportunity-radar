@@ -722,59 +722,7 @@ body {
   text-overflow: ellipsis;
 }
 
-.meter-values {
-  position: relative;
-  height: 14px;
-  margin: 16px 0 4px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  font-variant-numeric: tabular-nums;
-}
-
-.meter-value {
-  position: absolute;
-  top: 0;
-  white-space: nowrap;
-}
-
-.meter-value.source-news       { color: var(--news-color); }
-.meter-value.source-reddit     { color: var(--reddit-red); }
-.meter-value.source-linkedin   { color: var(--linkedin-blue); }
-.meter-value.source-github     { color: var(--github-color); }
-.meter-value.source-hn         { color: var(--hn-color); }
-.meter-value.source-exec_hire  { color: var(--exec-hire-color); }
-.meter-value.source-funding    { color: var(--funding-color); }
-
-.source-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  margin: 4px 0 12px;
-}
-
-.source-legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-
-.source-legend-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.source-legend-dot.source-news       { background: var(--news-color); }
-.source-legend-dot.source-reddit     { background: var(--reddit-red); }
-.source-legend-dot.source-linkedin   { background: var(--linkedin-blue); }
-.source-legend-dot.source-github     { background: var(--github-color); }
-.source-legend-dot.source-hn         { background: var(--hn-color); }
-.source-legend-dot.source-exec_hire  { background: var(--exec-hire-color); }
-.source-legend-dot.source-funding    { background: var(--funding-color); }
+.company-row-meter { margin-top: 16px; }
 
 .source-pill {
   display: inline-flex;
@@ -821,20 +769,6 @@ body {
 .meter-fill.source-linkedin { background: var(--linkedin-blue); opacity: 0.9; }
 .meter-fill.source-github   { background: var(--github-color); opacity: 0.9; }
 .meter-fill.source-hn       { background: var(--hn-color); opacity: 0.9; }
-
-.meter-track-segmented { display: flex; height: 5px; }
-
-.meter-segment { height: 100%; opacity: 0.9; }
-.meter-segment:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
-.meter-segment:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
-.meter-segment.source-news     { background: var(--news-color); }
-.meter-segment.source-reddit   { background: var(--reddit-red); }
-.meter-segment.source-linkedin { background: var(--linkedin-blue); }
-
-.meter-segment.source-github   { background: var(--github-color); }
-.meter-segment.source-hn       { background: var(--hn-color); }
-.meter-segment.source-exec_hire { background: var(--exec-hire-color); }
-.meter-segment.source-funding   { background: var(--funding-color); }
 
 .table-empty {
   margin: 0;
