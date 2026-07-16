@@ -182,7 +182,7 @@ function renderList() {
           .filter((s) => s.pct > 0);
 
         const valuesHtml = active
-          .map((s) => `<span class="meter-value ${s.cls}" title="${s.label}: ${s.value}/${s.cap} mentions">${s.value}</span>`)
+          .map((s) => `<span class="meter-value ${s.cls}" title="${s.label}: ${s.value}/${s.cap} mentions"><span class="meter-value-dot"></span>${s.value}</span>`)
           .join('');
         const segmentsHtml = active
           .map((s) => `<div class="meter-segment ${s.cls}" style="width:${s.pct.toFixed(1)}%" title="${s.label}: ${s.value}/${s.cap} mentions — ${s.pct.toFixed(1)}% of this company's raw signal volume"></div>`)
