@@ -83,7 +83,7 @@
   --border-input:    var(--border);
 
   --text-primary:    #0d1219;
-  --text-secondary:  #5c6478;
+  --text-secondary:  #d6d6d6;
   --text-muted:      #838ba0;
 
   --accent:          #607d8b;
@@ -722,7 +722,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 16px;
-  margin: 8px 0;
+  margin: 16px 0 8px;
 }
 
 .source-pill {
