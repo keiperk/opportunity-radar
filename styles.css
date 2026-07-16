@@ -892,6 +892,7 @@ body {
   content: '';
   width: 6px;
   height: 6px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--accent);
   opacity: 0.9;
@@ -1300,7 +1301,7 @@ body {
 .source-rank-row + .source-rank-row { border-top: 1px solid var(--border); }
 
 .source-rank-row-label {
-  width: 84px;
+  width: 112px;
   flex-shrink: 0;
   white-space: nowrap;
 }
