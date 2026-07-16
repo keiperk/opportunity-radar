@@ -106,7 +106,7 @@ function renderRadar() {
 
   labels.forEach((l) => {
     const { x, y } = labelPos(l);
-    svg += `<text data-company="${l.company}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${l.anchor}" font-size="${FONT_SIZE}" font-weight="600" font-family="Inter, sans-serif" fill="${THEME.dark}" style="cursor:pointer"><title>${escapeXml(l.company)}</title>${escapeXml(l.label)}</text>`;
+    svg += `<text data-company="${l.company}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${l.anchor}" font-size="${FONT_SIZE}" font-weight="600" font-family="Inter, sans-serif" fill="${THEME.radarLabel}" style="cursor:pointer"><title>${escapeXml(l.company)}</title>${escapeXml(l.label)}</text>`;
   });
 
   radarSvg.innerHTML = svg;
@@ -285,7 +285,7 @@ function renderInspector() {
   const badge = document.getElementById('inspector-tier-badge');
   badge.textContent = c.tier.toUpperCase();
   badge.className = 'tier-badge' + (cls ? ` tier-${cls}` : '');
-  document.getElementById('inspector-index').textContent = c.opportunity_index.toFixed(2);
+  document.getElementById('inspector-index').textContent = c.opportunity_index.toFixed(2).replace(/^0\./, '.');
   document.getElementById('inspector-index').style.color = cls === 'amber' ? 'var(--amber-deep)' : cls === 'rose' ? 'var(--rose-deep)' : 'var(--accent-deep)';
   document.getElementById('inspector-discovery-badge').hidden = c.discovery_source !== 'discovered';
 
@@ -334,7 +334,7 @@ function renderInspector() {
     const norm = Math.min(d.value, d.cap) / d.cap;
     const contribution = norm * d.weight;
     total += contribution;
-    return `<div class="math-row"><span class="math-label ${d.key}">${d.label}  <span class="num">${d.value}/${d.cap}</span></span><span class="math-detail num">${norm.toFixed(2)} × ${(d.weight * 100).toFixed(0)}% = ${contribution.toFixed(3)}</span></div>`;
+    return `<div class="math-row"><span class="math-label ${d.key}">${d.label}  <span class="num">${d.value}/${d.cap}</span></span><span class="math-detail num">${norm.toFixed(2).replace(/^0\./, '.')} × ${(d.weight * 100).toFixed(0)}% = ${contribution.toFixed(3).replace(/^0\./, '.')}</span></div>`;
   }
   const rowsHtml = `
     <span class="math-group-label">Leading signals</span>
@@ -343,7 +343,7 @@ function renderInspector() {
     ${confirmingDefs.map(mathRow).join('')}
   `;
   document.getElementById('math-rows').innerHTML = rowsHtml;
-  document.getElementById('math-total-value').textContent = (Math.round(total * 100) / 100).toFixed(2);
+  document.getElementById('math-total-value').textContent = (Math.round(total * 100) / 100).toFixed(2).replace(/^0\./, '.');
 
   renderRolesGauge(c.linkedin_signals, CAPS.linkedin);
   document.getElementById('open-roles-value').textContent = c.linkedin_signals;

@@ -31,6 +31,7 @@ const THEME = {
   accentDeep: '#455a64', // Material Blue Grey 700 — matches --accent-deep
   accentTint: '#eceff1', // Material Blue Grey 50  — matches --accent-tint
   dark: '#0d1219', // matches --text-primary
+  radarLabel: '#333333', // radar dot text labels — softer than THEME.dark
   amber: '#f59e0b',
   rose: '#f87171',
   border: '#d3dee4', // matches --border, used for gauge track
