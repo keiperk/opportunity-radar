@@ -333,7 +333,11 @@ function renderInspector() {
   document.getElementById('gauge-discovery-badge').hidden = c.discovery_source !== 'discovered';
   document.getElementById('why-it-matters-text').innerHTML = generateWhyItMatters(c);
 
-  const emailHandle = c.company.toLowerCase().replace(/[^a-z0-9]+/g, '');
+  /* Capped — some discovered "company" names are actually whole clauses
+     the discovery LLM extracted (e.g. "Unspecified AI startup by former
+     Target executive"), and an uncapped handle turns those into an
+     absurdly long, unrealistic-looking email domain. */
+  const emailHandle = c.company.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 20);
   document.getElementById('contact-title').textContent = `Engineering Recruiter · ${c.company}`;
   document.getElementById('contact-email').textContent = `jordan.reyes@${emailHandle}.com`;
 }

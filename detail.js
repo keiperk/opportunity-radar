@@ -249,8 +249,12 @@ function initDetailPage() {
   /* ── Why This Matters ── */
   document.getElementById('detail-why-text').innerHTML = generateWhyItMatters(c);
 
-  /* ── Suggested Contact ── */
-  const emailHandle = c.company.toLowerCase().replace(/[^a-z0-9]+/g, '');
+  /* ── Suggested Contact ──
+     Capped — some discovered "company" names are actually whole clauses
+     the discovery LLM extracted (e.g. "Unspecified AI startup by former
+     Target executive"), and an uncapped handle turns those into an
+     absurdly long, unrealistic-looking email domain. */
+  const emailHandle = c.company.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 20);
   document.getElementById('detail-contact-title').textContent = `Engineering Recruiter · ${c.company}`;
   document.getElementById('detail-contact-email').textContent = `jordan.reyes@${emailHandle}.com`;
 }
