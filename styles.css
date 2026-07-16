@@ -97,6 +97,7 @@
   --surface:         #fdfeff;
   --border:          #d3dee4;
   --border-input:    var(--border);
+  --border-emphasis: #bbc5d0; /* border a step darker for hover/selected rows -- lighter than --text-secondary */
 
   --text-primary:    #0d1219;
   --text-secondary:  #838ba0;
@@ -183,7 +184,6 @@
      Every font-size declaration in this file references one of these —
      no more independently-picked pixel values. */
   --text-2xs: 10px;
-  --text-xs:  11px;
   --text-sm:  12px;
   --text-md:  16px;
   --text-lg:  22px;
@@ -235,7 +235,7 @@ body {
 }
 
 .header-eyebrow {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 16px;
   font-weight: 700;
   letter-spacing: 1.2px;
@@ -434,7 +434,7 @@ body {
 
 .card-eyebrow {
   padding-left: 3px;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -465,7 +465,7 @@ body {
 
 .fine-print {
   margin: 8px 0 0;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.4;
@@ -543,7 +543,7 @@ body {
 
 .radar-caption {
   margin: 16px 0 0;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.5;
@@ -626,7 +626,7 @@ body {
 }
 
 .gauge-momentum-row .stat-label {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
@@ -653,7 +653,7 @@ body {
 
 .list-hint {
   margin: 4px 0 12px;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--text-secondary);
 }
@@ -704,12 +704,12 @@ body {
 
 .company-row:hover {
   background: var(--surface);
-  border-color: var(--text-secondary);
+  border-color: var(--border-emphasis);
 }
 
 .company-row.selected {
   background: var(--surface);
-  border-color: var(--text-secondary);
+  border-color: var(--border-emphasis);
 }
 
 .company-row-top {
@@ -764,7 +764,7 @@ body {
 .company-row-index.rose  { color: var(--rose-deep); }
 
 .momentum-delta {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 600;
   white-space: nowrap;
   opacity: 0.5;
@@ -869,7 +869,7 @@ body {
 }
 
 .row-detail-contrib {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--text-secondary);
 }
@@ -880,7 +880,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
@@ -995,7 +995,7 @@ body {
 
 .math-caption {
   margin: 2px 0 10px;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.5;
@@ -1018,7 +1018,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 5px 0;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .math-row .math-label { color: var(--text-primary); font-weight: 500; }
@@ -1096,7 +1096,7 @@ body {
 
 .contact-title {
   margin: 2px 0 0;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--text-secondary);
 }
@@ -1172,7 +1172,7 @@ body {
 
 .back-link {
   display: inline-block;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 16px;
   font-weight: 400;
   color: var(--text-secondary);
@@ -1265,7 +1265,7 @@ body {
 
 .peer-compare-sub {
   margin: 4px 0 14px;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--text-secondary);
 }
@@ -1279,7 +1279,7 @@ body {
 
 .source-rank-headline {
   margin: 0 0 12px;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--text-secondary);
 }
@@ -1304,7 +1304,7 @@ body {
 .source-rank-row-pct {
   width: 118px;
   flex-shrink: 0;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
   text-align: right;
 }
@@ -1384,7 +1384,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: #ffffff;
   line-height: 1;
 }
