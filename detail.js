@@ -214,12 +214,20 @@ function initDetailPage() {
 
       /* Muted dots first, highlighted dot drawn last (on top) — otherwise
          a tie with another company at the exact same value paints over
-         the highlight, since several companies often share a capped max. */
+         the highlight, since several companies often share a capped max.
+         Dots are semi-transparent rather than solid: with 20+ tracked
+         companies, many genuinely tie on the same raw count (especially
+         at a source's cap), so solid same-color circles at the same
+         position just blend into one shape -- reading as a missing dot,
+         or as a stretched oval where two near-but-not-quite-identical
+         values overlap. Translucency turns a tied cluster into a
+         visibly darker blob instead, and each dot's <title> exposes the
+         real company name + value on hover for hover for identification. */
       const mutedDotsSvg = companies
         .filter((co) => co.company !== c.company)
-        .map((co) => `<circle cx="${xOf(co[s.field]).toFixed(1)}" cy="${cy}" r="3" fill="${THEME.mutedDot}" />`)
+        .map((co) => `<circle cx="${xOf(co[s.field]).toFixed(1)}" cy="${cy}" r="3" fill="${THEME.mutedDot}" opacity="0.55"><title>${escapeXml(co.company)}: ${co[s.field]}</title></circle>`)
         .join('');
-      const highlightSvg = `<circle cx="${xOf(c[s.field]).toFixed(1)}" cy="${cy}" r="4.5" fill="var(${s.colorVar})" stroke="#ffffff" stroke-width="1.5" />`;
+      const highlightSvg = `<circle cx="${xOf(c[s.field]).toFixed(1)}" cy="${cy}" r="4.5" fill="var(${s.colorVar})" stroke="#ffffff" stroke-width="1.5"><title>${escapeXml(c.company)}: ${c[s.field]} (this company)</title></circle>`;
 
       svgEl.innerHTML = `
         <line x1="${PAD_X}" y1="${cy}" x2="${W - PAD_X}" y2="${cy}" stroke="${THEME.border}" stroke-width="1" />
