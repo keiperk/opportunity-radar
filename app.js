@@ -151,7 +151,7 @@ function renderList() {
         </div>
         <div class="company-row-right">
           ${renderMomentumBadge(c)}
-          <span class="company-row-index ${cls}">${c.opportunity_index.toFixed(2)}</span>
+          <span class="company-row-index ${cls}">${c.opportunity_index.toFixed(2).replace(/^0\./, '.')}</span>
         </div>
       </div>
       <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
