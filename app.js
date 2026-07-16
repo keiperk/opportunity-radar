@@ -16,6 +16,7 @@ const radarSvg = document.getElementById('radar-svg');
 let sortDirection = 'desc';
 let groupByTier = true;
 let selectedCompany = null;
+let expandedCompany = null; // which row's per-source detail is toggled open (click, not hover)
 
 /* ── Radar (SVG) ── */
 function renderRadar() {
@@ -148,7 +149,9 @@ function renderList() {
   function renderRow(c) {
     const cls = tierClass(c.tier);
     const row = document.createElement('div');
-    row.className = 'company-row' + (c.company === selectedCompany.company ? ' selected' : '');
+    row.className = 'company-row'
+      + (c.company === selectedCompany.company ? ' selected' : '')
+      + (c.company === expandedCompany ? ' expanded' : '');
     row.dataset.company = c.company;
 
     const discoveryBadge = c.discovery_source === 'discovered'
@@ -190,7 +193,10 @@ function renderList() {
       <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
       <div class="company-row-detail"><div class="company-row-detail-inner">${detailHtml}</div></div>
     `;
-    row.addEventListener('click', () => selectCompany(c.company));
+    row.addEventListener('click', () => {
+      expandedCompany = expandedCompany === c.company ? null : c.company;
+      selectCompany(c.company);
+    });
     row.querySelector('.company-row-name').addEventListener('click', (e) => e.stopPropagation());
     return row;
   }
