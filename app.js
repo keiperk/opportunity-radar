@@ -167,9 +167,10 @@ function renderList() {
     const detailHtml = sourceDefs.map((s) => {
       const norm = Math.min(s.value, s.cap) / s.cap;
       const contribution = norm * s.weight;
+      const atCap = s.value >= s.cap;
       return `
         <div class="row-detail-item">
-          <span class="row-detail-label ${s.cls}">${s.label}</span>
+          <span class="row-detail-label ${s.cls}">${s.label}${atCap ? '<span class="row-detail-cap-flag" title="This source hit its scoring cap — real activity may be higher than what\'s shown">At cap</span>' : ''}</span>
           <span class="row-detail-value">${s.value}<span class="row-detail-cap">/${s.cap}</span> <span class="row-detail-contrib">${contribution.toFixed(3).replace(/^0\./, '.')}</span></span>
         </div>
       `;
@@ -187,7 +188,7 @@ function renderList() {
         </div>
       </div>
       <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
-      <div class="company-row-detail">${detailHtml}</div>
+      <div class="company-row-detail"><div class="company-row-detail-inner">${detailHtml}</div></div>
     `;
     row.addEventListener('click', () => selectCompany(c.company));
     row.querySelector('.company-row-name').addEventListener('click', (e) => e.stopPropagation());
@@ -282,28 +283,6 @@ function renderInspector() {
   document.getElementById('inspector-index').textContent = c.opportunity_index.toFixed(2).replace(/^0\./, '.');
   document.getElementById('inspector-index').style.color = cls === 'amber' ? 'var(--amber-deep)' : cls === 'rose' ? 'var(--rose-deep)' : 'var(--accent-deep)';
   document.getElementById('inspector-discovery-badge').hidden = c.discovery_source !== 'discovered';
-
-  const sourceDefs = [
-    { label: 'News', key: 'source-news', value: c.news_signals, cap: CAPS.news },
-    { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit },
-    { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
-    { label: 'GitHub', key: 'source-github', value: c.github_signals, cap: CAPS.github },
-    { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
-    { label: 'Executive Hires', key: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire },
-    { label: 'Funding', key: 'source-funding', value: c.funding_signals, cap: CAPS.funding },
-  ];
-  const breakdownEl = document.getElementById('signal-breakdown');
-  breakdownEl.innerHTML = sourceDefs.map((s) => {
-    const atCap = s.value >= s.cap;
-    return `
-      <div class="signal-confidence-row">
-        <span class="signal-confidence-dot ${s.key}"></span>
-        <span class="signal-confidence-label">${s.label}</span>
-        <span class="signal-confidence-value">${s.value}<span class="signal-confidence-cap">/${s.cap}</span></span>
-        ${atCap ? `<span class="signal-confidence-flag" title="This source hit its scoring cap — real activity may be higher than what's shown">At cap</span>` : ''}
-      </div>
-    `;
-  }).join('');
 
   renderInspectorTrend(c);
 
