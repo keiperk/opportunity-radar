@@ -59,7 +59,7 @@ function renderRadar() {
       const ringD = diameter + 8;
       svg += `<circle cx="${px}" cy="${py}" r="${ringD / 2}" fill="none" stroke="${THEME.dark}" stroke-width="1.5" stroke-dasharray="3 2" />`;
     }
-    const blipColor = c.discovery_source === 'discovered' ? THEME.purple : THEME.reddit;
+    const blipColor = c.discovery_source === 'discovered' ? THEME.accent : THEME.reddit;
     svg += `<circle class="radar-blip" data-company="${c.company}" cx="${px}" cy="${py}" r="${diameter / 2}" fill="${blipColor}" opacity="${opacity}" style="cursor:pointer" />`;
 
     let anchor = 'middle', labelR = radius;
@@ -227,7 +227,7 @@ function renderRolesGauge(value, max) {
 
   gaugeSvg.innerHTML = `
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${THEME.border}" stroke-width="${stroke}" />
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${THEME.purple}" stroke-width="${stroke}"
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${THEME.accent}" stroke-width="${stroke}"
       stroke-linecap="round" stroke-dasharray="${dash.toFixed(2)} ${circumference.toFixed(2)}" />
   `;
 }

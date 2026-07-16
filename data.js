@@ -25,19 +25,22 @@ const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTGAgujnKii4qOQ
  * since CSS custom properties aren't readable from raw SVG string
  * templates) and the JS-rendered SVG (radar, trend chart) in app.js /
  * detail.js. Change the color here and in styles.css :root together.
+ *
+ * Consolidated 2026-07-16 alongside the styles.css core-10 palette pass —
+ * dropped the separate purple "gauge accent" hue (folded into accent) and
+ * pointed border/mutedDot/trendAccent at the same derived values.
  */
 const THEME = {
   accent: '#607d8b',     // Material Blue Grey 500 — matches --accent
   accentDeep: '#455a64', // Material Blue Grey 700 — matches --accent-deep
-  accentTint: '#eceff1', // Material Blue Grey 50  — matches --accent-tint
+  accentTint: '#e7ecee', // matches --accent-tint
   dark: '#0d1219', // matches --text-primary
   radarLabel: '#333333', // radar dot text labels — softer than THEME.dark
   amber: '#f59e0b',
   rose: '#f87171',
   border: '#d3dee4', // matches --border, used for gauge track
-  mutedDot: '#9aa7ae', // matches --peer-muted-dot, used for peer comparison dots
+  mutedDot: '#838ba0', // matches --peer-muted-dot, used for peer comparison dots
   reddit: '#5e864d', // matches --reddit-red, used for the radar blips
-  purple: '#9b7cc4', // matches --gauge-accent, used for the roles gauge ring
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
 

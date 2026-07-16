@@ -34,29 +34,31 @@
    also stay as their own extension, same as shadcn's own docs do for
    product-specific colors beyond the core set. */
 :root {
-  --background:         #eff3f6; /* = --bg */
-  --foreground:         #0d1219; /* = --text-primary */
-  --card:                #fdfeff; /* = --surface */
-  --card-foreground:    #0d1219; /* = --text-primary */
-  --popover:             #fdfeff; /* = --surface */
-  --popover-foreground: #0d1219; /* = --text-primary */
-  --primary:             #0d1219; /* = --text-primary (the solid dark CTA button) */
+  /* Aliased via var() (not duplicated hex) since the consolidation pass —
+     these can't go stale the way the old hardcoded copies did. */
+  --background:         var(--bg);
+  --foreground:         var(--text-primary);
+  --card:                var(--surface);
+  --card-foreground:    var(--text-primary);
+  --popover:             var(--surface);
+  --popover-foreground: var(--text-primary);
+  --primary:             var(--text-primary); /* the solid dark CTA button */
   --primary-foreground: #ffffff;
-  --secondary:           #f2f6f8; /* = --surface-alt */
-  --secondary-foreground: #0d1219; /* = --text-primary */
-  --muted:               #eceff1; /* = --accent-tint */
-  --muted-foreground:   #5c6478; /* = --text-secondary */
+  --secondary:           var(--bg); /* no separate surface-alt anymore */
+  --secondary-foreground: var(--text-primary);
+  --muted:               var(--accent-tint);
+  --muted-foreground:   var(--text-secondary);
   /* No separate --accent slot: shadcn's "accent" (a subtle hover bg) would
      be the same value as --muted above, and this project already has an
      unrelated --accent (brand blue-grey, #607d8b) declared below — reusing
      the name here would silently shadow one or the other depending on
      source order. --muted covers shadcn's accent role instead. */
-  --accent-foreground:  #455a64; /* = --accent-deep */
-  --destructive:         #cc2626; /* = --rose-deep */
+  --accent-foreground:  var(--accent-deep);
+  --destructive:         var(--rose-deep);
   --destructive-foreground: #ffffff;
-  --border:              #d3dee4; /* = --border */
-  --input:               #d3dee4; /* = --border-input */
-  --ring:                #607d8b; /* = --accent, used for focus rings below */
+  --border:              var(--border);
+  --input:               var(--border-input);
+  --ring:                var(--accent); /* used for focus rings below */
   --radius:              0.625rem; /* = --radius-lg (10px) — sm/md/lg/xl below derive from this */
 
   /* shadcn chart-color convention — same hues as our per-source tokens */
@@ -76,38 +78,43 @@
   outline-offset: 2px;
 }
 
-/* ── Design tokens (matched to the Figma mockups) ── */
+/* ── Design tokens ──
+   Consolidated 2026-07-16: everything below derives from 10 core colors
+   (bg / surface / border / text-primary / text-secondary / accent /
+   accent-deep / green / amber / rose). Every "-deep" is that color mixed
+   ~30% toward black; every "-tint" is mixed ~85% toward white — not an
+   independently hand-picked hex. Dropped as redundant near-duplicates in
+   this pass: --surface-alt, --row-bg, --control-bg, --accent-light,
+   --text-muted, and the separate --gauge-accent* hue (folded into
+   --accent). The 7 --news-color..--funding-color source colors are the
+   deliberate exception — a categorical data-viz palette where 7-way
+   distinguishability is the actual requirement, so they keep their own
+   hues rather than deriving from the core 10. */
 :root {
   --bg:              #eff3f6;
   --surface:         #fdfeff;
-  --surface-alt:     #f2f6f8;
   --border:          #d3dee4;
   --border-input:    var(--border);
 
   --text-primary:    #0d1219;
-  --text-secondary:  #919191;
-  --text-muted:      #838ba0;
+  --text-secondary:  #838ba0;
 
   --accent:          #607d8b;
   --accent-deep:     #455a64;
-  --accent-tint:     #eceff1;
+  --accent-tint:     #e7ecee;
   --callout-tint:    var(--bg);
-  --accent-light:    #bccbd1;
-  --row-bg:          #f8fafb;
 
   --green:           #6f9d6a;
-  --green-deep:      #4a7546;
-  --green-tint:      #e9f3e7;
+  --green-deep:      #4e6e4a;
+  --green-tint:      #e9f0e9;
 
   --amber:           #f59e0b;
-  --amber-deep:      #b45309;
-  --amber-tint:      #fef3e2;
+  --amber-deep:      #ac6f08;
+  --amber-tint:      #fef0da;
 
   --rose:            #f87171;
-  --rose-deep:       #cc2626;
-  --rose-tint:       #fde2e2;
-
-  --control-bg:      #e9eff2;
+  --rose-deep:       #ae4f4f;
+  --rose-tint:       #feeaea;
 
   --news-color:      #bf635e;
   --linkedin-blue:   #4c6c91;
@@ -116,11 +123,8 @@
   --hn-color:        #ac7847;
   --exec-hire-color: #267069;
   --funding-color:   #9a8541;
-  --gauge-accent:      #9b7cc4;
-  --gauge-accent-deep: #6b4f96;
-  --gauge-accent-tint: #f2edf8;
-  --trend-accent:    #6f9d6a;
-  --peer-muted-dot:  #9aa7ae;
+  --trend-accent:    var(--green);
+  --peer-muted-dot:  var(--text-secondary);
 
   --radius-sm:   6px;
   --radius-md:   8px;
@@ -325,7 +329,7 @@ body {
 }
 
 .pill-btn-clear {
-  background: var(--control-bg);
+  background: var(--accent-tint);
 }
 
 /* ─────────────────────────────────────────
@@ -434,8 +438,8 @@ body {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.4px;
-  background: var(--gauge-accent-tint);
-  color: var(--gauge-accent-deep);
+  background: var(--accent-tint);
+  color: var(--accent-deep);
 }
 
 .discovery-badge[hidden] { display: none; }
@@ -633,7 +637,7 @@ body {
 .tier-group-label.rose  { color: var(--rose-deep); }
 
 .company-row {
-  background: var(--row-bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 14px 18px;
@@ -643,12 +647,12 @@ body {
 
 .company-row:hover {
   background: var(--surface);
-  border-color: var(--accent-light);
+  border-color: var(--accent);
 }
 
 .company-row.selected {
   background: var(--surface);
-  border-color: var(--accent-light);
+  border-color: var(--accent);
 }
 
 .company-row-top {
@@ -711,7 +715,7 @@ body {
 
 .momentum-delta.momentum-up   { color: var(--green-deep); }
 .momentum-delta.momentum-down { color: var(--rose-deep); }
-.momentum-delta.momentum-flat { color: var(--text-muted); }
+.momentum-delta.momentum-flat { color: var(--text-secondary); }
 
 .company-row-blurb {
   margin: 6px 0 0;
@@ -741,9 +745,16 @@ body {
 
 .company-row-detail-inner {
   overflow: hidden;
+  min-height: 0;
   display: flex;
   gap: 14px;
-  margin-top: 12px;
+  padding-top: 0;
+  transition: padding-top 0.3s ease;
+}
+
+.company-row:hover .company-row-detail-inner,
+.company-row:focus-within .company-row-detail-inner {
+  padding-top: 12px;
 }
 
 .row-detail-item {
@@ -942,7 +953,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .math-group-label:first-child { margin-top: 0; }
@@ -1041,7 +1052,7 @@ body {
   gap: 4px;
   padding: 10px 12px;
   border-radius: var(--radius-md);
-  background: var(--control-bg);
+  background: var(--accent-tint);
   margin-top: 12px;
 }
 
@@ -1050,7 +1061,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .contact-detail-value {
@@ -1294,7 +1305,7 @@ body {
   transition: background 0.12s;
 }
 
-.next-step-row:hover { background: var(--control-bg); }
+.next-step-row:hover { background: var(--accent-tint); }
 
 .next-step-check {
   width: 18px;
