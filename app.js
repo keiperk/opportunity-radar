@@ -154,6 +154,7 @@ function renderList() {
           <span class="company-row-index ${cls}">${c.opportunity_index.toFixed(2)}</span>
         </div>
       </div>
+      <p class="company-row-blurb">${escapeXml(getCompanyBlurb(c))}</p>
       <div class="company-row-sources">
         <span class="source-pill source-news">News <span class="num">${c.news_signals}</span></span>
         <span class="source-pill source-reddit">Reddit <span class="num">${c.reddit_signals}</span></span>

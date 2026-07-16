@@ -709,6 +709,15 @@ body {
 .momentum-delta.momentum-down { color: var(--rose-deep); }
 .momentum-delta.momentum-flat { color: var(--text-muted); }
 
+.company-row-blurb {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .company-row-sources {
   display: flex;
   flex-wrap: wrap;
@@ -1104,7 +1113,7 @@ body {
   color: var(--accent-deep);
 }
 
-.detail-subtitle {
+.detail-blurb {
   margin: 4px 0 0;
   font-size: 13px;
   line-height: 18px;

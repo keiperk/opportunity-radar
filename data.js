@@ -306,6 +306,22 @@ function findCompany(name) {
   return companies.find((c) => c.company === name) || null;
 }
 
+/* One-sentence company blurbs — only for names we actually, verifiably
+   know are real; every other company in this dataset is a discovery-
+   pipeline placeholder/demo name, so they get an honest fallback rather
+   than an invented-sounding description. Keyed by company_canonical. */
+const COMPANY_BLURBS = {
+  helsing: 'German defense-tech company building AI software for military and security applications.',
+  allbirds: 'Footwear and apparel brand known for sustainable, natural materials like merino wool.',
+  meta: 'Parent company of Facebook, Instagram, and WhatsApp, focused on social platforms and AI.',
+  alibaba: 'Chinese e-commerce and cloud computing conglomerate operating Taobao, Tmall, and Alibaba Cloud.',
+};
+const NO_BLURB = 'No public description available.';
+
+function getCompanyBlurb(c) {
+  return COMPANY_BLURBS[c.company_canonical] || NO_BLURB;
+}
+
 /*
  * LinkedIn Jobs signal, by definition, only registers once a role is
  * already posted publicly — it's confirmation, not an early signal.
@@ -400,20 +416,32 @@ function isValidCompanyRow(row) {
   return true;
 }
 
+/* The discovery LLM occasionally names the same real signal differently
+   across runs (e.g. "Unspecified AI startup by former Target executive"
+   vs "AI startup launched by former Target executive" — same near-
+   identical signal values, different extracted name), which would
+   otherwise show up as two separate companies. Manually alias any
+   known duplicate canonical key onto the one we keep, applied here so
+   it merges correctly regardless of whether the row came from the live
+   sheet or FALLBACK_ROWS. */
+const CANONICAL_ALIASES = {
+  unspecifiedstartupbyformertargetexecutive: 'startuplaunchedbyformertargetexecutive',
+};
+
 /* Groups raw CSV rows by company, computing the current (latest-run)
    snapshot per company plus its full real history (every past run) for
    genuine trend charts — no synthetic/illustrative data involved. */
 function buildCompaniesFromRows(rows) {
   const grouped = {};
   rows.forEach((row) => {
-    const key = row.company_canonical;
+    const key = CANONICAL_ALIASES[row.company_canonical] || row.company_canonical;
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(row);
   });
 
   let latestRunTs = null, latestRunId = null;
 
-  const built = Object.values(grouped).map((runs) => {
+  const built = Object.entries(grouped).map(([canonicalKey, runs]) => {
     runs.sort((a, b) => new Date(a.run_ts) - new Date(b.run_ts));
 
     const history = runs.map((r) => {
@@ -442,6 +470,7 @@ function buildCompaniesFromRows(rows) {
 
     return {
       company: latest.company_display,
+      company_canonical: canonicalKey,
       news_signals: news,
       reddit_signals: reddit,
       linkedin_signals: linkedin,

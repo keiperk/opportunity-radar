@@ -20,6 +20,7 @@ function initDetailPage() {
 
   /* ── Header ── */
   document.getElementById('detail-name').textContent = c.company;
+  document.getElementById('detail-blurb').textContent = getCompanyBlurb(c);
   document.title = `${c.company} — Company Detail`;
 
   const tierBadge = document.getElementById('detail-tier-badge');
