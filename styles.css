@@ -579,6 +579,7 @@ body {
 .quadrant-scope {
   aspect-ratio: 1 / 1;
   width: 100%;
+  flex-shrink: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -1021,17 +1022,20 @@ body {
 
 /* Plain link, not a badge/pill — this is a reference, not a status flag
    like the tier/discovery badges above it. Own line, not inline with
-   the pills, so it doesn't read as a third badge. */
+   the pills, so it doesn't read as a third badge. Reserves its line
+   height always (visibility, not display:none) so the Momentum Trend
+   section below doesn't shift up/down depending on whether this
+   particular company has a URL. */
 .inspector-website-link {
   display: block;
+  min-height: 1.4em;
   margin-top: 8px;
   font-size: var(--text-sm);
   color: var(--text-secondary);
   text-decoration: none;
 }
 
-.inspector-website-link:hover { text-decoration: underline; }
-.inspector-website-link[hidden] { display: none; }
+.inspector-website-link:hover { color: var(--hue-blue); }
 
 .inspector-index {
   font-size: var(--text-lg);

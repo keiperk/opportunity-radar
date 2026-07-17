@@ -319,10 +319,15 @@ function renderInspector() {
 
   const websiteLink = document.getElementById('inspector-website-link');
   if (websiteLink) {
-    websiteLink.hidden = !c.company_url;
+    /* visibility, not hidden/display:none — keeps this line's height
+       reserved so Momentum Trend below doesn't shift depending on
+       whether this particular company has a URL. */
     if (c.company_url) {
+      websiteLink.style.visibility = 'visible';
       websiteLink.href = c.company_url;
       websiteLink.textContent = stripUrlProtocol(c.company_url);
+    } else {
+      websiteLink.style.visibility = 'hidden';
     }
   }
 
