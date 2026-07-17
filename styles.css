@@ -413,7 +413,7 @@ body {
   grid-template-columns: 350px 1fr 350px;
   gap: 28px;
   align-items: start;
-  flex: 1 0 0;
+  flex: 1 0 auto;
   padding: 24px 32px 48px;
   min-height: 300px;
 }
@@ -549,6 +549,10 @@ body {
 .quadrant-column {
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 
 .quadrant-scope {
@@ -966,6 +970,10 @@ body {
 .right-rail {
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 
 .inspector-title-row {
