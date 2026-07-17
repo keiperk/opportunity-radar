@@ -1030,6 +1030,7 @@ body {
   display: block;
   min-height: 1.4em;
   margin-top: 8px;
+  margin-left: 3px;
   font-size: var(--text-sm);
   color: var(--text-secondary);
   text-decoration: none;
