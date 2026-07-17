@@ -520,6 +520,21 @@ body {
 
 .discovery-badge[hidden] { display: none; }
 
+/* Same funding/exec-hire-vs-LinkedIn criteria as the Job Value
+   Quadrant's bottom-right cell — teal because that's exec_hire's own
+   hue, one of the two signals driving this flag. */
+.stealth-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  background: var(--hue-teal-tint-2);
+  color: var(--hue-teal-dark);
+}
+
 .callout-box {
   margin-top: 16px;
   padding: 14px 16px;

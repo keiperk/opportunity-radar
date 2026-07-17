@@ -7,6 +7,7 @@
 const searchInput = document.getElementById('search-input');
 const sortToggle = document.getElementById('sort-toggle');
 const groupToggle = document.getElementById('group-toggle');
+const stealthToggle = document.getElementById('stealth-toggle');
 const clearButton = document.getElementById('clear-filters');
 const rankedListEl = document.getElementById('ranked-list');
 const listEmptyEl = document.getElementById('list-empty');
@@ -15,8 +16,26 @@ const quadrantSvg = document.getElementById('quadrant-svg');
 
 let sortDirection = 'desc';
 let groupByTier = true;
+let stealthFilterOn = false;
 let selectedCompany = null;
 let expandedCompany = null; // which row's per-source detail is toggled open (click, not hover)
+
+/* ── Stealth Hiring ──
+   Same criteria as the Job Value Quadrant's bottom-right cell (funding +
+   exec hires above the field median, LinkedIn below it) — companies
+   showing real growth/leadership signal with no public job posting yet.
+   Computed once per render against the FULL company set (not the
+   search-filtered subset) so percentile rank stays meaningful regardless
+   of what's currently typed in the search box. */
+function computeStealthCandidates(allCompanies) {
+  const xRanks = percentileRanks(allCompanies.map((c) => c.funding_signals + c.exec_hire_signals));
+  const yRanks = percentileRanks(allCompanies.map((c) => c.linkedin_signals));
+  const set = new Set();
+  allCompanies.forEach((c, i) => {
+    if (xRanks[i] > 0.5 && yRanks[i] < 0.5) set.add(c.company);
+  });
+  return set;
+}
 
 /* ── Job Value Quadrant (SVG) ──
    Two axes chosen for the outreach decision specifically, not overall
@@ -130,8 +149,11 @@ function renderMomentumBadge(c) {
 
 /* ── Ranked list ── */
 function renderList() {
+  const stealthCandidates = computeStealthCandidates(companies);
   const query = searchInput.value.trim().toLowerCase();
-  const filtered = companies.filter((c) => !query || c.company.toLowerCase().includes(query));
+  const filtered = companies
+    .filter((c) => !query || c.company.toLowerCase().includes(query))
+    .filter((c) => !stealthFilterOn || stealthCandidates.has(c.company));
   const sorted = filtered.slice().sort((a, b) =>
     sortDirection === 'desc' ? b.opportunity_index_precise - a.opportunity_index_precise : a.opportunity_index_precise - b.opportunity_index_precise
   );
@@ -150,6 +172,9 @@ function renderList() {
 
     const discoveryBadge = c.discovery_source === 'discovered'
       ? `<span class="discovery-badge" title="Newly discovered this scan — not on the existing tracked list">New Discovery</span>`
+      : '';
+    const stealthBadge = stealthCandidates.has(c.company)
+      ? `<span class="stealth-badge" title="Strong funding/exec-hire signal with little-to-no LinkedIn activity — likely growing before any role is publicly posted">🎯 Stealth Hire</span>`
       : '';
 
     const sourceDefs = [
@@ -185,6 +210,7 @@ function renderList() {
         <div class="company-row-name-group">
           <a class="company-row-name" href="detail.html?company=${encodeURIComponent(c.company)}">${escapeXml(c.company)}</a>
           ${discoveryBadge}
+          ${stealthBadge}
         </div>
         <div class="company-row-right">
           ${renderMomentumBadge(c)}
@@ -368,12 +394,20 @@ groupToggle.addEventListener('click', () => {
   renderList();
 });
 
+stealthToggle.addEventListener('click', () => {
+  stealthFilterOn = !stealthFilterOn;
+  stealthToggle.setAttribute('aria-pressed', String(stealthFilterOn));
+  renderList();
+});
+
 clearButton.addEventListener('click', () => {
   searchInput.value = '';
   sortDirection = 'desc';
   groupByTier = true;
+  stealthFilterOn = false;
   sortToggle.classList.remove('sort-asc');
   groupToggle.setAttribute('aria-pressed', 'true');
+  stealthToggle.setAttribute('aria-pressed', 'false');
   renderList();
 });
 
