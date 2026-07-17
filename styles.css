@@ -839,6 +839,10 @@ body {
   min-width: 0;
 }
 
+.row-detail-meter {
+  margin-top: 2px;
+}
+
 .row-detail-label {
   font-size: var(--text-2xs);
   font-weight: 700;
@@ -962,7 +966,12 @@ body {
   flex-direction: column;
 }
 
-.inspector-title-row { margin-top: 14px; }
+.inspector-title-row {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
 .inspector-company-name {
   margin: 0;
@@ -994,7 +1003,11 @@ body {
 .mini-breakdown-row {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+}
+
+.mini-breakdown-contrib {
+  display: block;
 }
 
 .mini-breakdown-top {

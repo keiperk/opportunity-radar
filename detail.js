@@ -60,26 +60,35 @@ function initDetailPage() {
      Inspector so the same widget doesn't look like two different things
      on two pages) ── */
   const sourceDefs = [
-    { label: 'News', key: 'source-news', value: c.news_signals, cap: CAPS.news },
-    { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit },
-    { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin },
-    { label: 'GitHub', key: 'source-github', value: c.github_signals, cap: CAPS.github },
-    { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
-    { label: 'Executive Hires', key: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire },
-    { label: 'Funding', key: 'source-funding', value: c.funding_signals, cap: CAPS.funding },
-    { label: 'Patents', key: 'source-patents', value: c.patent_signals, cap: CAPS.patents },
+    { label: 'News', key: 'source-news', value: c.news_signals, cap: CAPS.news, weight: WEIGHTS.news },
+    { label: 'Reddit', key: 'source-reddit', value: c.reddit_signals, cap: CAPS.reddit, weight: WEIGHTS.reddit },
+    { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, cap: CAPS.linkedin, weight: WEIGHTS.linkedin },
+    { label: 'GitHub', key: 'source-github', value: c.github_signals, cap: CAPS.github, weight: WEIGHTS.github },
+    { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn, weight: WEIGHTS.hn },
+    { label: 'Executive Hires', key: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire, weight: WEIGHTS.exec_hire },
+    { label: 'Funding', key: 'source-funding', value: c.funding_signals, cap: CAPS.funding, weight: WEIGHTS.funding },
+    { label: 'Patents', key: 'source-patents', value: c.patent_signals, cap: CAPS.patents, weight: WEIGHTS.patents },
   ];
   /* Bar width is scaled against the highest cap among these sources
      (not each source's own cap) — otherwise a value of 10 at its cap of
      10 and a value of 30 at its cap of 30 would render as the same
      100%-width bar, even though 30 is three times as many mentions. */
   const maxCap = Math.max(...sourceDefs.map((s) => s.cap));
-  document.getElementById('breakdown-stack').innerHTML = sourceDefs.map((s) => `
-    <div class="mini-breakdown-row">
-      <div class="mini-breakdown-top"><span class="label">${s.label}</span><span class="value">${s.value}</span></div>
-      <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${Math.min(100, (s.value / maxCap) * 100).toFixed(0)}%"></div></div>
-    </div>
-  `).join('');
+  document.getElementById('breakdown-stack').innerHTML = sourceDefs.map((s) => {
+    const norm = Math.min(s.value, s.cap) / s.cap;
+    const contribution = norm * s.weight;
+    const atCap = s.value >= s.cap;
+    return `
+      <div class="mini-breakdown-row">
+        <div class="mini-breakdown-top">
+          <span class="label">${s.label}${atCap ? '<span class="row-detail-cap-flag" title="This source hit its scoring cap — real activity may be higher than what\'s shown">At cap</span>' : ''}</span>
+          <span class="value">${s.value}<span class="row-detail-cap">/${s.cap}</span></span>
+        </div>
+        <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${Math.min(100, (s.value / maxCap) * 100).toFixed(0)}%"></div></div>
+        <span class="row-detail-contrib mini-breakdown-contrib">${contribution.toFixed(3)}</span>
+      </div>
+    `;
+  }).join('');
 
   /* ── Momentum Trend chart (SVG) — real scan history now, not a
      synthetic illustrative curve. A company needs at least 2 real runs
