@@ -326,8 +326,14 @@ function initDetailPage() {
       { label: 'Patents', value: c.patent_signals, cap: CAPS.patents, colorVar: '--patents-color' },
     ];
 
-    const W = 350, H = 270;
-    const cx = W / 2, cy = 140, maxR = 95;
+    // Read the actual rendered width rather than hardcoding it — a fixed
+    // viewBox width that doesn't match the real card width leaves the
+    // chart letterboxed (empty space top/bottom) instead of filling the
+    // card, since the browser scales the SVG to fit while preserving
+    // its (wrong) aspect ratio.
+    const W = svgEl.getBoundingClientRect().width || 350, H = 270;
+    const cx = W / 2, cy = 140;
+    const maxR = Math.min(cx - 68, cy - 13, H - cy - 13);
     svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
     const n = RADAR_DEFS.length;
