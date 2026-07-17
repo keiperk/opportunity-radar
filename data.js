@@ -823,12 +823,40 @@ function loadCompanyData() {
 /* Real per-company contacts, keyed by canonical company key (same
    CANONICAL_ALIASES resolution as the main data, so a contact found
    under a since-merged duplicate name still joins correctly). This is
-   supplementary, not core — a failed fetch just leaves CONTACTS empty
-   and every company falls back to the "no contact found yet" state
-   rather than breaking the page. No FALLBACK_ROWS-style snapshot for
-   this one: the dataset is small and actively growing, and showing a
-   stale contact for the wrong scan is worse than showing none. */
+   supplementary, not core — a failed live fetch falls back to the
+   last-known-good CONTACTS snapshot below, same pattern as
+   FALLBACK_ROWS for the main data. */
 let CONTACTS = {};
+
+/* Some companies turn up more than one candidate contact in a single
+   pull (the search isn't a 1:1 match) — keep whichever one the sheet
+   lists first rather than letting a later, potentially worse match
+   silently overwrite it. */
+function buildContactsMap(rows) {
+  const map = {};
+  rows.forEach((r) => {
+    if (!r.company_canonical || !r.contact_name || !r.linkedin_url) return;
+    const key = CANONICAL_ALIASES[r.company_canonical] || r.company_canonical;
+    if (!map[key]) map[key] = r;
+  });
+  return map;
+}
+
+/* Last-known-good contacts snapshot (pulled 2026-07-17) — used only if
+   the live fetch fails. Small and will grow as the pipeline finds more;
+   refresh the same way as FALLBACK_ROWS (pull the contacts sheet,
+   keep-first dedupe per company, regenerate this array). */
+const FALLBACK_CONTACTS = [
+  { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Pascal Cordeau', contact_title_snippet: 'Pascal Cordeau - Senior Engineering Manager', linkedin_url: 'https://ca.linkedin.com/in/pascalcordeau', snippet: 'Pascal Cordeau · Senior Engineering Manager | Mechanical and Multidisciplinary Projects | Energy and Mining Markets · View mutual connections with Pascal · About.', found_at: '2026-07-17T19:18:19.967Z', verified: 'TRUE' },
+  { company_canonical: 'emergent', company_display: 'Emergent', contact_name: 'Udeshna Boruah Kalita', contact_title_snippet: 'Udeshna Boruah Kalita - Talent Partner@ Emergent', linkedin_url: 'https://in.linkedin.com/in/udeshna-boruah-kalita-6b0459bb', snippet: 'Talent Partner@ Emergent | Build your Idea-​> Emergent.sh · With a 10 years + of experience in Talent Acquisition, I specialize in end-to-end recruitment, ...', found_at: '2026-07-17T19:18:19.968Z', verified: 'TRUE' },
+  { company_canonical: 'auger', company_display: 'Auger', contact_name: 'Chris Auger', contact_title_snippet: 'Chris Auger - Extreme Leadership', linkedin_url: 'https://ca.linkedin.com/in/chris-auger-extreme-leadership-999067136', snippet: 'Chris Auger - Extreme Leadership. Senior Engineering Manager | General Manager | Business Transformation Manager | PMP | Project Manager | Project Delivery ...', found_at: '2026-07-17T19:18:19.969Z', verified: 'TRUE' },
+  { company_canonical: 'helsing', company_display: 'Helsing', contact_name: 'Bailey McMeekin', contact_title_snippet: 'Bailey McMeekin - Talent Acquisition Specialist', linkedin_url: 'https://uk.linkedin.com/in/bailey-mcmeekin-b0b773171', snippet: 'Talent Acquisition Specialist · I am a passionate and driven recruiter, with ... Talent Acquisition Specialist. Harmattan AI. Jan 2026 - Present 7 months. Helsing ...', found_at: '2026-07-17T19:37:49.782Z', verified: 'TRUE' },
+  { company_canonical: 'syntetica', company_display: 'Syntetica', contact_name: 'Laure Delavallée', contact_title_snippet: 'Laure Delavallée - Talent Partner chez Hexa', linkedin_url: 'https://fr.linkedin.com/in/laure-delavall%C3%A9e-456374109', snippet: 'Syntetica. mai 2025 - juil. 2025 3 mois. Ville de Paris . HRBP . Recruitment ... Talent Acquisition and Employer Branding Specialist. Bene Bono (ex Hors ...', found_at: '2026-07-17T19:37:49.785Z', verified: 'TRUE' },
+  { company_canonical: 'venice', company_display: 'Venice AI', contact_name: 'Illana Hoffer Henriquez', contact_title_snippet: 'Illana Hoffer Henriquez - CSR & Social Impact', linkedin_url: 'https://www.linkedin.com/in/illana-hoffer-henriquez-a5591770', snippet: 'Amoria Bond. 8 months · Amoria Bond Graphic. Talent Acquisition Specialist. Amoria Bond. Apr 2018 - Jun 2018 3 months. Amsterdam Area, Netherlands.', found_at: '2026-07-17T19:37:49.786Z', verified: 'FALSE' },
+  { company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', contact_name: "John O'Hara", contact_title_snippet: "John O'Hara - Recruiting @ Thinking Machines Lab", linkedin_url: 'https://www.linkedin.com/in/john0hara', snippet: 'Recruiting @ Thinking Machines Lab · Experience: Thinking Machines Lab ... Technical Recruiter & Sourcer (2008-2011). Oculus VR Graphic. Technical ...', found_at: '2026-07-17T19:37:49.787Z', verified: 'TRUE' },
+  { company_canonical: 'zml', company_display: 'ZML', contact_name: '‎ Hugo‎ Venturini', contact_title_snippet: '‎ Hugo‎ Venturini - Software Engineering @ SkipLabs', linkedin_url: 'https://fr.linkedin.com/in/venturini', snippet: 'Software Engineering Manager. Facebook. févr. 2017 - nov. 2018 1 an 10 mois. London, United Kingdom. Graphique Facebook. Software Engineer. Facebook. avr. 2016 ...', found_at: '2026-07-17T19:37:49.789Z', verified: 'FALSE' },
+  { company_canonical: 'nautis', company_display: 'Nautis', contact_name: 'Tanveer Singh Dhawan', contact_title_snippet: 'Tanveer Singh Dhawan - Backend Team Lead → DevOps ...', linkedin_url: 'https://la.linkedin.com/in/tany09', snippet: 'Software Engineering Manager with hands-on experience leading teams to build and scale production-grade applications. Responsible for system design, code ...', found_at: '2026-07-17T19:37:49.789Z', verified: 'FALSE' },
+];
 
 function loadContactsData() {
   return fetch(CONTACTS_URL)
@@ -838,18 +866,12 @@ function loadContactsData() {
     })
     .then((text) => {
       const rows = parseCSV(text);
-      const map = {};
-      rows.forEach((r) => {
-        if (!r.company_canonical || !r.contact_name || !r.linkedin_url) return;
-        const key = CANONICAL_ALIASES[r.company_canonical] || r.company_canonical;
-        map[key] = r;
-      });
-      CONTACTS = map;
+      CONTACTS = buildContactsMap(rows);
       return CONTACTS;
     })
     .catch((err) => {
-      console.warn('Contacts fetch failed, no contact data available:', err);
-      CONTACTS = {};
+      console.warn('Contacts fetch failed, using fallback snapshot:', err);
+      CONTACTS = buildContactsMap(FALLBACK_CONTACTS);
       return CONTACTS;
     });
 }
