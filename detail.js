@@ -144,68 +144,93 @@ function initDetailPage() {
     const captionEl = document.getElementById('rank-trend-caption');
 
     // Every company's index at every run_id it has data for, grouped by
-    // run_id, so we can rank this company against the field as it stood
-    // at each point in ITS history (not just the latest scan).
+    // run_id, plus a run_id -> timestamp lookup so the shared axis below
+    // is in chronological order regardless of any one company's own
+    // (possibly shorter, possibly gappy) history.
     const byRun = {};
+    const runTsById = {};
     companies.forEach((co) => {
       co.history.forEach((h) => {
         if (!byRun[h.run_id]) byRun[h.run_id] = [];
         byRun[h.run_id].push({ company_canonical: co.company_canonical, index: h.index });
+        runTsById[h.run_id] = h.run_ts;
       });
     });
+    const allRunIds = Object.keys(byRun).sort((a, b) => new Date(runTsById[a]) - new Date(runTsById[b]));
 
-    const trend = c.history.map((h) => {
-      const field = byRun[h.run_id] || [];
-      const ranked = field.slice().sort((a, b) => b.index - a.index);
-      const rank = ranked.findIndex((r) => r.company_canonical === c.company_canonical) + 1;
-      return { run_id: h.run_id, rank, total: field.length };
+    // Rank of every company within its field, at every run_id.
+    const rankByRun = {};
+    allRunIds.forEach((runId) => {
+      const field = byRun[runId].slice().sort((a, b) => b.index - a.index);
+      const map = {};
+      field.forEach((r, i) => { map[r.company_canonical] = { rank: i + 1, total: field.length }; });
+      rankByRun[runId] = map;
     });
 
-    const current = trend[trend.length - 1];
-    document.getElementById('peer-rank-headline').innerHTML = `Ranks #<span class="num">${current.rank}</span> of <span class="num">${current.total}</span> tracked companies`;
+    const selfTrend = allRunIds
+      .map((runId, i) => ({ i, entry: rankByRun[runId][c.company_canonical] }))
+      .filter((t) => t.entry);
 
-    if (trend.length < 2) {
+    const current = selfTrend[selfTrend.length - 1];
+    document.getElementById('peer-rank-headline').innerHTML = `Ranks #<span class="num">${current.entry.rank}</span> of <span class="num">${current.entry.total}</span> tracked companies`;
+
+    if (selfTrend.length < 2) {
       document.getElementById('peer-rank-sub').textContent = 'Not enough scan history yet to show a trend.';
       svgEl.innerHTML = '';
       captionEl.textContent = 'Check back after the next run.';
       return;
     }
 
-    const earliest = trend[0];
-    const delta = earliest.rank - current.rank; // positive = climbed (rank number went down)
+    const earliest = selfTrend[0];
+    const delta = earliest.entry.rank - current.entry.rank; // positive = climbed (rank number went down)
     const subText = delta > 0
-      ? `Climbed <span class="num">${delta}</span> spot${delta === 1 ? '' : 's'} since the earliest tracked scan (was #${earliest.rank}).`
+      ? `Climbed <span class="num">${delta}</span> spot${delta === 1 ? '' : 's'} since the earliest tracked scan (was #${earliest.entry.rank}).`
       : delta < 0
-        ? `Fell <span class="num">${Math.abs(delta)}</span> spot${Math.abs(delta) === 1 ? '' : 's'} since the earliest tracked scan (was #${earliest.rank}).`
+        ? `Fell <span class="num">${Math.abs(delta)}</span> spot${Math.abs(delta) === 1 ? '' : 's'} since the earliest tracked scan (was #${earliest.entry.rank}).`
         : `Holding steady at this rank across the tracked scan history.`;
     document.getElementById('peer-rank-sub').innerHTML = subText;
 
-    const W = svgEl.getBoundingClientRect().width || 560, H = 120, PAD = 16, PAD_X = 20;
+    const W = svgEl.getBoundingClientRect().width || 560, H = 140, PAD = 16, PAD_X = 20;
     svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
-    const ranks = trend.map((t) => t.rank);
-    const min = Math.min(...ranks), max = Math.max(...ranks); // min = best (smallest number)
-    const range = Math.max(max - min, 1);
+    const maxTotal = Math.max(...allRunIds.map((id) => byRun[id].length));
     const usable = H - PAD * 2;
     const usableW = W - PAD_X * 2;
-
+    const n = allRunIds.length;
+    const xOf = (i) => PAD_X + (i * usableW) / Math.max(n - 1, 1);
     // Inverted on purpose: a better (lower/smaller) rank number should
     // read as higher on the chart, so "climbing" looks like climbing.
-    const pts = trend.map((t, i) => ({
-      x: PAD_X + (i * usableW) / (trend.length - 1),
-      y: PAD + ((t.rank - min) / range) * usable,
-    }));
+    const yOf = (rank) => PAD + ((rank - 1) / Math.max(maxTotal - 1, 1)) * usable;
+
+    // Every other tracked company, as thin muted context lines behind the
+    // highlighted subject — same "context first, subject on top" pattern
+    // used for the muted dots in Signal Rank by Source.
+    const peerLinesSvg = companies
+      .filter((co) => co.company_canonical !== c.company_canonical)
+      .map((co) => {
+        const pts = allRunIds
+          .map((runId, i) => {
+            const entry = rankByRun[runId][co.company_canonical];
+            return entry ? { x: xOf(i), y: yOf(entry.rank) } : null;
+          })
+          .filter(Boolean);
+        if (pts.length < 2) return '';
+        const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+        return `<path d="${d}" fill="none" stroke="${THEME.mutedDot}" stroke-width="1" opacity="0.3"><title>${escapeXml(co.company)}</title></path>`;
+      }).join('');
 
     const tierDotVar = cls === 'amber' ? '--amber-deep' : cls === 'rose' ? '--rose-deep' : '--green-deep';
-    const lineCmds = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-    const dotsSvg = pts.map((p, i) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#ffffff" stroke="var(${tierDotVar})" stroke-width="2"><title>#${trend[i].rank} of ${trend[i].total}</title></circle>`).join('');
+    const selfPts = selfTrend.map((t) => ({ x: xOf(t.i), y: yOf(t.entry.rank) }));
+    const selfLine = selfPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+    const selfDots = selfPts.map((p, i) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#ffffff" stroke="var(${tierDotVar})" stroke-width="2"><title>${escapeXml(c.company)}: #${selfTrend[i].entry.rank} of ${selfTrend[i].entry.total}</title></circle>`).join('');
 
     svgEl.innerHTML = `
-      <path d="${lineCmds}" fill="none" stroke="var(${tierDotVar})" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-      ${dotsSvg}
+      ${peerLinesSvg}
+      <path d="${selfLine}" fill="none" stroke="var(${tierDotVar})" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      ${selfDots}
     `;
 
-    captionEl.textContent = `Relative rank across ${trend.length} scans — shows standing versus the field, not just this company's own index.`;
+    captionEl.textContent = `This company's rank (highlighted) against every other tracked company (faint lines) across ${n} scans. Hover a line or dot for detail.`;
   }
   renderRankTrend();
 
