@@ -1001,6 +1001,12 @@ function stripBidiMarks(s) {
   return String(s).replace(/[‎‏‪-‮]/g, '').trim();
 }
 
+/* Display-only — strips the protocol so a link reads "www.name.com"
+   instead of "https://www.name.com"; the href keeps the full URL. */
+function stripUrlProtocol(url) {
+  return String(url).replace(/^https?:\/\//i, '').replace(/\/$/, '');
+}
+
 /* Shared between index.html (Company Inspector) and detail.html — both
    pages use the identical contact-card element IDs, so one function
    covers both. Deliberately does NOT auto-correct name casing (e.g.

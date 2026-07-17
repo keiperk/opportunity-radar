@@ -317,6 +317,15 @@ function renderInspector() {
   document.getElementById('inspector-index').style.color = cls === 'amber' ? 'var(--amber-deep)' : cls === 'rose' ? 'var(--rose-deep)' : 'var(--accent-deep)';
   document.getElementById('inspector-discovery-badge').hidden = c.discovery_source !== 'discovered';
 
+  const websiteLink = document.getElementById('inspector-website-link');
+  if (websiteLink) {
+    websiteLink.hidden = !c.company_url;
+    if (c.company_url) {
+      websiteLink.href = c.company_url;
+      websiteLink.textContent = stripUrlProtocol(c.company_url);
+    }
+  }
+
   renderInspectorTrend(c);
 
   /* News, Reddit, GitHub, and Hacker News are "leading" signals that can
