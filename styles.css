@@ -151,11 +151,13 @@
 
   /* 8th hue, added when the pipeline added patents as a source — all 7
      original hues (red/green/blue/purple/orange/yellow/teal) were
-     already spoken for by the existing sources. */
-  --hue-indigo:        #6c72c9;
-  --hue-indigo-dark:   #4c508d;
-  --hue-indigo-tint-1: #b6b9e4;
-  --hue-indigo-tint-2: #e9eaf7;
+     already spoken for. First attempt was an indigo (blue-violet, ~235°)
+     which sat too close to blue(~212°) and purple(~301°) to actually
+     read as distinct; pink(~338°) sits in the real gap between them. */
+  --hue-pink:        #c46e8e;
+  --hue-pink-dark:   #894d63;
+  --hue-pink-tint-1: #e2b7c7;
+  --hue-pink-tint-2: #f6e9ee;
 
   /* Tier status colors — reuse the same hues as the source palette below
      (rose=red, green=green, amber=orange) instead of maintaining 3 more
@@ -179,7 +181,7 @@
   --hn-color:        var(--hue-orange);
   --exec-hire-color: var(--hue-teal);
   --funding-color:   var(--hue-yellow);
-  --patents-color:   var(--hue-indigo);
+  --patents-color:   var(--hue-pink);
   --trend-accent:    var(--green);
   --peer-muted-dot:  var(--text-secondary);
 
@@ -317,9 +319,13 @@ body {
 }
 
 /* The one exception to the site-wide neutral button treatment — the
-   primary CTA on Suggested Contact stays a solid dark button. */
+   primary CTA on Suggested Contact stays a solid, filled button so it
+   still reads as "the" action on the card. Was solid near-black
+   (--text-primary); softened to --accent once the rest of the app's
+   palette got muted this session — pure black read as disproportionately
+   loud once everything around it got quieter. */
 .btn-dark {
-  background: var(--text-primary);
+  background: var(--accent);
   color: #ffffff;
 }
 
@@ -844,14 +850,12 @@ body {
   text-overflow: ellipsis;
 }
 
-.row-detail-label.source-news       { color: var(--news-color); }
-.row-detail-label.source-reddit     { color: var(--reddit-red); }
-.row-detail-label.source-linkedin   { color: var(--linkedin-blue); }
-.row-detail-label.source-github     { color: var(--github-color); }
-.row-detail-label.source-hn         { color: var(--hn-color); }
-.row-detail-label.source-exec_hire  { color: var(--exec-hire-color); }
-.row-detail-label.source-funding    { color: var(--funding-color); }
-.row-detail-label.source-patents    { color: var(--patents-color); }
+/* Deliberately no per-source color override here (unlike source-pill/
+   meter-fill/math-label elsewhere) — each label already sits directly
+   next to its own value with no legend or bar segment to decode, so
+   coloring the text added no information, just noise. Color stays
+   reserved for spots where it's actually functional: the dots, bars,
+   and the "At cap" badge. */
 
 .row-detail-cap-flag {
   display: inline-block;
