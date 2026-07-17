@@ -896,7 +896,9 @@ body {
   color: var(--text-secondary);
 }
 
-.row-detail-contrib::before { content: '→ '; }
+/* The arrow glyph renders a couple pixels low relative to the digits next
+   to it in this font — nudge it up so it optically aligns with the text. */
+.row-detail-contrib::before { content: '→ '; position: relative; top: -2px; }
 
 .source-pill {
   display: inline-flex;
