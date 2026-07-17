@@ -898,7 +898,7 @@ body {
 
 /* The arrow glyph renders a couple pixels low relative to the digits next
    to it in this font — nudge it up so it optically aligns with the text. */
-.row-detail-contrib::before { content: '→ '; position: relative; top: -2px; }
+.row-detail-contrib::before { content: '→ '; position: relative; top: -1px; }
 
 .source-pill {
   display: inline-flex;
@@ -1223,7 +1223,7 @@ body {
 .back-link-arrow {
   display: inline-block;
   position: relative;
-  top: -2px;
+  top: -1px;
 }
 
 .detail-header {
