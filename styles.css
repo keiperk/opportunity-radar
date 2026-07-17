@@ -1281,6 +1281,13 @@ body {
   padding: 16px;
 }
 
+.signal-radar-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+}
+
 .trend-card {
   background: var(--surface);
   border: 1px solid var(--border);

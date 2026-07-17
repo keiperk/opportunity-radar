@@ -249,6 +249,92 @@ function initDetailPage() {
   }
   renderSourceRank();
 
+  /* ── Signal Radar (8-axis polar chart) — same per-source data as Signal
+     Breakdown, encoded as shape instead of bars so a company's signal
+     profile (GitHub-heavy vs funding-heavy vs balanced) reads at a
+     glance. Axes are normalized to value/cap, the same norm used for
+     contribution math elsewhere, so all 8 axes are comparable despite
+     having different caps. ── */
+  function renderSignalRadar() {
+    const svgEl = document.getElementById('signal-radar-svg');
+    const captionEl = document.getElementById('signal-radar-caption');
+
+    const RADAR_DEFS = [
+      { label: 'News', value: c.news_signals, cap: CAPS.news, colorVar: '--news-color' },
+      { label: 'Reddit', value: c.reddit_signals, cap: CAPS.reddit, colorVar: '--reddit-red' },
+      { label: 'LinkedIn', value: c.linkedin_signals, cap: CAPS.linkedin, colorVar: '--linkedin-blue' },
+      { label: 'GitHub', value: c.github_signals, cap: CAPS.github, colorVar: '--github-color' },
+      { label: 'HN', value: c.hn_signals, cap: CAPS.hn, colorVar: '--hn-color' },
+      { label: 'Exec Hires', value: c.exec_hire_signals, cap: CAPS.exec_hire, colorVar: '--exec-hire-color' },
+      { label: 'Funding', value: c.funding_signals, cap: CAPS.funding, colorVar: '--funding-color' },
+      { label: 'Patents', value: c.patent_signals, cap: CAPS.patents, colorVar: '--patents-color' },
+    ];
+
+    const W = 320, H = 230;
+    const cx = W / 2, cy = 108, maxR = 68;
+    svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    const n = RADAR_DEFS.length;
+    const angleFor = (i) => -Math.PI / 2 + (i * 2 * Math.PI) / n;
+    const pointAt = (i, r) => ({
+      x: cx + r * Math.cos(angleFor(i)),
+      y: cy + r * Math.sin(angleFor(i)),
+    });
+
+    // Grid rings at 25/50/75/100% of max radius.
+    const ringsSvg = [0.25, 0.5, 0.75, 1].map((frac) => {
+      const pts = RADAR_DEFS.map((_, i) => pointAt(i, maxR * frac));
+      const d = pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+      return `<polygon points="${d}" fill="none" stroke="var(--border)" stroke-width="1" />`;
+    }).join('');
+
+    // Spokes from center out to each axis's max-radius vertex.
+    const spokesSvg = RADAR_DEFS.map((_, i) => {
+      const p = pointAt(i, maxR);
+      return `<line x1="${cx}" y1="${cy}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="var(--border)" stroke-width="1" />`;
+    }).join('');
+
+    // Data polygon — one vertex per source, radius = value/cap (clamped to 1).
+    const dataPoints = RADAR_DEFS.map((s, i) => {
+      const norm = Math.min(s.value, s.cap) / s.cap;
+      return pointAt(i, maxR * norm);
+    });
+    const dataPath = dataPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+
+    // Vertex dots, colored per source (matches the dot treatment used in
+    // Signal Rank by Source), with a tooltip showing the raw value.
+    const dotsSvg = RADAR_DEFS.map((s, i) => {
+      const p = dataPoints[i];
+      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="var(${s.colorVar})" stroke="#ffffff" stroke-width="1.5"><title>${escapeXml(s.label)}: ${s.value}/${s.cap}</title></circle>`;
+    }).join('');
+
+    // Axis labels, anchor flips based on which side of the chart they fall on
+    // so text grows away from the shape instead of into it.
+    const labelsSvg = RADAR_DEFS.map((s, i) => {
+      const p = pointAt(i, maxR + 13);
+      const cos = Math.cos(angleFor(i));
+      let anchor = 'middle';
+      if (cos > 0.3) anchor = 'start';
+      else if (cos < -0.3) anchor = 'end';
+      return `<text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" font-size="10" font-family="Inter, sans-serif" font-weight="700" fill="var(--text-secondary)">${escapeXml(s.label)}</text>`;
+    }).join('');
+
+    svgEl.innerHTML = `
+      ${ringsSvg}
+      ${spokesSvg}
+      <polygon points="${dataPath}" fill="var(--accent)" opacity="0.16" />
+      <polygon points="${dataPath}" fill="none" stroke="var(--accent-deep)" stroke-width="2" stroke-linejoin="round" />
+      ${dotsSvg}
+      ${labelsSvg}
+    `;
+
+    const atCapCount = RADAR_DEFS.filter((s) => s.value >= s.cap).length;
+    captionEl.textContent = atCapCount > 0
+      ? `Shape shows this company's signal profile — points on the outer ring are at or near their scoring cap (${atCapCount} of ${n} here).`
+      : `Shape shows this company's signal profile relative to each source's scoring cap.`;
+  }
+  renderSignalRadar();
+
   /* ── Recommended Next Steps ── */
   const NEXT_STEPS = [
     { id: 'watchlist', label: 'Add to Watchlist', doneLabel: 'Added to Watchlist' },
