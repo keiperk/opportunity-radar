@@ -174,7 +174,7 @@ function renderList() {
       ? `<span class="discovery-badge" title="Newly discovered this scan — not on the existing tracked list">New Discovery</span>`
       : '';
     const stealthBadge = stealthCandidates.has(c.company)
-      ? `<span class="stealth-badge" title="Strong funding/exec-hire signal with little-to-no LinkedIn activity — likely growing before any role is publicly posted">🎯 Stealth Hire</span>`
+      ? `<span class="stealth-badge" title="Strong funding/exec-hire signal with little-to-no LinkedIn activity — likely growing before any role is publicly posted">Stealth Hire</span>`
       : '';
 
     const sourceDefs = [
