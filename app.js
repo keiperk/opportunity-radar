@@ -29,10 +29,21 @@ let expandedCompany = null; // which row's per-source detail is toggled open (cl
    makes those collide immediately, so identity is hover-only (title
    tooltip), matching the pattern used for Rank Trend's peer lines and
    Signal Rank by Source's scatter dots. */
-function median(arr) {
-  const s = arr.slice().sort((a, b) => a - b);
-  const mid = Math.floor(s.length / 2);
-  return s.length % 2 !== 0 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+/* Signal counts are capped and integer-valued, so most companies sit at
+   exactly 0 or exactly the cap — a raw-value axis piles everyone onto the
+   two edges with a dead zone in between, no matter how the chart is
+   drawn. Percentile rank fixes this at the source: position encodes
+   relative standing, not magnitude, so the field spreads across the full
+   plot by construction. Ties still separate too, since stable sort gives
+   each tied company its own consecutive rank slot instead of identical
+   positions. */
+function percentileRanks(vals) {
+  const order = vals.map((v, i) => i).sort((a, b) => vals[a] - vals[b]);
+  const ranks = new Array(vals.length);
+  order.forEach((originalIdx, pos) => {
+    ranks[originalIdx] = vals.length > 1 ? pos / (vals.length - 1) : 0.5;
+  });
+  return ranks;
 }
 
 function tierColorVar(tier) {
@@ -57,25 +68,20 @@ function renderQuadrant() {
   const W = 400, H = 400, PAD = 46;
   const plotW = W - PAD * 2, plotH = H - PAD * 2;
 
-  const xVals = companies.map((c) => c.funding_signals + c.exec_hire_signals);
-  const yVals = companies.map((c) => c.linkedin_signals);
-  const xMax = Math.max(...xVals, 1);
-  const yMax = Math.max(...yVals, 1);
-  const splitX = median(xVals);
-  const splitY = median(yVals);
+  const xRanks = percentileRanks(companies.map((c) => c.funding_signals + c.exec_hire_signals));
+  const yRanks = percentileRanks(companies.map((c) => c.linkedin_signals));
 
-  const xOf = (v) => PAD + (v / xMax) * plotW;
-  const yOf = (v) => PAD + plotH - (v / yMax) * plotH;
+  const xOf = (rank) => PAD + rank * plotW;
+  const yOf = (rank) => PAD + plotH - rank * plotH;
 
   const mutedLine = hexToRgba(THEME.accent, 0.25);
   const labelAttrs = `font-size="10" font-weight="700" font-family="Inter, sans-serif" fill="var(--text-secondary)"`;
   let svg = '';
 
-  // Quadrant divider lines, split at the median of the actual data so the
-  // four quadrants reflect where companies really cluster, not a fixed
-  // midpoint that could leave a quadrant empty.
-  svg += `<line x1="${PAD}" y1="${yOf(splitY).toFixed(1)}" x2="${W - PAD}" y2="${yOf(splitY).toFixed(1)}" stroke="${mutedLine}" stroke-width="1" stroke-dasharray="3 3" />`;
-  svg += `<line x1="${xOf(splitX).toFixed(1)}" y1="${PAD}" x2="${xOf(splitX).toFixed(1)}" y2="${H - PAD}" stroke="${mutedLine}" stroke-width="1" stroke-dasharray="3 3" />`;
+  // Quadrant divider lines sit at the 50th percentile by construction —
+  // half the field above, half below, on each axis.
+  svg += `<line x1="${PAD}" y1="${yOf(0.5).toFixed(1)}" x2="${W - PAD}" y2="${yOf(0.5).toFixed(1)}" stroke="${mutedLine}" stroke-width="1" stroke-dasharray="3 3" />`;
+  svg += `<line x1="${xOf(0.5).toFixed(1)}" y1="${PAD}" x2="${xOf(0.5).toFixed(1)}" y2="${H - PAD}" stroke="${mutedLine}" stroke-width="1" stroke-dasharray="3 3" />`;
 
   svg += `<text x="${W - PAD}" y="${PAD - 10}" text-anchor="end" ${labelAttrs}>FUNDED &amp; HIRING</text>`;
   svg += `<text x="${PAD}" y="${PAD - 10}" text-anchor="start" ${labelAttrs}>ROLES POSTED, LOW GROWTH</text>`;
@@ -85,10 +91,10 @@ function renderQuadrant() {
   svg += `<text x="${W / 2}" y="${H - 10}" text-anchor="middle" ${labelAttrs}>FUNDING + EXEC HIRES →</text>`;
   svg += `<text x="14" y="${H / 2}" text-anchor="middle" ${labelAttrs} transform="rotate(-90 14 ${H / 2})">LINKEDIN ACTIVITY →</text>`;
 
-  companies.forEach((c) => {
-    const { dx, dy } = hashJitter(c.company, 9);
-    const cx = Math.min(W - PAD, Math.max(PAD, xOf(c.funding_signals + c.exec_hire_signals) + dx));
-    const cy = Math.min(H - PAD, Math.max(PAD, yOf(c.linkedin_signals) + dy));
+  companies.forEach((c, i) => {
+    const { dx, dy } = hashJitter(c.company, 4);
+    const cx = Math.min(W - PAD, Math.max(PAD, xOf(xRanks[i]) + dx));
+    const cy = Math.min(H - PAD, Math.max(PAD, yOf(yRanks[i]) + dy));
     const isSelected = c.company === selectedCompany.company;
     const colorVar = tierColorVar(c.tier);
 
