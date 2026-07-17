@@ -1051,8 +1051,11 @@ function populateContactCard(c) {
   document.getElementById('contact-name').textContent = name;
   document.getElementById('contact-title').textContent = title ? `${title} · ${c.company}` : c.company;
 
+  /* visibility, not hidden/display:none — reserves this line's height
+     always, so the card isn't a different height for a verified vs.
+     unverified contact. */
   const badge = document.getElementById('contact-unverified-badge');
-  if (badge) badge.hidden = isVerified;
+  if (badge) badge.style.visibility = isVerified ? 'hidden' : 'visible';
 
   const linkedinSlug = contact.linkedin_url.replace(/^https?:\/\/[^/]+\/in\//, 'in/').replace(/\/$/, '');
   document.getElementById('contact-linkedin-value').textContent = linkedinSlug;

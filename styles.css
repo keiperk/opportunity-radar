@@ -486,6 +486,14 @@ body {
   line-height: 1.4;
 }
 
+/* Verified vs. unverified captions differ enough in length (one line vs.
+   three) to change the whole contact card's height depending on which
+   contact happened to be found. Reserve room for the longer message so
+   the card height stays consistent either way. */
+#contact-fine-print {
+  min-height: 4.2em;
+}
+
 .tier-badge {
   display: inline-flex;
   align-items: center;
@@ -602,6 +610,16 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: 20px;
+  /* These are direct children of the sticky columns (.quadrant-column /
+     .right-rail), which cap their own height and scroll rather than
+     grow past the viewport. Without flex-shrink:0, default flex
+     behavior lets a card get squeezed below its natural content height
+     when a sibling's variable-length text (an unverified caption, a
+     "why it matters" blurb) pushes the column over that cap - which is
+     what caused the Momentum Trend chart to render squished into a
+     shorter box than its own coordinate math assumed. Now any real
+     overflow goes to the column's existing scroll instead. */
+  flex-shrink: 0;
 }
 
 .stat-row {
@@ -1078,6 +1096,7 @@ body {
   border-radius: var(--radius-lg);
   background: var(--surface);
   border: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .math-caption {
@@ -1186,23 +1205,27 @@ body {
    not decoration. Hiding unverified contacts entirely would make the
    feature useless (most of what's found this way is still directionally
    right), but presenting it with the same confidence as a verified
-   contact would be dishonest. */
+   contact would be dishonest.
+
+   Own line below the name (not inline) — some contact names are long
+   enough that an inline badge would wrap awkwardly or crowd the name.
+   Uses visibility (see populateContactCard), not display:none, so this
+   line's height is always reserved and the card isn't a different
+   height for a verified vs. unverified contact. */
 .contact-unverified-badge {
   display: inline-flex;
   align-items: center;
-  margin-left: 6px;
+  width: fit-content;
+  margin-top: 4px;
   padding: 2px 8px;
   border-radius: var(--radius-full);
   font-size: var(--text-2xs);
   font-weight: 700;
   letter-spacing: 0.3px;
   text-transform: uppercase;
-  vertical-align: middle;
   background: var(--amber-tint);
   color: var(--amber-deep);
 }
-
-.contact-unverified-badge[hidden] { display: none; }
 
 .contact-empty-state {
   margin: 0;
@@ -1213,6 +1236,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  flex-shrink: 0;
 }
 
 .contact-empty-state p { margin: 0; }
