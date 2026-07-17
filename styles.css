@@ -486,13 +486,11 @@ body {
   line-height: 1.4;
 }
 
-/* Verified vs. unverified captions differ enough in length (one line vs.
-   three) to change the whole contact card's height depending on which
-   contact happened to be found. Reserve room for the longer message so
-   the card height stays consistent either way. */
-#contact-fine-print {
-  min-height: 4.2em;
-}
+/* Verified vs. unverified captions differ a lot in length (one line vs.
+   three). Deliberately not reserving height for the longer message here
+   - a fixed-height reservation just left dead space under the shorter
+   one. Letting the card size naturally to its own content and shift
+   the layout below it is the more graceful failure mode. */
 
 .tier-badge {
   display: inline-flex;
@@ -1216,7 +1214,7 @@ body {
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  margin-top: 4px;
+  margin-bottom: 4px;
   padding: 2px 8px;
   border-radius: var(--radius-full);
   font-size: var(--text-2xs);
@@ -1226,6 +1224,8 @@ body {
   background: var(--amber-tint);
   color: var(--amber-deep);
 }
+
+.contact-unverified-badge[hidden] { display: none; }
 
 .contact-empty-state {
   margin: 0;

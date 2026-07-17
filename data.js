@@ -1051,11 +1051,12 @@ function populateContactCard(c) {
   document.getElementById('contact-name').textContent = name;
   document.getElementById('contact-title').textContent = title ? `${title} · ${c.company}` : c.company;
 
-  /* visibility, not hidden/display:none — reserves this line's height
-     always, so the card isn't a different height for a verified vs.
-     unverified contact. */
+  /* hidden attribute, not visibility — sits above the name and pushes
+     it down when present rather than reserving fixed space. A verified
+     and unverified contact card are naturally different heights now;
+     that's the intended, more graceful behavior. */
   const badge = document.getElementById('contact-unverified-badge');
-  if (badge) badge.style.visibility = isVerified ? 'hidden' : 'visible';
+  if (badge) badge.hidden = isVerified;
 
   const linkedinSlug = contact.linkedin_url.replace(/^https?:\/\/[^/]+\/in\//, 'in/').replace(/\/$/, '');
   document.getElementById('contact-linkedin-value').textContent = linkedinSlug;
