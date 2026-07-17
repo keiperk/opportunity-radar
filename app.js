@@ -89,7 +89,7 @@ function renderQuadrant() {
   svg += `<text x="${PAD}" y="${H - PAD + 20}" text-anchor="start" ${labelAttrs}>LOW ACTIVITY</text>`;
 
   svg += `<text x="${W / 2}" y="${H - 10}" text-anchor="middle" ${labelAttrs}>FUNDING + EXEC HIRES →</text>`;
-  svg += `<text x="17" y="${H / 2}" text-anchor="middle" ${labelAttrs} transform="rotate(-90 17 ${H / 2})">LINKEDIN ACTIVITY →</text>`;
+  svg += `<text x="24" y="${H / 2}" text-anchor="middle" ${labelAttrs} transform="rotate(-90 24 ${H / 2})">LINKEDIN ACTIVITY →</text>`;
 
   companies.forEach((c, i) => {
     const { dx, dy } = hashJitter(c.company, 4);
