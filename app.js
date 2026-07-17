@@ -84,8 +84,20 @@ function hashJitter(str, spread) {
 }
 
 function renderQuadrant() {
-  const W = 400, H = 400, PAD = 46;
+  // Read the actual rendered width rather than hardcoding it — viewBox
+  // units only equal real screen pixels when this matches the real box
+  // size. It didn't (this was fixed at 400 while the box is ~350), so
+  // every "move this label N px" request was silently off by a ~0.875
+  // scale factor the whole time. H = W since .quadrant-scope is a
+  // guaranteed square (aspect-ratio: 1/1 + flex-shrink: 0).
+  const W = quadrantSvg.getBoundingClientRect().width || 400;
+  const H = W;
+  const PAD = 46;
   const plotW = W - PAD * 2, plotH = H - PAD * 2;
+  // The HTML hardcodes viewBox="0 0 400 400" and nothing ever updated it
+  // dynamically — had to be set here too, or coordinates computed for
+  // the real ~350 box would be drawn into a viewBox still claiming 400.
+  quadrantSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
   const xRanks = percentileRanks(companies.map((c) => c.funding_signals + c.exec_hire_signals));
   const yRanks = percentileRanks(companies.map((c) => c.linkedin_signals));

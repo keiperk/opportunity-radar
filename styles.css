@@ -1505,6 +1505,13 @@ body {
   height: 80px;
 }
 
+/* Reserves room for the longer 2-line "not enough history" message so
+   the card isn't shorter when a company has real trend data to show
+   (whose caption is a single short line) than when it doesn't. */
+#inspector-trend-caption {
+  min-height: 2.8em;
+}
+
 .contact-card-standalone { padding: 20px; }
 
 .next-steps-card {
