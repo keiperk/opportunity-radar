@@ -1529,12 +1529,11 @@ body {
   height: 80px;
 }
 
-/* Reserves room for the longer 2-line "not enough history" message so
-   the card isn't shorter when a company has real trend data to show
-   (whose caption is a single short line) than when it doesn't. */
-#inspector-trend-caption {
-  min-height: 2.8em;
-}
+/* Both possible captions ("Real signal history across N scans." and
+   "Not enough scan history yet.") are short enough to stay on one line,
+   so no height reservation is needed here — a longer message used to
+   wrap to 2 lines and force one wider than the other's 1-line height,
+   which is what actually caused the inconsistency. */
 
 .contact-card-standalone { padding: 20px; }
 

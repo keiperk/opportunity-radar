@@ -287,7 +287,7 @@ function renderInspectorTrend(c) {
 
   if (history.length < 2) {
     svgEl.innerHTML = '';
-    captionEl.textContent = 'Not enough scan history yet — check back after the next run.';
+    captionEl.textContent = 'Not enough scan history yet.';
     return;
   }
 
