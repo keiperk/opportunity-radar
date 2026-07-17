@@ -149,6 +149,14 @@
   --hue-teal-tint-1:   #93b8b4;
   --hue-teal-tint-2:   #deeae9;
 
+  /* 8th hue, added when the pipeline added patents as a source — all 7
+     original hues (red/green/blue/purple/orange/yellow/teal) were
+     already spoken for by the existing sources. */
+  --hue-indigo:        #6c72c9;
+  --hue-indigo-dark:   #4c508d;
+  --hue-indigo-tint-1: #b6b9e4;
+  --hue-indigo-tint-2: #e9eaf7;
+
   /* Tier status colors — reuse the same hues as the source palette below
      (rose=red, green=green, amber=orange) instead of maintaining 3 more
      standalone shades. */
@@ -171,6 +179,7 @@
   --hn-color:        var(--hue-orange);
   --exec-hire-color: var(--hue-teal);
   --funding-color:   var(--hue-yellow);
+  --patents-color:   var(--hue-indigo);
   --trend-accent:    var(--green);
   --peer-muted-dot:  var(--text-secondary);
 
@@ -806,8 +815,9 @@ body {
 .company-row-detail-inner {
   overflow: hidden;
   min-height: 0;
-  display: flex;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px 14px;
   padding-top: 0;
   transition: padding-top 0.3s ease;
 }
@@ -820,7 +830,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  flex: 1 1 0;
   min-width: 0;
 }
 
@@ -842,6 +851,7 @@ body {
 .row-detail-label.source-hn         { color: var(--hn-color); }
 .row-detail-label.source-exec_hire  { color: var(--exec-hire-color); }
 .row-detail-label.source-funding    { color: var(--funding-color); }
+.row-detail-label.source-patents    { color: var(--patents-color); }
 
 .row-detail-cap-flag {
   display: inline-block;
@@ -905,6 +915,7 @@ body {
 .source-pill.source-hn::before       { background: var(--hn-color); }
 .source-pill.source-exec_hire::before { background: var(--exec-hire-color); }
 .source-pill.source-funding::before  { background: var(--funding-color); }
+.source-pill.source-patents::before  { background: var(--patents-color); }
 
 .meter-track {
   height: 5px;
@@ -926,6 +937,7 @@ body {
 .meter-fill.source-hn       { background: var(--hn-color); opacity: 0.9; }
 .meter-fill.source-exec_hire { background: var(--exec-hire-color); opacity: 0.9; }
 .meter-fill.source-funding   { background: var(--funding-color); opacity: 0.9; }
+.meter-fill.source-patents   { background: var(--patents-color); opacity: 0.9; }
 
 .table-empty {
   margin: 0;
@@ -1049,6 +1061,7 @@ body {
 .math-label.source-hn::before       { background: var(--hn-color); }
 .math-label.source-exec_hire::before { background: var(--exec-hire-color); }
 .math-label.source-funding::before   { background: var(--funding-color); }
+.math-label.source-patents::before   { background: var(--patents-color); }
 
 .math-total-row {
   display: flex;

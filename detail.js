@@ -67,6 +67,7 @@ function initDetailPage() {
     { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, cap: CAPS.hn },
     { label: 'Executive Hires', key: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire },
     { label: 'Funding', key: 'source-funding', value: c.funding_signals, cap: CAPS.funding },
+    { label: 'Patents', key: 'source-patents', value: c.patent_signals, cap: CAPS.patents },
   ];
   /* Bar width is scaled against the highest cap among these sources
      (not each source's own cap) — otherwise a value of 10 at its cap of
@@ -181,6 +182,7 @@ function initDetailPage() {
       { key: 'hn', label: 'Hacker News', field: 'hn_signals', cls: 'source-hn', colorVar: '--hn-color' },
       { key: 'exec_hire', label: 'Executive Hires', field: 'exec_hire_signals', cls: 'source-exec_hire', colorVar: '--exec-hire-color' },
       { key: 'funding', label: 'Funding', field: 'funding_signals', cls: 'source-funding', colorVar: '--funding-color' },
+      { key: 'patents', label: 'Patents', field: 'patent_signals', cls: 'source-patents', colorVar: '--patents-color' },
     ];
 
     const stats = SOURCE_DEFS.map((s) => {

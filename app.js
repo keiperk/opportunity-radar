@@ -166,6 +166,7 @@ function renderList() {
       { label: 'Hacker News', cls: 'source-hn', value: c.hn_signals, cap: CAPS.hn, weight: WEIGHTS.hn },
       { label: 'Executive Hires', cls: 'source-exec_hire', value: c.exec_hire_signals, cap: CAPS.exec_hire, weight: WEIGHTS.exec_hire },
       { label: 'Funding', cls: 'source-funding', value: c.funding_signals, cap: CAPS.funding, weight: WEIGHTS.funding },
+      { label: 'Patents', cls: 'source-patents', value: c.patent_signals, cap: CAPS.patents, weight: WEIGHTS.patents },
     ];
     const detailHtml = sourceDefs.map((s) => {
       const norm = Math.min(s.value, s.cap) / s.cap;
@@ -304,6 +305,7 @@ function renderInspector() {
     { label: 'Hacker News', key: 'source-hn', value: c.hn_signals, weight: WEIGHTS.hn, cap: CAPS.hn },
     { label: 'Executive Hires', key: 'source-exec_hire', value: c.exec_hire_signals, weight: WEIGHTS.exec_hire, cap: CAPS.exec_hire },
     { label: 'Funding', key: 'source-funding', value: c.funding_signals, weight: WEIGHTS.funding, cap: CAPS.funding },
+    { label: 'Patents', key: 'source-patents', value: c.patent_signals, weight: WEIGHTS.patents, cap: CAPS.patents },
   ];
   const confirmingDefs = [
     { label: 'LinkedIn', key: 'source-linkedin', value: c.linkedin_signals, weight: WEIGHTS.linkedin, cap: CAPS.linkedin },
