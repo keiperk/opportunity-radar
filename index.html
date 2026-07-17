@@ -125,8 +125,8 @@
           <div class="inspector-badge-row">
             <span class="tier-badge" id="inspector-tier-badge">—</span>
             <span class="discovery-badge" id="inspector-discovery-badge" title="Newly discovered this scan — not on the existing tracked list" hidden>New Discovery</span>
-            <a class="inspector-website-link" id="inspector-website-link" href="#" target="_blank" rel="noopener" hidden>—</a>
           </div>
+          <a class="inspector-website-link" id="inspector-website-link" href="#" target="_blank" rel="noopener" hidden>—</a>
 
           <h3 class="section-label">Momentum Trend</h3>
           <div class="inspector-trend-card">
@@ -158,14 +158,10 @@
           <a class="btn btn-dark btn-full" id="contact-cta" href="#" target="_blank" rel="noopener">Message on LinkedIn</a>
           <p class="fine-print" id="contact-fine-print">—</p>
         </div>
-        <div class="contact-card" id="contact-website-fallback" hidden>
-          <p class="contact-name">No specific contact found</p>
-          <p class="contact-title">but a likely company website turned up:</p>
-          <a class="btn btn-dark btn-full" id="contact-website-cta" href="#" target="_blank" rel="noopener">Visit Company Website</a>
-          <p class="fine-print">Automatically discovered, not confirmed as the right company — double-check before visiting.</p>
-        </div>
         <div class="contact-empty-state" id="contact-empty-state" hidden>
           <p>No contact found yet for this company — check back after the next scan.</p>
+          <a class="btn btn-dark btn-full" id="contact-website-cta" href="#" target="_blank" rel="noopener" hidden>Go to Company Website</a>
+          <p class="fine-print" id="contact-website-caveat" hidden>Automatically discovered, not confirmed as the right company — double-check before visiting.</p>
         </div>
 
         <h3 class="section-label">How this is calculated</h3>

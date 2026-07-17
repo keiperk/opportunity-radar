@@ -29,7 +29,7 @@ function initDetailPage() {
 
   const indexEl = document.getElementById('detail-index');
   indexEl.textContent = c.opportunity_index.toFixed(2);
-  indexEl.style.color = cls === 'amber' ? 'var(--amber-deep)' : cls === 'rose' ? 'var(--rose-deep)' : 'var(--accent-deep)';
+  indexEl.style.color = cls === 'amber' ? 'var(--amber)' : cls === 'rose' ? 'var(--rose)' : 'var(--accent)';
 
   document.getElementById('detail-discovery-badge').hidden = c.discovery_source !== 'discovered';
 

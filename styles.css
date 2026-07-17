@@ -568,6 +568,12 @@ body {
   top: 24px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
+  /* Reserves the scrollbar's gutter whether or not it's actually needed,
+     so content taller than the viewport toggling the scrollbar on/off
+     between renders can't shrink/grow this column's available width -
+     which would otherwise resize the quadrant chart (aspect-ratio: 1/1
+     scales with container width) every time it happened. */
+  scrollbar-gutter: stable;
 }
 
 .quadrant-scope {
@@ -795,11 +801,11 @@ body {
 .company-row-index {
   font-size: var(--text-md);
   font-weight: 700;
-  color: var(--accent-deep);
+  color: var(--accent);
 }
 
-.company-row-index.amber { color: var(--amber-deep); }
-.company-row-index.rose  { color: var(--rose-deep); }
+.company-row-index.amber { color: var(--amber); }
+.company-row-index.rose  { color: var(--rose); }
 
 .momentum-delta {
   font-size: var(--text-sm);
@@ -989,6 +995,7 @@ body {
   top: 24px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .inspector-title-row {
@@ -1013,8 +1020,11 @@ body {
 }
 
 /* Plain link, not a badge/pill — this is a reference, not a status flag
-   like the tier/discovery badges next to it. */
+   like the tier/discovery badges above it. Own line, not inline with
+   the pills, so it doesn't read as a third badge. */
 .inspector-website-link {
+  display: block;
+  margin-top: 8px;
   font-size: var(--text-sm);
   color: var(--text-secondary);
   text-decoration: none;
@@ -1026,7 +1036,7 @@ body {
 .inspector-index {
   font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--accent-deep);
+  color: var(--accent);
 }
 
 .mini-breakdown {
@@ -1201,6 +1211,8 @@ body {
 }
 
 .contact-empty-state p { margin: 0; }
+.contact-empty-state .btn { margin-top: 14px; }
+.contact-empty-state .fine-print { margin-top: 8px; }
 .contact-empty-state[hidden] { display: none; }
 
 .contact-title {
@@ -1315,7 +1327,7 @@ body {
   font-size: var(--text-xl);
   line-height: 34px;
   font-weight: 700;
-  color: var(--accent-deep);
+  color: var(--accent);
 }
 
 .detail-blurb {

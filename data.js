@@ -1016,33 +1016,28 @@ function stripUrlProtocol(url) {
    cleanup." */
 function populateContactCard(c) {
   const cardEl = document.getElementById('contact-card');
-  const websiteEl = document.getElementById('contact-website-fallback');
   const emptyEl = document.getElementById('contact-empty-state');
+  const websiteCta = document.getElementById('contact-website-cta');
+  const websiteCaveat = document.getElementById('contact-website-caveat');
   const contact = CONTACTS[c.company_canonical];
 
   if (!contact) {
     if (cardEl) cardEl.hidden = true;
-    /* No named contact — fall back to the company's own website if the
-       pipeline found one, rather than a dead end. That field has shown
-       real false positives already (e.g. one company matched to a
-       generic Discord invite link), so this is presented as a lead to
-       verify, not a confirmed fact — same posture as unverified
-       contacts below. */
-    if (c.company_url) {
-      if (websiteEl) {
-        websiteEl.hidden = false;
-        const cta = document.getElementById('contact-website-cta');
-        if (cta) cta.href = c.company_url;
-      }
-      if (emptyEl) emptyEl.hidden = true;
-    } else {
-      if (websiteEl) websiteEl.hidden = true;
-      if (emptyEl) emptyEl.hidden = false;
+    if (emptyEl) emptyEl.hidden = false;
+    /* No named contact — accompany the "no contact yet" message with a
+       CTA to the company's own website if the pipeline found one,
+       rather than a dead end. That field has shown real false
+       positives already (e.g. one company matched to a generic Discord
+       invite link), so this is presented as a lead to verify, not a
+       confirmed fact — same posture as unverified contacts below. */
+    if (websiteCta) {
+      websiteCta.hidden = !c.company_url;
+      if (c.company_url) websiteCta.href = c.company_url;
     }
+    if (websiteCaveat) websiteCaveat.hidden = !c.company_url;
     return;
   }
   if (cardEl) cardEl.hidden = false;
-  if (websiteEl) websiteEl.hidden = true;
   if (emptyEl) emptyEl.hidden = true;
 
   const name = stripBidiMarks(contact.contact_name);
