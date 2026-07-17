@@ -45,27 +45,29 @@
       <!-- Left: Suggested Contact + Signal Breakdown -->
       <div class="detail-col detail-col-left">
         <h3 class="section-label">Suggested Contact</h3>
-        <div class="contact-card contact-card-standalone">
+        <div class="contact-card contact-card-standalone" id="contact-card">
           <div class="contact-person-row" style="margin-top: 0;">
-            <div class="contact-avatar">JR</div>
+            <div class="contact-avatar" id="contact-avatar">—</div>
             <div class="contact-person-info">
-              <p class="contact-name">Jordan Reyes</p>
-              <p class="contact-title" id="detail-contact-title">Engineering Recruiter · —</p>
+              <p class="contact-name">
+                <span id="contact-name">—</span>
+                <span class="contact-unverified-badge" id="contact-unverified-badge" title="Found via automated LinkedIn search, not human-confirmed" hidden>Unverified</span>
+              </p>
+              <p class="contact-title" id="contact-title">—</p>
             </div>
-          </div>
-          <div class="contact-detail-box">
-            <span class="contact-detail-label">Email</span>
-            <span class="contact-detail-value" id="detail-contact-email">—</span>
           </div>
           <div class="contact-detail-box">
             <span class="contact-detail-label">LinkedIn</span>
             <span class="contact-detail-value contact-detail-value-linkedin">
               <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" rx="3" fill="var(--linkedin-blue)" /><text x="8" y="11.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#ffffff">in</text></svg>
-              in/jordanreyes
+              <span id="contact-linkedin-value">—</span>
             </span>
           </div>
-          <button class="btn btn-dark btn-full" type="button">Send Introduction Email</button>
-          <p class="fine-print">Suggested contact based on public company data — verify details before reaching out.</p>
+          <a class="btn btn-dark btn-full" id="contact-cta" href="#" target="_blank" rel="noopener">Message on LinkedIn</a>
+          <p class="fine-print" id="contact-fine-print">—</p>
+        </div>
+        <div class="contact-empty-state" id="contact-empty-state" hidden>
+          <p>No contact found yet for this company — check back after the next scan.</p>
         </div>
 
         <h3 class="section-label">Signal Breakdown</h3>

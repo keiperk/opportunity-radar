@@ -108,7 +108,7 @@ function renderQuadrant() {
   svg += `<text x="${PAD}" y="${H - PAD + 20}" text-anchor="start" ${labelAttrs}>LOW ACTIVITY</text>`;
 
   svg += `<text x="${W / 2}" y="${H - 10}" text-anchor="middle" ${labelAttrs}>FUNDING + EXEC HIRES →</text>`;
-  svg += `<text x="24" y="${H / 2}" text-anchor="middle" ${labelAttrs} transform="rotate(-90 24 ${H / 2})">LINKEDIN ACTIVITY →</text>`;
+  svg += `<text x="14" y="${H / 2}" text-anchor="middle" ${labelAttrs} transform="rotate(-90 14 ${H / 2})">LINKEDIN ACTIVITY →</text>`;
 
   companies.forEach((c, i) => {
     const { dx, dy } = hashJitter(c.company, 4);
@@ -361,13 +361,7 @@ function renderInspector() {
   document.getElementById('gauge-discovery-badge').hidden = c.discovery_source !== 'discovered';
   document.getElementById('why-it-matters-text').innerHTML = generateWhyItMatters(c);
 
-  /* Capped — some discovered "company" names are actually whole clauses
-     the discovery LLM extracted (e.g. "Unspecified AI startup by former
-     Target executive"), and an uncapped handle turns those into an
-     absurdly long, unrealistic-looking email domain. */
-  const emailHandle = c.company.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 20);
-  document.getElementById('contact-title').textContent = `Engineering Recruiter · ${c.company}`;
-  document.getElementById('contact-email').textContent = `jordan.reyes@${emailHandle}.com`;
+  populateContactCard(c);
 }
 
 function selectCompany(companyName) {
@@ -417,7 +411,7 @@ clearButton.addEventListener('click', () => {
 const loadingOverlayEl = document.getElementById('loading-overlay');
 const fallbackBannerEl = document.getElementById('fallback-banner');
 
-loadCompanyData().then(() => {
+Promise.all([loadCompanyData(), loadContactsData()]).then(() => {
   selectedCompany = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise)[0];
   if (!selectedCompany) return; // no usable data even from fallback — leave the loading state up rather than render broken widgets
 

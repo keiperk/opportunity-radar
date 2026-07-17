@@ -13,6 +13,12 @@ const WEIGHTS = { news: 0.13, reddit: 0.09, linkedin: 0.13, github: 0.09, hn: 0.
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTGAgujnKii4qOQYezhAMdwFcsAnLOeg_jnZtE8lOHm2dexXdH0tWtwqKeZbhPxov_Z9YzQGEH2mS2C/pub?gid=1454866921&single=true&output=csv';
 
+/* Second sheet, separate pipeline output: real per-company recruiter
+   contacts found via automated LinkedIn search (name, title, profile
+   URL) — not human-verified. No email field exists yet, so outreach is
+   LinkedIn-only for now (see CONTACTS below). */
+const CONTACTS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTGAgujnKii4qOQYezhAMdwFcsAnLOeg_jnZtE8lOHm2dexXdH0tWtwqKeZbhPxov_Z9YzQGEH2mS2C/pub?gid=2003786292&single=true&output=csv';
+
 /*
  * Single source of truth for the accent color, shared by styles.css (via
  * the matching --accent custom properties — keep these in sync manually,
@@ -812,4 +818,93 @@ function loadCompanyData() {
       dataSource = 'fallback';
       return companies;
     });
+}
+
+/* Real per-company contacts, keyed by canonical company key (same
+   CANONICAL_ALIASES resolution as the main data, so a contact found
+   under a since-merged duplicate name still joins correctly). This is
+   supplementary, not core — a failed fetch just leaves CONTACTS empty
+   and every company falls back to the "no contact found yet" state
+   rather than breaking the page. No FALLBACK_ROWS-style snapshot for
+   this one: the dataset is small and actively growing, and showing a
+   stale contact for the wrong scan is worse than showing none. */
+let CONTACTS = {};
+
+function loadContactsData() {
+  return fetch(CONTACTS_URL)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      return res.text();
+    })
+    .then((text) => {
+      const rows = parseCSV(text);
+      const map = {};
+      rows.forEach((r) => {
+        if (!r.company_canonical || !r.contact_name || !r.linkedin_url) return;
+        const key = CANONICAL_ALIASES[r.company_canonical] || r.company_canonical;
+        map[key] = r;
+      });
+      CONTACTS = map;
+      return CONTACTS;
+    })
+    .catch((err) => {
+      console.warn('Contacts fetch failed, no contact data available:', err);
+      CONTACTS = {};
+      return CONTACTS;
+    });
+}
+
+/* Strips LinkedIn-scrape bidi control characters (U+200E/F, U+202A-E)
+   that show up invisibly in some names/snippets — junk formatting
+   artifacts, not meaningful content. */
+function stripBidiMarks(s) {
+  return String(s).replace(/[‎‏‪-‮]/g, '').trim();
+}
+
+/* Shared between index.html (Company Inspector) and detail.html — both
+   pages use the identical contact-card element IDs, so one function
+   covers both. Deliberately does NOT auto-correct name casing (e.g.
+   "mamatha kotakonda") beyond stripping bidi noise — a naive title-case
+   pass would mangle names like "McMeekin", and the whole point of the
+   unverified badge is "sanity-check this yourself," not "trust our
+   cleanup." */
+function populateContactCard(c) {
+  const cardEl = document.getElementById('contact-card');
+  const emptyEl = document.getElementById('contact-empty-state');
+  const contact = CONTACTS[c.company_canonical];
+
+  if (!contact) {
+    if (cardEl) cardEl.hidden = true;
+    if (emptyEl) emptyEl.hidden = false;
+    return;
+  }
+  if (cardEl) cardEl.hidden = false;
+  if (emptyEl) emptyEl.hidden = true;
+
+  const name = stripBidiMarks(contact.contact_name);
+  const initials = name.split(/\s+/).slice(0, 2).map((w) => w[0] || '').join('').toUpperCase() || '—';
+  let title = stripBidiMarks(contact.contact_title_snippet || '');
+  const namePrefix = new RegExp('^' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-–—‏]\\s*', 'i');
+  title = title.replace(namePrefix, '').trim();
+  const isVerified = String(contact.verified).trim().toUpperCase() === 'TRUE';
+
+  document.getElementById('contact-avatar').textContent = initials;
+  document.getElementById('contact-name').textContent = name;
+  document.getElementById('contact-title').textContent = title ? `${title} · ${c.company}` : c.company;
+
+  const badge = document.getElementById('contact-unverified-badge');
+  if (badge) badge.hidden = isVerified;
+
+  const linkedinSlug = contact.linkedin_url.replace(/^https?:\/\/[^/]+\/in\//, 'in/').replace(/\/$/, '');
+  document.getElementById('contact-linkedin-value').textContent = linkedinSlug;
+
+  const cta = document.getElementById('contact-cta');
+  if (cta) cta.href = contact.linkedin_url;
+
+  const fine = document.getElementById('contact-fine-print');
+  if (fine) {
+    fine.textContent = isVerified
+      ? 'Verified contact for this company.'
+      : 'Found via automated LinkedIn search, not yet human-verified — check the name against their profile before reaching out.';
+  }
 }
