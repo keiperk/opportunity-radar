@@ -106,7 +106,16 @@
       <div class="detail-col detail-col-right">
         <h3 class="section-label" style="margin-top: 0;">Signal Radar</h3>
         <div class="signal-radar-card">
+          <div class="radar-compare-row">
+            <select class="radar-compare-select" id="radar-compare-1" aria-label="Compare with another company">
+              <option value="">+ Compare with…</option>
+            </select>
+            <select class="radar-compare-select" id="radar-compare-2" aria-label="Compare with a second company">
+              <option value="">+ Compare with…</option>
+            </select>
+          </div>
           <svg id="signal-radar-svg" width="100%" height="270" aria-hidden="true"></svg>
+          <div class="radar-legend" id="radar-legend"></div>
           <p class="fine-print" id="signal-radar-caption">—</p>
         </div>
 

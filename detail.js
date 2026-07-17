@@ -310,21 +310,60 @@ function initDetailPage() {
      profile (GitHub-heavy vs funding-heavy vs balanced) reads at a
      glance. Axes are normalized to value/cap, the same norm used for
      contribution math elsewhere, so all 8 axes are comparable despite
-     having different caps. ── */
+     having different caps.
+
+     Also supports overlaying up to 2 other companies' shapes for direct
+     comparison — picked via the two <select> elements above the chart.
+     The main company keeps its original treatment untouched (accent
+     fill/stroke, per-source rainbow dots) regardless of whether anyone
+     is being compared; overlay companies get a single flat color each
+     (dashed outline, matching solid dots) so their shape doesn't fight
+     the main company's per-source dot coloring for meaning. ── */
+  const compareCompanies = [null, null]; // company_canonical per select, or null
+  const COMPARE_COLOR_VARS = ['--hue-purple', '--hue-teal'];
+
+  function populateCompareSelects() {
+    const others = companies
+      .filter((co) => co.company_canonical !== c.company_canonical)
+      .slice()
+      .sort((a, b) => a.company.localeCompare(b.company));
+
+    [0, 1].forEach((idx) => {
+      const sel = document.getElementById(`radar-compare-${idx + 1}`);
+      if (!sel) return;
+      const otherPick = compareCompanies[1 - idx];
+      const optionsHtml = others
+        .filter((co) => co.company_canonical !== otherPick)
+        .map((co) => `<option value="${co.company_canonical}">${escapeXml(co.company)}</option>`)
+        .join('');
+      sel.innerHTML = `<option value="">+ Compare with…</option>${optionsHtml}`;
+      sel.value = compareCompanies[idx] || '';
+    });
+  }
+
   function renderSignalRadar() {
     const svgEl = document.getElementById('signal-radar-svg');
     const captionEl = document.getElementById('signal-radar-caption');
+    const legendEl = document.getElementById('radar-legend');
 
-    const RADAR_DEFS = [
-      { label: 'News', value: c.news_signals, cap: CAPS.news, colorVar: '--news-color' },
-      { label: 'Reddit', value: c.reddit_signals, cap: CAPS.reddit, colorVar: '--reddit-red' },
-      { label: 'LinkedIn', value: c.linkedin_signals, cap: CAPS.linkedin, colorVar: '--linkedin-blue' },
-      { label: 'GitHub', value: c.github_signals, cap: CAPS.github, colorVar: '--github-color' },
-      { label: 'HN', value: c.hn_signals, cap: CAPS.hn, colorVar: '--hn-color' },
-      { label: 'Exec Hires', value: c.exec_hire_signals, cap: CAPS.exec_hire, colorVar: '--exec-hire-color' },
-      { label: 'Funding', value: c.funding_signals, cap: CAPS.funding, colorVar: '--funding-color' },
-      { label: 'Patents', value: c.patent_signals, cap: CAPS.patents, colorVar: '--patents-color' },
+    const SOURCE_DEFS = [
+      { key: 'news_signals', label: 'News', cap: CAPS.news, colorVar: '--news-color' },
+      { key: 'reddit_signals', label: 'Reddit', cap: CAPS.reddit, colorVar: '--reddit-red' },
+      { key: 'linkedin_signals', label: 'LinkedIn', cap: CAPS.linkedin, colorVar: '--linkedin-blue' },
+      { key: 'github_signals', label: 'GitHub', cap: CAPS.github, colorVar: '--github-color' },
+      { key: 'hn_signals', label: 'HN', cap: CAPS.hn, colorVar: '--hn-color' },
+      { key: 'exec_hire_signals', label: 'Exec Hires', cap: CAPS.exec_hire, colorVar: '--exec-hire-color' },
+      { key: 'funding_signals', label: 'Funding', cap: CAPS.funding, colorVar: '--funding-color' },
+      { key: 'patent_signals', label: 'Patents', cap: CAPS.patents, colorVar: '--patents-color' },
     ];
+
+    const compareSeries = compareCompanies
+      .map((canon, i) => {
+        if (!canon) return null;
+        const co = companies.find((x) => x.company_canonical === canon);
+        return co ? { company: co, colorVar: COMPARE_COLOR_VARS[i] } : null;
+      })
+      .filter(Boolean);
 
     // Read the actual rendered width rather than hardcoding it — a fixed
     // viewBox width that doesn't match the real card width leaves the
@@ -336,65 +375,100 @@ function initDetailPage() {
     const maxR = Math.min(cx - 68, cy - 13, H - cy - 13);
     svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
-    const n = RADAR_DEFS.length;
+    const n = SOURCE_DEFS.length;
     const angleFor = (i) => -Math.PI / 2 + (i * 2 * Math.PI) / n;
     const pointAt = (i, r) => ({
       x: cx + r * Math.cos(angleFor(i)),
       y: cy + r * Math.sin(angleFor(i)),
     });
+    const pointsFor = (co) => SOURCE_DEFS.map((s, i) => {
+      const norm = Math.min(co[s.key], s.cap) / s.cap;
+      return pointAt(i, maxR * norm);
+    });
+    const pathFor = (pts) => pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
     // Grid rings at 25/50/75/100% of max radius.
     const ringsSvg = [0.25, 0.5, 0.75, 1].map((frac) => {
-      const pts = RADAR_DEFS.map((_, i) => pointAt(i, maxR * frac));
-      const d = pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-      return `<polygon points="${d}" fill="none" stroke="var(--border)" stroke-width="1" />`;
+      const pts = SOURCE_DEFS.map((_, i) => pointAt(i, maxR * frac));
+      return `<polygon points="${pathFor(pts)}" fill="none" stroke="var(--border)" stroke-width="1" />`;
     }).join('');
 
     // Spokes from center out to each axis's max-radius vertex.
-    const spokesSvg = RADAR_DEFS.map((_, i) => {
+    const spokesSvg = SOURCE_DEFS.map((_, i) => {
       const p = pointAt(i, maxR);
       return `<line x1="${cx}" y1="${cy}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="var(--border)" stroke-width="1" />`;
     }).join('');
 
-    // Data polygon — one vertex per source, radius = value/cap (clamped to 1).
-    const dataPoints = RADAR_DEFS.map((s, i) => {
-      const norm = Math.min(s.value, s.cap) / s.cap;
-      return pointAt(i, maxR * norm);
-    });
-    const dataPath = dataPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    // Main company — unchanged from the single-company treatment:
+    // tinted fill, solid accent stroke, per-source rainbow dots.
+    const selfPoints = pointsFor(c);
+    const selfDotsSvg = SOURCE_DEFS.map((s, i) => {
+      const p = selfPoints[i];
+      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="var(${s.colorVar})" stroke="#ffffff" stroke-width="1.5"><title>${escapeXml(c.company)} — ${escapeXml(s.label)}: ${c[s.key]}/${s.cap}</title></circle>`;
+    }).join('');
 
-    // Vertex dots, colored per source (matches the dot treatment used in
-    // Signal Rank by Source), with a tooltip showing the raw value.
-    const dotsSvg = RADAR_DEFS.map((s, i) => {
-      const p = dataPoints[i];
-      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="var(${s.colorVar})" stroke="#ffffff" stroke-width="1.5"><title>${escapeXml(s.label)}: ${s.value}/${s.cap}</title></circle>`;
+    // Compare overlays — flat single color per company (dashed outline +
+    // matching solid dots), deliberately not sharing the source-rainbow
+    // language so it's clear these are a different kind of series.
+    const compareSvg = compareSeries.map((ser) => {
+      const pts = pointsFor(ser.company);
+      const dotsSvg = SOURCE_DEFS.map((s, i) => {
+        const p = pts[i];
+        return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="var(${ser.colorVar})" stroke="#ffffff" stroke-width="1.5"><title>${escapeXml(ser.company.company)} — ${escapeXml(s.label)}: ${ser.company[s.key]}/${s.cap}</title></circle>`;
+      }).join('');
+      return `
+        <polygon points="${pathFor(pts)}" fill="none" stroke="var(${ser.colorVar})" stroke-width="2" stroke-linejoin="round" stroke-dasharray="4 3" />
+        ${dotsSvg}
+      `;
     }).join('');
 
     // Axis labels, anchor flips based on which side of the chart they fall on
     // so text grows away from the shape instead of into it.
-    const labelsSvg = RADAR_DEFS.map((s, i) => {
+    const labelsSvg = SOURCE_DEFS.map((s, i) => {
       const p = pointAt(i, maxR + 13);
-      const cos = Math.cos(angleFor(i));
+      const cosV = Math.cos(angleFor(i));
       let anchor = 'middle';
-      if (cos > 0.3) anchor = 'start';
-      else if (cos < -0.3) anchor = 'end';
+      if (cosV > 0.3) anchor = 'start';
+      else if (cosV < -0.3) anchor = 'end';
       return `<text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" font-size="10" font-family="Inter, sans-serif" font-weight="700" fill="var(--text-secondary)">${escapeXml(s.label)}</text>`;
     }).join('');
 
     svgEl.innerHTML = `
       ${ringsSvg}
       ${spokesSvg}
-      <polygon points="${dataPath}" fill="var(--accent)" opacity="0.16" />
-      <polygon points="${dataPath}" fill="none" stroke="var(--accent-deep)" stroke-width="2" stroke-linejoin="round" />
-      ${dotsSvg}
+      <polygon points="${pathFor(selfPoints)}" fill="var(--accent)" opacity="0.16" />
+      <polygon points="${pathFor(selfPoints)}" fill="none" stroke="var(--accent-deep)" stroke-width="2" stroke-linejoin="round" />
+      ${selfDotsSvg}
+      ${compareSvg}
       ${labelsSvg}
     `;
 
-    const atCapCount = RADAR_DEFS.filter((s) => s.value >= s.cap).length;
+    if (legendEl) {
+      if (compareSeries.length === 0) {
+        legendEl.innerHTML = '';
+      } else {
+        const selfItem = `<span class="radar-legend-item"><span class="radar-legend-swatch" style="background:var(--accent-deep)"></span>${escapeXml(c.company)}</span>`;
+        const compareItems = compareSeries.map((ser) => `<span class="radar-legend-item"><span class="radar-legend-swatch" style="background:var(${ser.colorVar})"></span>${escapeXml(ser.company.company)}</span>`).join('');
+        legendEl.innerHTML = selfItem + compareItems;
+      }
+    }
+
+    const atCapCount = SOURCE_DEFS.filter((s) => c[s.key] >= s.cap).length;
     captionEl.textContent = atCapCount > 0
       ? `Shape shows this company's signal profile — points on the outer ring are at or near their scoring cap (${atCapCount} of ${n} here).`
       : `Shape shows this company's signal profile relative to each source's scoring cap.`;
   }
+
+  populateCompareSelects();
+  [0, 1].forEach((idx) => {
+    const sel = document.getElementById(`radar-compare-${idx + 1}`);
+    if (!sel) return;
+    sel.addEventListener('change', () => {
+      compareCompanies[idx] = sel.value || null;
+      populateCompareSelects();
+      renderSignalRadar();
+    });
+  });
   renderSignalRadar();
 
   /* ── Recommended Next Steps ── */
