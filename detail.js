@@ -131,52 +131,83 @@ function initDetailPage() {
   renderTrendChart();
 
   /* ── Peer Comparison ── */
-  function renderPeerComparison() {
+  /* ── Rank Trend ──
+     Momentum Trend already shows this company's own index moving over
+     time; this shows something Momentum Trend can't: relative standing.
+     A company can hold flat while everyone around it falls (rank
+     improves) or rise while the field rises faster (rank falls) — the
+     index line alone doesn't tell you which. Requires ranking this
+     company against every other company at each of ITS OWN historical
+     runs, not just the current scan. */
+  function renderRankTrend() {
     const svgEl = document.getElementById('peer-compare-svg');
-    const W = svgEl.getBoundingClientRect().width || 560, H = 56, PAD_X = 16;
+    const captionEl = document.getElementById('rank-trend-caption');
+
+    // Every company's index at every run_id it has data for, grouped by
+    // run_id, so we can rank this company against the field as it stood
+    // at each point in ITS history (not just the latest scan).
+    const byRun = {};
+    companies.forEach((co) => {
+      co.history.forEach((h) => {
+        if (!byRun[h.run_id]) byRun[h.run_id] = [];
+        byRun[h.run_id].push({ company_canonical: co.company_canonical, index: h.index });
+      });
+    });
+
+    const trend = c.history.map((h) => {
+      const field = byRun[h.run_id] || [];
+      const ranked = field.slice().sort((a, b) => b.index - a.index);
+      const rank = ranked.findIndex((r) => r.company_canonical === c.company_canonical) + 1;
+      return { run_id: h.run_id, rank, total: field.length };
+    });
+
+    const current = trend[trend.length - 1];
+    document.getElementById('peer-rank-headline').innerHTML = `Ranks #<span class="num">${current.rank}</span> of <span class="num">${current.total}</span> tracked companies`;
+
+    if (trend.length < 2) {
+      document.getElementById('peer-rank-sub').textContent = 'Not enough scan history yet to show a trend.';
+      svgEl.innerHTML = '';
+      captionEl.textContent = 'Check back after the next run.';
+      return;
+    }
+
+    const earliest = trend[0];
+    const delta = earliest.rank - current.rank; // positive = climbed (rank number went down)
+    const subText = delta > 0
+      ? `Climbed <span class="num">${delta}</span> spot${delta === 1 ? '' : 's'} since the earliest tracked scan (was #${earliest.rank}).`
+      : delta < 0
+        ? `Fell <span class="num">${Math.abs(delta)}</span> spot${Math.abs(delta) === 1 ? '' : 's'} since the earliest tracked scan (was #${earliest.rank}).`
+        : `Holding steady at this rank across the tracked scan history.`;
+    document.getElementById('peer-rank-sub').innerHTML = subText;
+
+    const W = svgEl.getBoundingClientRect().width || 560, H = 120, PAD = 16, PAD_X = 20;
     svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
-    const values = companies.map((co) => co.opportunity_index_precise);
-    const min = Math.min(...values), max = Math.max(...values);
-    const range = Math.max(max - min, 0.001);
+    const ranks = trend.map((t) => t.rank);
+    const min = Math.min(...ranks), max = Math.max(...ranks); // min = best (smallest number)
+    const range = Math.max(max - min, 1);
+    const usable = H - PAD * 2;
     const usableW = W - PAD_X * 2;
-    const xOf = (v) => PAD_X + ((v - min) / range) * usableW;
-    const cy = H / 2;
 
-    const ranked = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise);
-    const rank = ranked.findIndex((co) => co.company === c.company) + 1;
-    const lowerCount = companies.filter((co) => co.opportunity_index_precise < c.opportunity_index_precise).length;
-    const percentile = companies.length > 1 ? Math.round((lowerCount / (companies.length - 1)) * 100) : 100;
+    // Inverted on purpose: a better (lower/smaller) rank number should
+    // read as higher on the chart, so "climbing" looks like climbing.
+    const pts = trend.map((t, i) => ({
+      x: PAD_X + (i * usableW) / (trend.length - 1),
+      y: PAD + ((t.rank - min) / range) * usable,
+    }));
 
-    document.getElementById('peer-rank-headline').innerHTML = `Ranks #<span class="num">${rank}</span> of <span class="num">${companies.length}</span> tracked companies`;
-    document.getElementById('peer-rank-sub').innerHTML = `Higher signal than <span class="num">${percentile}%</span> of other tracked companies this scan.`;
-
-    /* Highlighted dot uses this company's own tier color rather than a
-       generic accent — a small, purposeful splash of color instead of
-       decoration for decoration's sake. Drawn in its own pass, after all
-       muted dots, so it isn't painted over when other companies tie on
-       the exact same value (a real possibility — several often share a
-       capped max). */
     const tierDotVar = cls === 'amber' ? '--amber-deep' : cls === 'rose' ? '--rose-deep' : '--green-deep';
-    const mutedDotsSvg = companies
-      .filter((co) => co.company !== c.company)
-      .map((co) => {
-        const cx = xOf(co.opportunity_index_precise).toFixed(1);
-        return `<circle cx="${cx}" cy="${cy}" r="3.5" fill="${THEME.mutedDot}" stroke="#ffffff" stroke-width="1" />`;
-      }).join('');
-    const selfCx = xOf(c.opportunity_index_precise).toFixed(1);
-    const highlightSvg = `
-      <circle cx="${selfCx}" cy="${cy}" r="8" fill="none" stroke="var(${tierDotVar})" stroke-width="1.5" stroke-dasharray="2 2" />
-      <circle cx="${selfCx}" cy="${cy}" r="5" fill="var(${tierDotVar})" />
-    `;
+    const lineCmds = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+    const dotsSvg = pts.map((p, i) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#ffffff" stroke="var(${tierDotVar})" stroke-width="2"><title>#${trend[i].rank} of ${trend[i].total}</title></circle>`).join('');
 
     svgEl.innerHTML = `
-      <line x1="${PAD_X}" y1="${cy}" x2="${W - PAD_X}" y2="${cy}" stroke="${THEME.border}" stroke-width="1" />
-      ${mutedDotsSvg}
-      ${highlightSvg}
+      <path d="${lineCmds}" fill="none" stroke="var(${tierDotVar})" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      ${dotsSvg}
     `;
+
+    captionEl.textContent = `Relative rank across ${trend.length} scans — shows standing versus the field, not just this company's own index.`;
   }
-  renderPeerComparison();
+  renderRankTrend();
 
   /* ── Signal Rank by Source ──
      Framed by percentile, not raw rank — companies often tie at a source's
