@@ -270,8 +270,8 @@ function initDetailPage() {
       { label: 'Patents', value: c.patent_signals, cap: CAPS.patents, colorVar: '--patents-color' },
     ];
 
-    const W = 320, H = 230;
-    const cx = W / 2, cy = 108, maxR = 68;
+    const W = 350, H = 270;
+    const cx = W / 2, cy = 140, maxR = 95;
     svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
     const n = RADAR_DEFS.length;
