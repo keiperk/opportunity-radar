@@ -546,12 +546,12 @@ body {
 /* ─────────────────────────────────────────
    Radar column
 ───────────────────────────────────────── */
-.radar-column {
+.quadrant-column {
   display: flex;
   flex-direction: column;
 }
 
-.radar-scope {
+.quadrant-scope {
   aspect-ratio: 1 / 1;
   width: 100%;
   background: var(--surface);
@@ -560,7 +560,7 @@ body {
   overflow: hidden;
 }
 
-.radar-caption {
+.quadrant-caption {
   margin: 16px 0 0;
   font-size: var(--text-sm);
   font-weight: 400;

@@ -11,107 +11,95 @@ const clearButton = document.getElementById('clear-filters');
 const rankedListEl = document.getElementById('ranked-list');
 const listEmptyEl = document.getElementById('list-empty');
 const companiesTrackedCountEl = document.getElementById('companies-tracked-count');
-const radarSvg = document.getElementById('radar-svg');
+const quadrantSvg = document.getElementById('quadrant-svg');
 
 let sortDirection = 'desc';
 let groupByTier = true;
 let selectedCompany = null;
 let expandedCompany = null; // which row's per-source detail is toggled open (click, not hover)
 
-/* ── Radar (SVG) ── */
-function renderRadar() {
-  const CX = 200, CY = 200, MIN_R = 25, MAX_R = 175;
-  const ringColor = hexToRgba(THEME.accent, 0.25);
+/* ── Job Value Quadrant (SVG) ──
+   Two axes chosen for the outreach decision specifically, not overall
+   momentum: X = funding + executive hires (capacity/intent to grow),
+   Y = LinkedIn activity — the one signal in SOURCE_TIMING actually
+   tagged 'confirming' rather than 'leading', i.e. roles already
+   posted. Bottom-right (funded/hiring leadership, nothing posted yet)
+   is the highest-value outreach window: real growth signal before
+   the crowd sees an open role. No persistent labels — company count
+   makes those collide immediately, so identity is hover-only (title
+   tooltip), matching the pattern used for Rank Trend's peer lines and
+   Signal Rank by Source's scatter dots. */
+function median(arr) {
+  const s = arr.slice().sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 !== 0 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+
+function tierColorVar(tier) {
+  const tc = tierClass(tier);
+  return tc === 'amber' ? '--amber-deep' : tc === 'rose' ? '--rose-deep' : '--green-deep';
+}
+
+/* Signals are capped, integer-valued counts, so exact ties are common —
+   several companies routinely land on the identical pixel (e.g. everyone
+   maxed out on both axes). Deterministic (name-seeded, not random) jitter
+   keeps every dot individually hoverable/clickable instead of only the
+   topmost one in a stack, without the layout shifting between renders. */
+function hashJitter(str, spread) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+  const dx = (((h & 0xff) / 255) - 0.5) * 2 * spread;
+  const dy = ((((h >> 8) & 0xff) / 255) - 0.5) * 2 * spread;
+  return { dx, dy };
+}
+
+function renderQuadrant() {
+  const W = 400, H = 400, PAD = 46;
+  const plotW = W - PAD * 2, plotH = H - PAD * 2;
+
+  const xVals = companies.map((c) => c.funding_signals + c.exec_hire_signals);
+  const yVals = companies.map((c) => c.linkedin_signals);
+  const xMax = Math.max(...xVals, 1);
+  const yMax = Math.max(...yVals, 1);
+  const splitX = median(xVals);
+  const splitY = median(yVals);
+
+  const xOf = (v) => PAD + (v / xMax) * plotW;
+  const yOf = (v) => PAD + plotH - (v / yMax) * plotH;
+
+  const mutedLine = hexToRgba(THEME.accent, 0.25);
+  const labelAttrs = `font-size="10" font-weight="700" font-family="Inter, sans-serif" fill="var(--text-secondary)"`;
   let svg = '';
 
-  [50, 94, 138, 181].forEach((r) => {
-    svg += `<circle cx="${CX}" cy="${CY}" r="${r}" fill="none" stroke="${ringColor}" stroke-width="1" />`;
-  });
-  svg += `<line x1="20" y1="${CY}" x2="380" y2="${CY}" stroke="${ringColor}" stroke-width="1" />`;
-  svg += `<line x1="${CX}" y1="20" x2="${CX}" y2="380" stroke="${ringColor}" stroke-width="1" />`;
-  svg += `<circle cx="${CX}" cy="${CY}" r="3" fill="${THEME.dark}" />`;
+  // Quadrant divider lines, split at the median of the actual data so the
+  // four quadrants reflect where companies really cluster, not a fixed
+  // midpoint that could leave a quadrant empty.
+  svg += `<line x1="${PAD}" y1="${yOf(splitY).toFixed(1)}" x2="${W - PAD}" y2="${yOf(splitY).toFixed(1)}" stroke="${mutedLine}" stroke-width="1" stroke-dasharray="3 3" />`;
+  svg += `<line x1="${xOf(splitX).toFixed(1)}" y1="${PAD}" x2="${xOf(splitX).toFixed(1)}" y2="${H - PAD}" stroke="${mutedLine}" stroke-width="1" stroke-dasharray="3 3" />`;
 
-  const FONT_SIZE = 11.5, LINE_H = FONT_SIZE * 1.2, LABEL_GAP = 6, MAX_LABEL_W = 130;
-  const measureCtx = document.createElement('canvas').getContext('2d');
-  measureCtx.font = `600 ${FONT_SIZE}px Inter, sans-serif`;
-  /* Discovered-company names can run very long (40+ chars); left unchecked
-     their label boxes run off the chart edge and collide with neighboring
-     labels. Truncate what's shown on the radar itself — the full name is
-     still used for selection and still shown everywhere else. */
-  function truncateLabel(text) {
-    if (measureCtx.measureText(text).width <= MAX_LABEL_W) return text;
-    let t = text;
-    while (t.length > 1 && measureCtx.measureText(t + '…').width > MAX_LABEL_W) t = t.slice(0, -1);
-    return t + '…';
-  }
-  const labels = [];
+  svg += `<text x="${W - PAD}" y="${PAD - 10}" text-anchor="end" ${labelAttrs}>FUNDED &amp; HIRING</text>`;
+  svg += `<text x="${PAD}" y="${PAD - 10}" text-anchor="start" ${labelAttrs}>ROLES POSTED, LOW GROWTH</text>`;
+  svg += `<text x="${W - PAD}" y="${H - PAD + 20}" text-anchor="end" ${labelAttrs}>EARLY — NOT POSTED YET</text>`;
+  svg += `<text x="${PAD}" y="${H - PAD + 20}" text-anchor="start" ${labelAttrs}>LOW ACTIVITY</text>`;
 
-  companies.forEach((c, i) => {
-    const angleDeg = -90 + i * (360 / companies.length);
-    const angleRad = (angleDeg * Math.PI) / 180;
-    const radius = MIN_R + (1 - c.opportunity_index) * (MAX_R - MIN_R);
-    const cosV = Math.cos(angleRad), sinV = Math.sin(angleRad);
-    const px = CX + radius * cosV, py = CY + radius * sinV;
-    const diameter = 11 + c.opportunity_index * 5;
-    const opacity = 0.55 + c.opportunity_index * 0.45;
+  svg += `<text x="${W / 2}" y="${H - 10}" text-anchor="middle" ${labelAttrs}>FUNDING + EXEC HIRES →</text>`;
+  svg += `<text x="14" y="${H / 2}" text-anchor="middle" ${labelAttrs} transform="rotate(-90 14 ${H / 2})">LINKEDIN ACTIVITY →</text>`;
+
+  companies.forEach((c) => {
+    const { dx, dy } = hashJitter(c.company, 9);
+    const cx = Math.min(W - PAD, Math.max(PAD, xOf(c.funding_signals + c.exec_hire_signals) + dx));
+    const cy = Math.min(H - PAD, Math.max(PAD, yOf(c.linkedin_signals) + dy));
     const isSelected = c.company === selectedCompany.company;
+    const colorVar = tierColorVar(c.tier);
 
     if (isSelected) {
-      const ringD = diameter + 8;
-      svg += `<circle cx="${px}" cy="${py}" r="${ringD / 2}" fill="none" stroke="${THEME.dark}" stroke-width="1.5" stroke-dasharray="3 2" />`;
+      svg += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="11" fill="none" stroke="${THEME.dark}" stroke-width="1.5" stroke-dasharray="3 2" />`;
     }
-    const blipColor = c.discovery_source === 'discovered' ? THEME.accent : THEME.reddit;
-    svg += `<circle class="radar-blip" data-company="${c.company}" cx="${px}" cy="${py}" r="${diameter / 2}" fill="${blipColor}" opacity="${opacity}" style="cursor:pointer" />`;
-
-    let anchor = 'middle', labelR = radius;
-    if (cosV > 0.3) anchor = 'start';
-    else if (cosV < -0.3) anchor = 'end';
-
-    labels.push({ company: c.company, label: truncateLabel(c.company), cosV, sinV, anchor, diameter, labelR });
+    svg += `<circle class="quadrant-dot" data-company="${c.company}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="var(${colorVar})" opacity="0.7" stroke="#ffffff" stroke-width="1" style="cursor:pointer"><title>${escapeXml(c.company)}: ${c.funding_signals + c.exec_hire_signals} funding/exec hires, ${c.linkedin_signals} LinkedIn</title></circle>`;
   });
 
-  /* Label collision avoidance: push overlapping labels further out along
-     their own angle (dots stay put — only the text moves) until clear. */
-  function labelPos(l) {
-    const px = CX + l.labelR * l.cosV, py = CY + l.labelR * l.sinV;
-    let x = px, y = py;
-    if (l.cosV > 0.3) x = px + l.diameter / 2 + 5;
-    else if (l.cosV < -0.3) x = px - l.diameter / 2 - 5;
-    if (l.sinV < -0.3) y = py - l.diameter / 2 - 5;
-    else if (l.sinV > 0.3) y = py + l.diameter / 2 + 11;
-    return { x, y };
-  }
-  function bbox(l) {
-    const { x, y } = labelPos(l);
-    const w = measureCtx.measureText(l.label).width + LABEL_GAP;
-    const left = (l.anchor === 'start' ? x : l.anchor === 'end' ? x - w : x - w / 2) - LABEL_GAP / 2;
-    return { left, right: left + w, top: y - LINE_H, bottom: y + LINE_H * 0.3 };
-  }
-  function overlaps(a, b) {
-    const A = bbox(a), B = bbox(b);
-    return A.left < B.right && A.right > B.left && A.top < B.bottom && A.bottom > B.top;
-  }
-
-  for (let pass = 0; pass < 30; pass++) {
-    let moved = false;
-    for (let i = 0; i < labels.length; i++) {
-      for (let j = 0; j < i; j++) {
-        if (overlaps(labels[i], labels[j])) {
-          labels[i].labelR += 12;
-          moved = true;
-        }
-      }
-    }
-    if (!moved) break;
-  }
-
-  labels.forEach((l) => {
-    const { x, y } = labelPos(l);
-    svg += `<text data-company="${l.company}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${l.anchor}" font-size="${FONT_SIZE}" font-weight="600" font-family="Inter, sans-serif" fill="${THEME.radarLabel}" style="cursor:pointer"><title>${escapeXml(l.company)}</title>${escapeXml(l.label)}</text>`;
-  });
-
-  radarSvg.innerHTML = svg;
-  radarSvg.querySelectorAll('[data-company]').forEach((el) => {
+  quadrantSvg.innerHTML = svg;
+  quadrantSvg.querySelectorAll('[data-company]').forEach((el) => {
     el.addEventListener('click', () => selectCompany(el.getAttribute('data-company')));
   });
 }
@@ -354,7 +342,7 @@ function selectCompany(companyName) {
   const found = findCompany(companyName);
   if (!found) return;
   selectedCompany = found;
-  renderRadar();
+  renderQuadrant();
   renderList();
   renderInspector();
 }
@@ -393,7 +381,7 @@ loadCompanyData().then(() => {
   selectedCompany = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise)[0];
   if (!selectedCompany) return; // no usable data even from fallback — leave the loading state up rather than render broken widgets
 
-  renderRadar();
+  renderQuadrant();
   renderList();
   renderInspector();
 

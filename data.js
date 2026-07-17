@@ -29,10 +29,8 @@ const THEME = {
   accentDeep: '#455a64', // Material Blue Grey 700 — matches --accent-deep
   accentTint: '#e7ecee', // matches --accent-tint
   dark: '#0d1219', // matches --text-primary
-  radarLabel: '#333333', // radar dot text labels — softer than THEME.dark
   border: '#d3dee4', // matches --border, used for gauge track
   mutedDot: '#838ba0', // matches --peer-muted-dot, used for peer comparison dots
-  reddit: '#5e864d', // matches --reddit-red, used for the radar blips
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
 
