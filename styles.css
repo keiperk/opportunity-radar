@@ -815,7 +815,7 @@ body {
   opacity: 0.5;
 }
 
-.momentum-delta.momentum-up   { color: var(--green-deep); }
+.momentum-delta.momentum-up   { color: var(--green); }
 .momentum-delta.momentum-down { color: var(--rose-deep); }
 .momentum-delta.momentum-flat { color: var(--text-secondary); }
 
