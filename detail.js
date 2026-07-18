@@ -126,7 +126,7 @@ function initDetailPage() {
       <path d="${lineCmds}" fill="none" stroke="${THEME.trendAccent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
       ${dotsSvg}
     `;
-    captionEl.textContent = `Real signal history across ${history.length} scans — every point is an actual pipeline run.`;
+    captionEl.textContent = `Tracks this company's opportunity index over time, across ${history.length} scans — every point is an actual pipeline run.`;
   }
   renderTrendChart();
 
@@ -172,7 +172,7 @@ function initDetailPage() {
       .filter((t) => t.entry);
 
     const current = selfTrend[selfTrend.length - 1];
-    document.getElementById('peer-rank-headline').innerHTML = `Ranks #<span class="num">${current.entry.rank}</span> of <span class="num">${current.entry.total}</span> tracked companies`;
+    document.getElementById('peer-rank-headline').innerHTML = `Ranks #<span class="num">${current.entry.rank}</span> of <span class="num">${current.entry.total}</span> tracked companies by opportunity index`;
 
     if (selfTrend.length < 2) {
       document.getElementById('peer-rank-sub').textContent = 'Not enough scan history yet to show a trend.';
@@ -230,7 +230,7 @@ function initDetailPage() {
       ${selfDots}
     `;
 
-    captionEl.textContent = `This company's rank (highlighted) against every other tracked company (faint lines) across ${n} scans. Hover a line or dot for detail.`;
+    captionEl.textContent = `This company's opportunity-index rank (highlighted) against every other tracked company (faint lines) across ${n} scans — relative standing versus the field, not just its own score. Hover a line or dot for detail.`;
   }
   renderRankTrend();
 
@@ -455,8 +455,8 @@ function initDetailPage() {
 
     const atCapCount = SOURCE_DEFS.filter((s) => c[s.key] >= s.cap).length;
     captionEl.textContent = atCapCount > 0
-      ? `Shape shows this company's signal profile — points on the outer ring are at or near their scoring cap (${atCapCount} of ${n} here).`
-      : `Shape shows this company's signal profile relative to each source's scoring cap.`;
+      ? `Each axis is one of the 8 tracked signal sources — shape is this company's profile across all of them, and points on the outer ring are at or near that source's scoring cap (${atCapCount} of ${n} here).`
+      : `Each axis is one of the 8 tracked signal sources — shape is this company's profile across all of them, distance from center relative to each source's scoring cap.`;
   }
 
   populateCompareSelects();

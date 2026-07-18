@@ -375,7 +375,7 @@ function renderInspectorTrend(c) {
     <path d="${lineCmds}" fill="none" stroke="${THEME.trendAccent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     <circle cx="${last.x.toFixed(1)}" cy="${last.y.toFixed(1)}" r="2.5" fill="#ffffff" stroke="${THEME.trendAccent}" stroke-width="1.5" />
   `;
-  captionEl.textContent = `Real signal history across ${history.length} scans.`;
+  captionEl.textContent = `Opportunity index over ${history.length} scans.`;
 }
 
 /* ── Right rail: Inspector / Job Signals / Contact ── */
