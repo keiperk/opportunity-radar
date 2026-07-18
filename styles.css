@@ -1542,6 +1542,11 @@ body {
   text-align: right;
 }
 
+/* Same tier-color vocabulary as the overall tier badge — a quick
+   scanner should spot a weak source as fast as a strong one. */
+.source-rank-row-pct-weak { color: var(--rose-deep); font-weight: 600; }
+.source-rank-row-pct-strong { color: var(--green-deep); font-weight: 600; }
+
 .source-rank-row-strip {
   flex: 1 0 0;
   min-width: 0;

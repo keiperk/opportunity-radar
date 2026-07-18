@@ -259,16 +259,25 @@ function initDetailPage() {
     });
 
     const strongest = stats.reduce((a, b) => (b.percentile > a.percentile ? b : a));
+    const weakest = stats.reduce((a, b) => (b.percentile < a.percentile ? b : a));
     document.getElementById('source-rank-headline').innerHTML =
-      `Strongest relative to peers: <strong>${strongest.label}</strong> — higher than <span class="num">${strongest.percentile}%</span> of tracked companies.`;
+      `Strongest relative to peers: <strong>${strongest.label}</strong> (higher than <span class="num">${strongest.percentile}%</span>) — weakest: <strong>${weakest.label}</strong> (higher than only <span class="num">${weakest.percentile}%</span>).`;
 
-    document.getElementById('source-rank-rows').innerHTML = stats.map((s) => `
+    /* Weak and strong rows get the same tier-color vocabulary used for
+       the overall tier badge (rose/green) instead of every row looking
+       identical regardless of percentile — knowing where a company is
+       unexceptional matters just as much as knowing where it's strong,
+       for calibrating how much to trust the headline score. */
+    document.getElementById('source-rank-rows').innerHTML = stats.map((s) => {
+      const tier = s.percentile < 25 ? 'weak' : s.percentile >= 75 ? 'strong' : '';
+      return `
       <div class="source-rank-row">
         <span class="source-pill ${s.cls} source-rank-row-label">${s.label}</span>
         <svg class="source-rank-row-strip" data-source="${s.key}" height="20" aria-hidden="true"></svg>
-        <span class="source-rank-row-pct">Higher than <span class="num">${s.percentile}%</span></span>
+        <span class="source-rank-row-pct${tier ? ' source-rank-row-pct-' + tier : ''}">Higher than <span class="num">${s.percentile}%</span></span>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     stats.forEach((s) => {
       const svgEl = document.querySelector(`.source-rank-row-strip[data-source="${s.key}"]`);
