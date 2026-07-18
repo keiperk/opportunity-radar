@@ -261,11 +261,9 @@ function renderList() {
       { label: 'Funding', cls: 'source-funding', value: c.funding_signals, cap: CAPS.funding, weight: WEIGHTS.funding },
       { label: 'Patents', cls: 'source-patents', value: c.patent_signals, cap: CAPS.patents, weight: WEIGHTS.patents },
     ];
-    /* Bar width scaled against the highest cap among these sources (not
-       each source's own cap) — matches the Signal Breakdown widget on the
-       detail page so the same per-source data reads the same way on both
-       pages. */
-    const maxCap = Math.max(...sourceDefs.map((s) => s.cap));
+    /* Bar width scaled against each source's own cap — matches the Signal
+       Breakdown widget on the detail page, and a value that hits its cap
+       always reads as a full bar. */
     const detailHtml = sourceDefs.map((s) => {
       const norm = Math.min(s.value, s.cap) / s.cap;
       const contribution = norm * s.weight;
@@ -274,7 +272,7 @@ function renderList() {
         <div class="row-detail-item">
           <span class="row-detail-label ${s.cls}">${s.label}${atCap ? '<span class="row-detail-cap-flag" title="This source hit its scoring cap — real activity may be higher than what\'s shown">At cap</span>' : ''}</span>
           <span class="row-detail-value">${s.value}<span class="row-detail-cap">/${s.cap}</span> <span class="row-detail-contrib">${contribution.toFixed(3)}</span></span>
-          <div class="meter-track row-detail-meter"><div class="meter-fill ${s.cls}" style="width:${Math.min(100, (s.value / maxCap) * 100).toFixed(0)}%"></div></div>
+          <div class="meter-track row-detail-meter"><div class="meter-fill ${s.cls}" style="width:${(norm * 100).toFixed(0)}%"></div></div>
         </div>
       `;
     }).join('');

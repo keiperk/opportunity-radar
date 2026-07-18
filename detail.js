@@ -69,11 +69,11 @@ function initDetailPage() {
     { label: 'Funding', key: 'source-funding', value: c.funding_signals, cap: CAPS.funding, weight: WEIGHTS.funding },
     { label: 'Patents', key: 'source-patents', value: c.patent_signals, cap: CAPS.patents, weight: WEIGHTS.patents },
   ];
-  /* Bar width is scaled against the highest cap among these sources
-     (not each source's own cap) — otherwise a value of 10 at its cap of
-     10 and a value of 30 at its cap of 30 would render as the same
-     100%-width bar, even though 30 is three times as many mentions. */
-  const maxCap = Math.max(...sourceDefs.map((s) => s.cap));
+  /* Bar width is scaled against each source's own cap, so a value that
+     hits its cap (e.g. 10/10) always reads as a full bar — matching the
+     "10/10" text right next to it. Relative importance across sources
+     (a cap of 30 mattering more than a cap of 10) is instead conveyed by
+     the contribution number, not bar length. */
   document.getElementById('breakdown-stack').innerHTML = sourceDefs.map((s) => {
     const norm = Math.min(s.value, s.cap) / s.cap;
     const contribution = norm * s.weight;
@@ -84,7 +84,7 @@ function initDetailPage() {
           <span class="label">${s.label}${atCap ? '<span class="row-detail-cap-flag" title="This source hit its scoring cap — real activity may be higher than what\'s shown">At cap</span>' : ''}</span>
           <span class="value">${s.value}<span class="row-detail-cap">/${s.cap}</span></span>
         </div>
-        <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${Math.min(100, (s.value / maxCap) * 100).toFixed(0)}%"></div></div>
+        <div class="meter-track"><div class="meter-fill ${s.key}" style="width:${(norm * 100).toFixed(0)}%"></div></div>
         <span class="row-detail-contrib mini-breakdown-contrib">${contribution.toFixed(3)}</span>
       </div>
     `;
