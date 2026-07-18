@@ -449,9 +449,9 @@ body {
 
 .card-eyebrow {
   padding-left: 3px;
-  font-size: var(--text-sm);
+  font-size: var(--text-2xs);
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: var(--accent-deep);
 }
@@ -1234,7 +1234,7 @@ body {
   color: inherit;
 }
 
-.contact-list-link:hover { background: var(--border-emphasis); }
+.contact-list-link:hover { background: color-mix(in srgb, var(--accent-tint), var(--border-emphasis) 50%); }
 
 .contact-list-avatar {
   width: 30px;
