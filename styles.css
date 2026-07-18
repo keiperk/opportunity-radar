@@ -1221,14 +1221,20 @@ body {
   gap: 8px;
 }
 
-.contact-list-item {
+.contact-list-item { border-radius: var(--radius-md); overflow: hidden; }
+
+/* The whole row is the click target, not just the LinkedIn glyph. */
+.contact-list-link {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   padding: 8px;
-  border-radius: var(--radius-md);
   background: var(--accent-tint);
+  text-decoration: none;
+  color: inherit;
 }
+
+.contact-list-link:hover { background: var(--border-emphasis); }
 
 .contact-list-avatar {
   width: 30px;

@@ -1147,7 +1147,10 @@ function populateContactCard(c) {
   const emptyEl = document.getElementById('contact-empty-state');
   const websiteCta = document.getElementById('contact-website-cta');
   const websiteCaveat = document.getElementById('contact-website-caveat');
+  const labelEl = document.getElementById('contact-section-label');
   const contacts = CONTACTS[c.company_canonical] || [];
+
+  if (labelEl) labelEl.textContent = contacts.length > 1 ? 'Suggested Contacts' : 'Suggested Contact';
 
   if (contacts.length === 0) {
     if (cardEl) cardEl.hidden = true;
@@ -1180,13 +1183,13 @@ function populateContactCard(c) {
 
     return `
       <li class="contact-list-item">
-        <div class="contact-list-avatar">${escapeXml(initials)}</div>
-        <div class="contact-list-info">
-          <p class="contact-list-name">${escapeXml(name)}${badgeHtml}</p>
-          <p class="contact-list-title">${escapeXml(title || c.company)}</p>
-        </div>
-        <a class="contact-list-linkedin" href="${contact.linkedin_url}" target="_blank" rel="noopener" title="Message ${escapeXml(name)} on LinkedIn">
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" rx="3" fill="var(--linkedin-blue)" /><text x="8" y="11.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#ffffff">in</text></svg>
+        <a class="contact-list-link" href="${contact.linkedin_url}" target="_blank" rel="noopener" title="Message ${escapeXml(name)} on LinkedIn">
+          <div class="contact-list-avatar">${escapeXml(initials)}</div>
+          <div class="contact-list-info">
+            <p class="contact-list-name">${escapeXml(name)}${badgeHtml}</p>
+            <p class="contact-list-title">${escapeXml(title || c.company)}</p>
+          </div>
+          <svg class="contact-list-linkedin" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" rx="3" fill="var(--linkedin-blue)" /><text x="8" y="11.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#ffffff">in</text></svg>
         </a>
       </li>
     `;
