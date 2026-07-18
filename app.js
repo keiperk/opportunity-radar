@@ -170,20 +170,24 @@ function momentumHeatVar(c) {
   const h = c.history || [];
   if (h.length < 2) return '--text-secondary';
   const delta = h[h.length - 1].index - h[h.length - 2].index;
-  if (delta > 0.03) return '--hue-red';
-  if (delta > 0.005) return '--hue-orange';
-  if (delta < -0.03) return '--hue-blue-dark';
-  if (delta < -0.005) return '--hue-blue';
+  if (delta > 0.03) return '--hue-red-tint-1';
+  if (delta > 0.005) return '--hue-orange-tint-1';
+  if (delta < -0.03) return '--hue-blue';
+  if (delta < -0.005) return '--hue-blue-tint-1';
   return '--border-emphasis';
 }
 
-/* ── Leaderboard (SVG) — all companies, ranked by opportunity_index,
-   bar length = score, bar color = momentum heat. This is the direct
-   "who's hottest right now" view; Job Value Quadrant (toggle) answers
-   a narrower question (funding/hiring signal vs. posted-role signal). */
+/* ── Leaderboard (SVG) — top 12 by opportunity_index, bar length =
+   score, bar color = momentum heat. Capped to 12 rather than showing
+   every tracked company: a leaderboard is conventionally top-N, the
+   full company-by-company view already exists in the ranked list, and
+   showing all 40 here just meant scrolling to see the point of it.
+   Job Value Quadrant (toggle) covers a narrower question (funding/
+   hiring signal vs. posted-role signal). */
 function renderLeaderboard() {
-  const ROW_H = 26, GAP = 4, PAD_L = 4, PAD_R = 46, LABEL_W = 110;
-  const sorted = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise);
+  const TOP_N = 12;
+  const ROW_H = 20, GAP = 3, PAD_L = 4, PAD_R = 46, LABEL_W = 110;
+  const sorted = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise).slice(0, TOP_N);
   const n = sorted.length;
   const W = leaderboardSvg.getBoundingClientRect().width || 300;
   const H = Math.max(1, n * (ROW_H + GAP) - GAP);

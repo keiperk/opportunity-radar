@@ -609,7 +609,7 @@ body {
    push Job Opportunity Signals far down the page). */
 .leaderboard-scope {
   width: 100%;
-  max-height: 480px;
+  max-height: 300px;
   overflow-y: auto;
   flex-shrink: 0;
   background: var(--surface);
