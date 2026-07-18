@@ -116,8 +116,8 @@ function renderQuadrant() {
 
   svg += `<text x="${W - PAD}" y="${PAD - 10}" text-anchor="end" ${labelAttrs}>FUNDED &amp; HIRING</text>`;
   svg += `<text x="${PAD}" y="${PAD - 10}" text-anchor="start" ${labelAttrs}>ROLES POSTED, LOW GROWTH</text>`;
-  svg += `<text x="${W - PAD}" y="${H - PAD + 15}" text-anchor="end" ${labelAttrs}>EARLY — NOT POSTED YET</text>`;
-  svg += `<text x="${PAD}" y="${H - PAD + 15}" text-anchor="start" ${labelAttrs}>LOW ACTIVITY</text>`;
+  svg += `<text x="${W - PAD}" y="${H - PAD + 12}" text-anchor="end" ${labelAttrs}>EARLY — NOT POSTED YET</text>`;
+  svg += `<text x="${PAD}" y="${H - PAD + 12}" text-anchor="start" ${labelAttrs}>LOW ACTIVITY</text>`;
 
   svg += `<text x="${W / 2}" y="${H - 20}" text-anchor="middle" ${labelAttrs}>FUNDING + EXEC HIRES →</text>`;
   svg += `<text x="23" y="${H / 2}" text-anchor="middle" ${labelAttrs} transform="rotate(-90 23 ${H / 2})">LINKEDIN ACTIVITY →</text>`;
