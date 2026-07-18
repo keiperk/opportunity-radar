@@ -1171,9 +1171,15 @@ body {
 .inspector-card .btn-dark { margin-top: 16px; }
 
 /* Suggested Contact */
+/* flex-start, not center — the avatar must stay flush to this row's own
+   top edge always. Nothing precedes the row itself (the Unverified
+   badge lives inside .contact-person-info, not above the row), so the
+   row's top position is constant regardless of badge presence, and the
+   avatar lands next to whichever text is first: the badge when present,
+   the name when it isn't. */
 .contact-person-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   margin-top: 12px;
 }
