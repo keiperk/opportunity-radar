@@ -13,6 +13,7 @@ const rankedListEl = document.getElementById('ranked-list');
 const listEmptyEl = document.getElementById('list-empty');
 const companiesTrackedCountEl = document.getElementById('companies-tracked-count');
 const quadrantSvg = document.getElementById('quadrant-svg');
+const leaderboardSvg = document.getElementById('leaderboard-svg');
 
 let sortDirection = 'desc';
 let groupByTier = true;
@@ -157,6 +158,63 @@ function renderMomentumBadge(c) {
   const label = dir === 'flat' ? 'Flat' : `<span class="num">${delta > 0 ? '+' : ''}${delta.toFixed(2)}</span>`;
 
   return `<span class="momentum-delta momentum-${dir}" title="Change since previous scan">${arrow} ${label}</span>`;
+}
+
+/* ── Heat: momentum-based color for the Leaderboard, distinct from tier
+   color — the app's whole point is surfacing who's HOT (rising), not
+   just who's highest; a flat company sitting at a high score isn't the
+   same lead as one climbing fast. Reuses the exact same delta
+   thresholds as the momentum badges (renderMomentumBadge) so a
+   company's heat color always agrees with its arrow elsewhere. */
+function momentumHeatVar(c) {
+  const h = c.history || [];
+  if (h.length < 2) return '--text-secondary';
+  const delta = h[h.length - 1].index - h[h.length - 2].index;
+  if (delta > 0.03) return '--hue-red';
+  if (delta > 0.005) return '--hue-orange';
+  if (delta < -0.03) return '--hue-blue-dark';
+  if (delta < -0.005) return '--hue-blue';
+  return '--border-emphasis';
+}
+
+/* ── Leaderboard (SVG) — all companies, ranked by opportunity_index,
+   bar length = score, bar color = momentum heat. This is the direct
+   "who's hottest right now" view; Job Value Quadrant (toggle) answers
+   a narrower question (funding/hiring signal vs. posted-role signal). */
+function renderLeaderboard() {
+  const ROW_H = 26, GAP = 4, PAD_L = 4, PAD_R = 46, LABEL_W = 110;
+  const sorted = companies.slice().sort((a, b) => b.opportunity_index_precise - a.opportunity_index_precise);
+  const n = sorted.length;
+  const W = leaderboardSvg.getBoundingClientRect().width || 300;
+  const H = Math.max(1, n * (ROW_H + GAP) - GAP);
+  leaderboardSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  leaderboardSvg.setAttribute('height', H);
+
+  const barMaxW = Math.max(10, W - LABEL_W - PAD_R);
+  const maxIndex = Math.max(...sorted.map((c) => c.opportunity_index_precise), 0.01);
+
+  const rowsSvg = sorted.map((c, i) => {
+    const y = i * (ROW_H + GAP);
+    const barW = Math.max(2, (c.opportunity_index_precise / maxIndex) * barMaxW);
+    const heatVar = momentumHeatVar(c);
+    const isSelected = c.company === selectedCompany.company;
+    const nameLabel = c.company.length > 16 ? c.company.slice(0, 15) + '…' : c.company;
+
+    return `
+      <g class="leaderboard-row" data-company="${c.company}" style="cursor:pointer">
+        ${isSelected ? `<rect x="0" y="${y}" width="${W}" height="${ROW_H}" fill="var(--accent-tint)" rx="6" />` : ''}
+        <text x="${PAD_L}" y="${(y + ROW_H / 2).toFixed(1)}" dominant-baseline="middle" font-size="11" font-weight="600" font-family="Inter, sans-serif" fill="var(--text-primary)">${escapeXml(nameLabel)}<title>${escapeXml(c.company)}</title></text>
+        <rect x="${LABEL_W}" y="${y + 5}" width="${barMaxW}" height="${ROW_H - 10}" rx="3" fill="var(--border)" opacity="0.3" />
+        <rect x="${LABEL_W}" y="${y + 5}" width="${barW.toFixed(1)}" height="${ROW_H - 10}" rx="3" fill="var(${heatVar})"><title>${escapeXml(c.company)}: ${c.opportunity_index.toFixed(2)}</title></rect>
+        <text x="${(LABEL_W + barMaxW + 8).toFixed(1)}" y="${(y + ROW_H / 2).toFixed(1)}" dominant-baseline="middle" font-size="11" font-weight="700" font-family="var(--font-mono)" fill="var(--text-secondary)">${c.opportunity_index.toFixed(2)}</text>
+      </g>
+    `;
+  }).join('');
+
+  leaderboardSvg.innerHTML = rowsSvg;
+  leaderboardSvg.querySelectorAll('[data-company]').forEach((el) => {
+    el.addEventListener('click', () => selectCompany(el.getAttribute('data-company')));
+  });
 }
 
 /* ── Ranked list ── */
@@ -395,6 +453,7 @@ function selectCompany(companyName) {
   if (!found) return;
   selectedCompany = found;
   renderQuadrant();
+  renderLeaderboard();
   renderList();
   renderInspector();
 }
@@ -431,6 +490,29 @@ clearButton.addEventListener('click', () => {
   renderList();
 });
 
+/* ── Leaderboard / Job Value Quadrant toggle ── */
+const chartToggleLeaderboard = document.getElementById('chart-toggle-leaderboard');
+const chartToggleQuadrant = document.getElementById('chart-toggle-quadrant');
+const leaderboardScopeEl = document.getElementById('leaderboard-scope');
+const quadrantScopeEl = document.getElementById('quadrant-scope');
+const leaderboardCaptionEl = document.getElementById('leaderboard-caption');
+const quadrantCaptionEl = document.getElementById('quadrant-caption');
+
+function setChartView(view) {
+  const showLeaderboard = view === 'leaderboard';
+  leaderboardScopeEl.hidden = !showLeaderboard;
+  quadrantScopeEl.hidden = showLeaderboard;
+  leaderboardCaptionEl.hidden = !showLeaderboard;
+  quadrantCaptionEl.hidden = showLeaderboard;
+  chartToggleLeaderboard.setAttribute('aria-pressed', String(showLeaderboard));
+  chartToggleQuadrant.setAttribute('aria-pressed', String(!showLeaderboard));
+  if (showLeaderboard) renderLeaderboard();
+  else renderQuadrant();
+}
+
+chartToggleLeaderboard.addEventListener('click', () => setChartView('leaderboard'));
+chartToggleQuadrant.addEventListener('click', () => setChartView('quadrant'));
+
 /* ── Init: wait for live data before rendering anything that depends
    on it (radar/list/inspector all read `companies`, which is empty
    until the fetch resolves). ── */
@@ -442,6 +524,7 @@ Promise.all([loadCompanyData(), loadContactsData()]).then(() => {
   if (!selectedCompany) return; // no usable data even from fallback — leave the loading state up rather than render broken widgets
 
   renderQuadrant();
+  renderLeaderboard();
   renderList();
   renderInspector();
 

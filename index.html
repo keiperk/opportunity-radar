@@ -72,13 +72,20 @@
         <p>Loading live scan data…</p>
       </div>
 
-      <!-- Left: Job Value Quadrant + Job Opportunity Signals -->
-      <section class="quadrant-column" aria-label="Job value quadrant">
-        <h3 class="section-label" style="margin-top: 0;">Job Value Quadrant</h3>
-        <div class="quadrant-scope">
+      <!-- Left: Leaderboard / Job Value Quadrant (toggle) + Job Opportunity Signals -->
+      <section class="quadrant-column" aria-label="Company leaderboard">
+        <div class="chart-toggle-row" style="margin-top: 0;" role="tablist">
+          <button class="pill-btn chart-toggle-btn" id="chart-toggle-leaderboard" type="button" aria-pressed="true">Leaderboard</button>
+          <button class="pill-btn chart-toggle-btn" id="chart-toggle-quadrant" type="button" aria-pressed="false">Job Value Quadrant</button>
+        </div>
+        <div class="leaderboard-scope" id="leaderboard-scope">
+          <svg id="leaderboard-svg" width="100%" aria-hidden="true"></svg>
+        </div>
+        <div class="quadrant-scope" id="quadrant-scope" hidden>
           <svg id="quadrant-svg" viewBox="0 0 400 400" width="100%" height="100%" aria-hidden="true"></svg>
         </div>
-        <p class="quadrant-caption" id="quadrant-caption">Position shows relative standing versus other tracked companies, not raw counts — funding + executive hires on the right, LinkedIn hiring activity toward the top. Bottom-right is the sweet spot for outreach — real growth capital and leadership build-out ahead of any public job posting. Hover a dot for exact counts, click to select.</p>
+        <p class="quadrant-caption" id="leaderboard-caption">Ranked by opportunity index — bar length is the score, bar color is momentum since the last scan (warm = rising, cool = declining, grey = flat). Click a bar to select.</p>
+        <p class="quadrant-caption" id="quadrant-caption" hidden>Position shows relative standing versus other tracked companies, not raw counts — funding + executive hires on the right, LinkedIn hiring activity toward the top. Bottom-right is the sweet spot for outreach — real growth capital and leadership build-out ahead of any public job posting. Hover a dot for exact counts, click to select.</p>
 
         <h3 class="section-label">Job Opportunity Signals</h3>
         <div class="job-signals-card">
