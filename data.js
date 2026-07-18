@@ -40,16 +40,16 @@ const THEME = {
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
 
-/* Last-known-good snapshot (pipeline runs 59-182 — sparse/gapped run_ids
+/* Last-known-good snapshot (pipeline runs 59-184 — sparse/gapped run_ids
    throughout; run_id looks like an n8n execution ID shared across the
    whole instance, not a dedicated per-scan counter) — used only if the
    live fetch fails, so the page degrades gracefully instead of breaking.
    Full multi-run history (not just the latest run) so Momentum Trend
    charts still have real data to plot even in fallback mode. Refreshed
-   2026-07-17 (fifth refresh same day, after a full n8n workflow run).
-   No new discoveries or duplicate-naming issues - same 40 canonical
-   companies as prior refreshes. patent_signals remains blank for every
-   run except 124. */
+   2026-07-17 (sixth refresh same day, after a second full n8n workflow
+   run). No new discoveries or duplicate-naming issues - same 40
+   canonical companies as prior refreshes. patent_signals remains blank
+   for every run except 124. */
 const FALLBACK_ROWS = [
   { run_id: '59', run_ts: '2026-07-14T09:42:07.029-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '9', reddit_signals: '0', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '0', funding_signals: '0', patent_signals: '0', discovery_source: 'discovered', company_url: '' },
   { run_id: '59', run_ts: '2026-07-14T09:42:07.033-07:00', company_canonical: 'auger', company_display: 'Auger', news_signals: '10', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '2', exec_hire_signals: '0', funding_signals: '0', patent_signals: '0', discovery_source: 'discovered', company_url: '' },
@@ -703,6 +703,21 @@ const FALLBACK_ROWS = [
   { run_id: '182', run_ts: '2026-07-17T17:44:47.182-07:00', company_canonical: 'launchmeloud', company_display: 'LaunchMeLoud', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.launchmeloud.com' },
   { run_id: '182', run_ts: '2026-07-17T17:44:47.183-07:00', company_canonical: 'undocapital', company_display: 'Undo Capital', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.undocapital.com' },
   { run_id: '182', run_ts: '2026-07-17T17:44:47.184-07:00', company_canonical: 'nautis', company_display: 'Nautis', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://nautiswatches.com' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.187-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://helsing.ai' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.189-07:00', company_canonical: 'pascal', company_display: 'Pascal', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '2', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://pascaldesign.com' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.191-07:00', company_canonical: 'emergent', company_display: 'Emergent', news_signals: '9', reddit_signals: '0', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://emergent.sh' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.192-07:00', company_canonical: 'auger', company_display: 'Auger', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '2', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://ioniceaugers.com' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.193-07:00', company_canonical: 'syntetica', company_display: 'Syntetica', news_signals: '10', reddit_signals: '9', linkedin_signals: '10', github_signals: '6', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.syntetica.co' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.194-07:00', company_canonical: 'jessebens', company_display: "Jesse & Ben's", news_signals: '10', reddit_signals: '9', linkedin_signals: '10', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.jesseandbens.com' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.195-07:00', company_canonical: 'venice', company_display: 'Venice', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.visitvenezia.eu' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.196-07:00', company_canonical: 'whale', company_display: 'Whale', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://usewhale.io' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.197-07:00', company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '18', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://thinkingmachines.ai' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.198-07:00', company_canonical: 'virtu', company_display: 'Virtu AI', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.virtueai.com' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.199-07:00', company_canonical: 'attribute', company_display: 'Attribute', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '14', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://theattributes.com' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.202-07:00', company_canonical: 'zml', company_display: 'ZML', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://zml.ai' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.203-07:00', company_canonical: 'launchmeloud', company_display: 'LaunchMeLoud', news_signals: '10', reddit_signals: '9', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.launchmeloud.com' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.204-07:00', company_canonical: 'undocapital', company_display: 'Undo Capital', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.undocapital.com' },
+  { run_id: '184', run_ts: '2026-07-17T18:09:15.205-07:00', company_canonical: 'nautis', company_display: 'Nautis', news_signals: '10', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://nautiswatches.com' },
 ];
 
 let companies = [];
@@ -989,25 +1004,40 @@ let CONTACTS = {};
    pull (the search isn't a 1:1 match) — keep whichever one the sheet
    lists first rather than letting a later, potentially worse match
    silently overwrite it. */
+/* Maps each company to an ARRAY of candidate contacts, not just one —
+   the search now routinely returns several people per company, several
+   of them false positives (surname coincidences), so the UI shows the
+   list and lets a human pick rather than the app silently guessing
+   which one is right. Deduped by name (case-insensitive) since the
+   same real person often appears more than once across search passes. */
 function buildContactsMap(rows) {
   const map = {};
+  const seenNames = {};
   rows.forEach((r) => {
     if (!r.company_canonical || !r.contact_name || !r.linkedin_url) return;
     const key = CANONICAL_ALIASES[r.company_canonical] || r.company_canonical;
-    if (!map[key]) map[key] = r;
+    const nameKey = key + '::' + r.contact_name.trim().toLowerCase();
+    if (seenNames[nameKey]) return;
+    seenNames[nameKey] = true;
+    if (!map[key]) map[key] = [];
+    map[key].push(r);
   });
   return map;
 }
 
-/* Last-known-good contacts snapshot (pulled 2026-07-17) — used only if
-   the live fetch fails. Small and will grow as the pipeline finds more;
-   refresh the same way as FALLBACK_ROWS (pull the contacts sheet,
-   keep-first dedupe per company, regenerate this array). */
+/* Last-known-good contacts snapshot (refreshed 2026-07-17, after the
+   pipeline's search was widened to return multiple candidates per
+   company) — used only if the live fetch fails. Deduped by name within
+   each company (not "keep first" — buildContactsMap groups all unique
+   people per company now), so this can hold several rows per company.
+   Refresh the same way as FALLBACK_ROWS: pull the contacts sheet,
+   dedupe by company+name, regenerate this array. */
 const FALLBACK_CONTACTS = [
   { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Pascal Cordeau', contact_title_snippet: 'Pascal Cordeau - Senior Engineering Manager', linkedin_url: 'https://ca.linkedin.com/in/pascalcordeau', snippet: 'Pascal Cordeau · Senior Engineering Manager | Mechanical and Multidisciplinary Projects | Energy and Mining Markets · View mutual connections with Pascal · About.', found_at: '2026-07-17T19:18:19.967Z', verified: 'TRUE' },
   { company_canonical: 'emergent', company_display: 'Emergent', contact_name: 'Udeshna Boruah Kalita', contact_title_snippet: 'Udeshna Boruah Kalita - Talent Partner@ Emergent', linkedin_url: 'https://in.linkedin.com/in/udeshna-boruah-kalita-6b0459bb', snippet: 'Talent Partner@ Emergent | Build your Idea-​> Emergent.sh · With a 10 years + of experience in Talent Acquisition, I specialize in end-to-end recruitment, ...', found_at: '2026-07-17T19:18:19.968Z', verified: 'TRUE' },
   { company_canonical: 'auger', company_display: 'Auger', contact_name: 'Chris Auger', contact_title_snippet: 'Chris Auger - Extreme Leadership', linkedin_url: 'https://ca.linkedin.com/in/chris-auger-extreme-leadership-999067136', snippet: 'Chris Auger - Extreme Leadership. Senior Engineering Manager | General Manager | Business Transformation Manager | PMP | Project Manager | Project Delivery ...', found_at: '2026-07-17T19:18:19.969Z', verified: 'TRUE' },
   { company_canonical: 'helsing', company_display: 'Helsing', contact_name: 'Bailey McMeekin', contact_title_snippet: 'Bailey McMeekin - Talent Acquisition Specialist', linkedin_url: 'https://uk.linkedin.com/in/bailey-mcmeekin-b0b773171', snippet: 'Talent Acquisition Specialist · I am a passionate and driven recruiter, with ... Talent Acquisition Specialist. Harmattan AI. Jan 2026 - Present 7 months. Helsing ...', found_at: '2026-07-17T19:37:49.782Z', verified: 'TRUE' },
+  { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Alexandre Pascal', contact_title_snippet: 'Alexandre Pascal - Software QA Engineering Manager', linkedin_url: 'https://ca.linkedin.com/in/alexandre-pascal-184377114', snippet: 'Alexandre Pascal. Software QA Engineering Manager. Silicon Labs Université de Montréal - Ecole polytechnique de Montréal. Montreal, Quebec ...', found_at: '2026-07-17T19:37:49.783Z', verified: 'TRUE' },
   { company_canonical: 'syntetica', company_display: 'Syntetica', contact_name: 'Laure Delavallée', contact_title_snippet: 'Laure Delavallée - Talent Partner chez Hexa', linkedin_url: 'https://fr.linkedin.com/in/laure-delavall%C3%A9e-456374109', snippet: 'Syntetica. mai 2025 - juil. 2025 3 mois. Ville de Paris . HRBP . Recruitment ... Talent Acquisition and Employer Branding Specialist. Bene Bono (ex Hors ...', found_at: '2026-07-17T19:37:49.785Z', verified: 'TRUE' },
   { company_canonical: 'venice', company_display: 'Venice AI', contact_name: 'Illana Hoffer Henriquez', contact_title_snippet: 'Illana Hoffer Henriquez - CSR & Social Impact', linkedin_url: 'https://www.linkedin.com/in/illana-hoffer-henriquez-a5591770', snippet: 'Amoria Bond. 8 months · Amoria Bond Graphic. Talent Acquisition Specialist. Amoria Bond. Apr 2018 - Jun 2018 3 months. Amsterdam Area, Netherlands.', found_at: '2026-07-17T19:37:49.786Z', verified: 'FALSE' },
   { company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', contact_name: "John O'Hara", contact_title_snippet: "John O'Hara - Recruiting @ Thinking Machines Lab", linkedin_url: 'https://www.linkedin.com/in/john0hara', snippet: 'Recruiting @ Thinking Machines Lab · Experience: Thinking Machines Lab ... Technical Recruiter & Sourcer (2008-2011). Oculus VR Graphic. Technical ...', found_at: '2026-07-17T19:37:49.787Z', verified: 'TRUE' },
@@ -1015,6 +1045,54 @@ const FALLBACK_CONTACTS = [
   { company_canonical: 'nautis', company_display: 'Nautis', contact_name: 'Tanveer Singh Dhawan', contact_title_snippet: 'Tanveer Singh Dhawan - Backend Team Lead → DevOps ...', linkedin_url: 'https://la.linkedin.com/in/tany09', snippet: 'Software Engineering Manager with hands-on experience leading teams to build and scale production-grade applications. Responsible for system design, code ...', found_at: '2026-07-17T19:37:49.789Z', verified: 'FALSE' },
   { company_canonical: 'virtu', company_display: 'Virtu AI', contact_name: 'Bala Vadlamani (PMP®)', contact_title_snippet: 'Bala Vadlamani (PMP®) - Manager Talent Acquisition at ...', linkedin_url: 'https://in.linkedin.com/in/balavadlamani', snippet: 'Bala Vadlamani (PMP®) Manager. Talent Acquisition Manager Centific Nov 2021 - Present . •Managing the complete Recruitments for Staffing needs for South ...', found_at: '2026-07-17T20:55:05.632Z', verified: 'FALSE' },
   { company_canonical: 'allbirds', company_display: 'Allbirds', contact_name: 'Viviana Ramirez', contact_title_snippet: 'Viviana Ramirez - Recruiter | Full-Cycle Hiring', linkedin_url: 'https://www.linkedin.com/in/vivir', snippet: 'Allbirds Graphic. Recruiter. Allbirds. May 2021 - Aug 2022 1 year 4 months. Remote. Full-cycle recruiting for corporate roles with a focus in business ...', found_at: '2026-07-17T20:55:05.635Z', verified: 'TRUE' },
+  { company_canonical: 'syntetica', company_display: 'Helsing', contact_name: 'Bailey McMeekin', contact_title_snippet: 'Bailey McMeekin - Talent Acquisition Specialist', linkedin_url: 'https://uk.linkedin.com/in/bailey-mcmeekin-b0b773171', snippet: 'Talent Acquisition Specialist · I am a passionate and driven recruiter, with ... Talent Acquisition Specialist. Harmattan AI. Jan 2026 - Present 7 months. Helsing ...', found_at: '2026-07-17T21:03:44.095Z', verified: 'TRUE' },
+  { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Pascal Vandenbergh', contact_title_snippet: 'Pascal Vandenbergh - 🌏 International Trilingual (English/ ...', linkedin_url: 'https://es.linkedin.com/in/pascalvandenbergh/en', snippet: 'International Talent Acquisition Specialist. REDi Holbourne Group. Nov 2022 ... o Build strong talent pipelines using AI tools, talent mapping, LinkedIn Recruiter ...', found_at: '2026-07-17T21:03:44.096Z', verified: 'TRUE' },
+  { company_canonical: 'auger', company_display: 'Auger', contact_name: 'Theresa Auger', contact_title_snippet: 'Theresa Auger - Recruiter/Fundraiser at Diabetes Canada', linkedin_url: 'https://ca.linkedin.com/in/theresa-auger-a0a09b213', snippet: "Recruiter/Fundraiser at Diabetes Canada · Experience: Diabetes Canada · Location: Winnipeg. View Theresa Auger's profile on LinkedIn, a professional ...", found_at: '2026-07-17T21:03:44.102Z', verified: 'TRUE' },
+  { company_canonical: 'venice', company_display: 'Venice', contact_name: 'Kiersten Schaefer', contact_title_snippet: 'Kiersten Schaefer - Senior Talent Acquisition Specialist', linkedin_url: 'https://www.linkedin.com/in/kiersten-schaefer5462', snippet: 'Waterfront Bar And Grill & Venice Ale House. Jun 2016 - May 2018 2 ... LinkedIn Recruiter: AI-Powered Talent Acquisition Graphic · LinkedIn Recruiter ...', found_at: '2026-07-17T21:03:44.105Z', verified: 'TRUE' },
+  { company_canonical: 'virtu', company_display: 'Virtu AI', contact_name: 'Shane Golden', contact_title_snippet: 'Shane Golden - AI Talent Hacker | Recruiter of Rebels - LinkedIn', linkedin_url: 'https://www.linkedin.com/in/shanegolden', snippet: 'Sr IT Talent Acquisition Manager. OneMain Financial. Apr 2019 - Mar 2020 1 ... (Virtual) Executive Talent Acquisition Management for Information Management ...', found_at: '2026-07-17T21:03:44.108Z', verified: 'FALSE' },
+  { company_canonical: 'helsing', company_display: 'Helsing', contact_name: 'Torsten Reil', contact_title_snippet: 'Torsten Reil - Co-founder and Co-CEO at Helsing', linkedin_url: 'https://uk.linkedin.com/in/torstenreil', snippet: 'Torsten Reil. Co-founder and Co-CEO at Helsing - AI To Serve Our Democracies. London Area, United Kingdom. 10K followers 500+ connections.', found_at: '2026-07-17T22:23:22.192Z', verified: 'TRUE' },
+  { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Pascal Bensoussan', contact_title_snippet: 'Pascal Bensoussan - Redwood City, California, United States', linkedin_url: 'https://www.linkedin.com/in/pascalbensoussan', snippet: "Location: Redwood City · 500+ connections on LinkedIn. View Pascal Bensoussan's profile on LinkedIn, a professional community of 1 billion members.", found_at: '2026-07-17T22:23:22.194Z', verified: 'TRUE' },
+  { company_canonical: 'emergent', company_display: 'Emergent', contact_name: 'Mukund Jha', contact_title_snippet: 'Mukund Jha - Founder & CEO, Emergent | Build your idea ...', linkedin_url: 'https://www.linkedin.com/in/mukund-jha-a1596413', snippet: 'Founder & CEO, Emergent | Build your idea → emergent.sh · Specialties: Machine Learning, Natural Language Processing, Speech Processing, ...', found_at: '2026-07-17T22:23:22.196Z', verified: 'TRUE' },
+  { company_canonical: 'auger', company_display: 'Auger', contact_name: 'Mike Auger', contact_title_snippet: 'Mike Auger - True Search', linkedin_url: 'https://www.linkedin.com/in/mike-auger', snippet: 'Mike Auger. True Search University of Pennsylvania. United States. 4K followers 500+ connections. See your mutual connections. View mutual connections ...', found_at: '2026-07-17T22:23:22.197Z', verified: 'TRUE' },
+  { company_canonical: 'venice', company_display: 'Venice', contact_name: 'Venice M. Goodwine, CISSP, PMP', contact_title_snippet: 'Venice M. Goodwine, CISSP, PMP - Board Member', linkedin_url: 'https://www.linkedin.com/in/venice-m-goodwine', snippet: 'Venice M. Goodwine is a board member and CIO and CISO with over three decades of experience in military and civilian service, including 36 years in the U.S. ...', found_at: '2026-07-17T22:23:22.199Z', verified: 'TRUE' },
+  { company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', contact_name: 'Victoria Lin', contact_title_snippet: 'Victoria Lin - ⚒️ Thinking Machines Lab', linkedin_url: 'https://www.linkedin.com/in/victorialinml', snippet: 'Thinking Machines Lab · I am passionate about building general intelligent systems that process information at scale and assist humans in various ...', found_at: '2026-07-17T22:23:22.201Z', verified: 'TRUE' },
+  { company_canonical: 'virtu', company_display: 'Virtu AI', contact_name: 'Angela Virtu', contact_title_snippet: 'Angela Virtu - AI Instruction Faculty Fellow', linkedin_url: 'https://www.linkedin.com/in/angela-virtu', snippet: 'An inquisitive data scientist dedicated to uncovering the truth through data. Understands the power of transforming these truths into insights businesses ...', found_at: '2026-07-17T22:23:22.202Z', verified: 'FALSE' },
+  { company_canonical: 'zml', company_display: 'ZML', contact_name: 'Steeve Morin', contact_title_snippet: "Steeve Morin - Founder, ZML (we're hiring)", linkedin_url: 'https://fr.linkedin.com/in/steevemorin', snippet: 'ZML is building a next generation inference engine with total integrability, peak performance on a wide range of chips and exceptional developer experience, ...', found_at: '2026-07-17T22:23:22.204Z', verified: 'TRUE' },
+  { company_canonical: 'nautis', company_display: 'Nautis', contact_name: 'Baltej Singh', contact_title_snippet: 'Baltej Singh - Founder @ Nautis - Building the AI-Native ...', linkedin_url: 'https://in.linkedin.com/in/baltej-singh-46b78112', snippet: 'Nautis brings planning, fundraising, finance, execution, operations, investor readiness, CRM, and startup intelligence into one AI-powered platform. Our vision ...', found_at: '2026-07-17T22:23:22.205Z', verified: 'TRUE' },
+  { company_canonical: 'allbirds', company_display: 'Allbirds', contact_name: 'Tim Brown', contact_title_snippet: 'Tim Brown - Allbirds', linkedin_url: 'https://www.linkedin.com/in/timbrown64', snippet: 'Experience: Allbirds · Education: The London School of Economics and Political Science (LSE) · Location: San Francisco · 500+ connections on LinkedIn.', found_at: '2026-07-17T22:23:22.206Z', verified: 'TRUE' },
+  { company_canonical: 'syntetica', company_display: 'Syntetica', contact_name: 'Marco Bertone', contact_title_snippet: 'Marco Bertone - Co-founder & CEO, Syntetica', linkedin_url: 'https://fr.linkedin.com/in/marcobertone', snippet: 'Co-founder & CEO, Syntetica | Forbes 30U30 · Expérience : Syntetica · Formation : The London School of Economics and Political Science (LSE) · Lieu : France ...', found_at: '2026-07-17T22:41:34.996Z', verified: 'TRUE' },
+  { company_canonical: 'venice', company_display: 'Venice AI', contact_name: 'Adrien Lo', contact_title_snippet: 'Adrien Lo - Lead Software Engineer', linkedin_url: 'https://www.linkedin.com/in/adrienlo', snippet: 'Venice.ai Graphic. Senior Software Engineer. Venice.ai. Mar 2025 - Present 1 year 5 months. Zeta Global Graphic. Lead Software Engineer. Zeta Global. Apr 2024 ...', found_at: '2026-07-17T22:41:34.997Z', verified: 'FALSE' },
+  { company_canonical: 'helsing', company_display: 'Helsing', contact_name: 'Deirdrie Helsing', contact_title_snippet: 'Deirdrie Helsing - Product Design Leader', linkedin_url: 'https://www.linkedin.com/in/deirdriehelsing', snippet: 'Deirdrie Helsing. Product Design Leader • Guiding design and product strategy to craft scalable, future-focused user experiences. EvenUp Northwest College ...', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'helsing', company_display: 'Helsing', contact_name: 'Andrew Helsing', contact_title_snippet: 'Andrew Helsing - Determination, attitude, and leadership ...', linkedin_url: 'https://www.linkedin.com/in/andrew-helsing-b3a806132', snippet: 'Andrew Helsing. Determination, attitude, and leadership make me an integral component to any team. University of Chicago The Evergreen State College ...', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Pascal BORNET', contact_title_snippet: 'Pascal BORNET - #1 AI & Automation Thought Leader', linkedin_url: 'https://www.linkedin.com/in/pascalbornet/en', snippet: 'Pascal Bornet is an award-winning expert, author, keynote speaker, and influencer in Artificial Intelligence (AI) and Automation. He has received multiple ...', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Pascal Pascarella', contact_title_snippet: 'Pascal Pascarella - Strategic Partner | Product Designer', linkedin_url: 'https://www.linkedin.com/in/pascal-pascarella', snippet: 'The Pascal Case The University of Texas at Austin About Full Stack Web Application Developer with over 6 years of experience in military tactical.', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'emergent', company_display: 'Emergent', contact_name: 'Balpreet Singh', contact_title_snippet: 'Balpreet Singh - Build your idea → emergent.sh', linkedin_url: 'https://in.linkedin.com/in/knowbalpreet', snippet: 'Build your idea → emergent.sh | Rethinking Agents for Frontend @ Emergent · As a Senior Engineer with over 10 years of experience, I have a proven track ...', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'emergent', company_display: 'Emergent', contact_name: 'Mark Bajema', contact_title_snippet: 'Mark Bajema - Chief Information Officer at Emergent Software', linkedin_url: 'https://www.linkedin.com/in/markbajema', snippet: 'Chief Information Officer at Emergent Software · Experience: Emergent Software · Location: Greater Minneapolis-St. Paul Area · 500+ connections on LinkedIn.', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'auger', company_display: 'Auger', contact_name: 'Rob Auger', contact_title_snippet: 'Rob Auger - Digitas North America', linkedin_url: 'https://www.linkedin.com/in/robauger', snippet: 'Rob Auger. Digitas North America Worcester State University. United States. 2K followers 500+ connections.', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'auger', company_display: 'Auger', contact_name: 'Daisy Auger-Domínguez', contact_title_snippet: 'Daisy Auger-Domínguez - Chief People Officer @Digital ...', linkedin_url: 'https://www.linkedin.com/in/daisyaugerdominguez', snippet: "I'm Daisy Auger-Domínguez. I spend my days leading people strategy inside a scaling fintech and my other hours writing and speaking about what that costs and ...", found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'syntetica', company_display: 'Syntetica', contact_name: 'Ash Ward', contact_title_snippet: 'Ash Ward - Syntetica', linkedin_url: 'https://fr.linkedin.com/in/ashward207', snippet: 'Technology leader with extensive experience developing products from concept to launch in… · Expérience : Syntetica · Formation : University of California, ...', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'syntetica', company_display: 'Syntetica', contact_name: 'Albert Issa, PhD', contact_title_snippet: 'Albert Issa, PhD - R&D Manager | Syntetica', linkedin_url: 'https://fr.linkedin.com/in/albert-issa', snippet: "R&D Manager | Syntetica · I'm a Research Engineer at Syntetica, where I get to play a role in reimagining how we recycle textiles.", found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'venice', company_display: 'Venice', contact_name: 'Venice Buhain', contact_title_snippet: 'Venice Buhain - Journalist | Editor | Multimedia Storyteller', linkedin_url: 'https://www.linkedin.com/in/venicebuhain', snippet: 'Venice Buhain. Journalist | Editor | Multimedia Storyteller. Cascade PBS University of Washington. Seattle, Washington, United States. 880 ...', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'venice', company_display: 'Venice', contact_name: 'Taylor Barnes', contact_title_snippet: 'Taylor Barnes - Editor/Designer/Founder at 3.1 Venice ...', linkedin_url: 'https://www.linkedin.com/in/taylor-barnes-4941a29', snippet: '3.1 Venice is a community based online magazine designed to portray the art and culture of Venice Beach, CA.', found_at: '2026-07-18T01:11:32.173Z', verified: 'TRUE' },
+  { company_canonical: 'whale', company_display: 'Whale', contact_name: 'James Whale', contact_title_snippet: 'James Whale - Co Founder & CEO at Commune ...', linkedin_url: 'https://www.linkedin.com/in/james-whale-59068bb', snippet: 'James Whale. Co Founder & CEO at Commune Communication. Commune Communication Auckland University. Hood River, Oregon, United States. 750 followers ...', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'whale', company_display: 'Whale', contact_name: 'Sebastian Whale', contact_title_snippet: 'Sebastian Whale - Journalist and Author', linkedin_url: 'https://uk.linkedin.com/in/sebastian-whale-81093770', snippet: 'Sebastian Whale. Journalist and Author. POLITICO Europe Kings College London. London, England, United Kingdom. 720 followers 500+ connections.', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'whale', company_display: 'Whale', contact_name: 'Jackie Ellis', contact_title_snippet: 'Jackie Ellis - Naturalist at Pacific Whale Foundation', linkedin_url: 'https://www.linkedin.com/in/jackie-ellis-77017575', snippet: 'Pacific Whale Foundation ... Educating the public on the marine life here in Maui and on marine conservation. Help protect the ocean through science and advocacy.', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', contact_name: 'Pia Santos', contact_title_snippet: 'Pia Santos - Founding Team at Thinking Machines Lab', linkedin_url: 'https://www.linkedin.com/in/piafsantos', snippet: 'Founding Team at Thinking Machines Lab · Experience: Thinking Machines Lab · Education: University of San Francisco · Location: San Francisco · 500+ ...', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', contact_name: 'Myle Ott', contact_title_snippet: 'Myle Ott - ML infra at Thinking Machines', linkedin_url: 'https://www.linkedin.com/in/myleott', snippet: 'ML infra at Thinking Machines Lab. Previously founding researcher at Character.AI. Led early LLMs at Meta AI including FSDP, OPT, RoBERTa and fairseq.', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'virtu', company_display: 'Virtu AI', contact_name: 'Aditya Siripragada', contact_title_snippet: 'Aditya Siripragada - 2X Exits | Founder - Fountane Inc', linkedin_url: 'https://www.linkedin.com/in/adityasiripragada', snippet: '2X Exits | Founder - Fountane Inc | Virtu AI · Aditya is the Co-Founder of Fountane and now Virtu, an AI-powered product creation platform revolutionizing ...', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'virtu', company_display: 'Virtu AI', contact_name: 'Bret Rossman (he/him) 🏳️‍🌈', contact_title_snippet: 'Bret Rossman (he/him) 🏳️‍🌈 - Co-Founder, Virtu AI', linkedin_url: 'https://www.linkedin.com/in/bret-rossman', snippet: 'Bret Rossman (he/him) 🏳️‍ · Co-Founder, Virtu AI | Transforming how the world creates - where AI, design and purpose meet · View mutual connections with Bret.', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'virtu', company_display: 'Virtu AI', contact_name: 'alexis kantor', contact_title_snippet: 'alexis kantor - Co-Founder & CEO | Transforming how the ...', linkedin_url: 'https://www.linkedin.com/in/alexiskantor', snippet: 'Experience. Virtu AI Graphic. Co-Founder & CEO. Virtu AI. Mar 2025 - Present 1 year 5 months. Virtu is an AI-powered, end-to-end product creation platform built ...', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'attribute', company_display: 'Attribute', contact_name: 'beth kimmerle', contact_title_snippet: 'beth kimmerle - Founder & CEO, Attribute Analytics', linkedin_url: 'https://www.linkedin.com/in/beth-kimmerle-60145a31', snippet: 'Attribute Analytics enables teams to improve product quality, reduce innovation risk, and create consumer experiences grounded in sensory science and real-world ...', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'attribute', company_display: 'Attribute', contact_name: 'Andrew Tomlinson', contact_title_snippet: 'Andrew Tomlinson - CEO at Attribute Group', linkedin_url: 'https://au.linkedin.com/in/tomlinsona', snippet: 'Founded in 2008 Attribute Group is an Australian owned Staffing Solutions Company. We deliver the people, process and technology solutions that influence ...', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'attribute', company_display: 'Attribute', contact_name: 'Jackson Doyle', contact_title_snippet: 'Jackson Doyle - Founder of Attribute and GreenWatt', linkedin_url: 'https://www.linkedin.com/in/jdoyle1', snippet: 'Attribute- Analytics and performance platform for Marketing Companies to have full insight into clients campaigns. With over eight years of experience in the ...', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'zml', company_display: 'ZML', contact_name: 'Guillaume Le Strat', contact_title_snippet: "Guillaume Le Strat - Building ZML (We're hiring)", linkedin_url: 'https://fr.linkedin.com/in/guillaume-le-strat/en', snippet: 'About. ZML: High-performance inference. Any model. Any hardware. No compromise. GPUs go brrr. Ziglang, Bazel, MLIR', found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'zml', company_display: 'ZML', contact_name: 'Sue Lin', contact_title_snippet: 'Sue Lin - cfo at zml', linkedin_url: 'https://www.linkedin.com/in/sue-lin-07305615', snippet: "cfo at zml · Experience: zml · Location: South San Francisco. View Sue Lin's profile on LinkedIn, a professional community of 1 billion members.", found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'nautis', company_display: 'Nautis', contact_name: 'Nautis Neff', contact_title_snippet: 'Nautis Neff - Strategizing marketing and creative solutions ...', linkedin_url: 'https://www.linkedin.com/in/nautis555', snippet: "Strategizing marketing and creative solutions at MAVIN · Experience: MAVIN · Location: Dover · 139 connections on LinkedIn. View Nautis Neff's profile on ...", found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'nautis', company_display: 'Nautis', contact_name: "De'Nautis Liddell", contact_title_snippet: "De'Nautis Liddell - MMJ for WABG/DELTANEWS 6", linkedin_url: 'https://www.linkedin.com/in/de%E2%80%99nautis-liddell-01b70a245', snippet: "De'Nautis Liddell. MMJ for WABG/DELTANEWS 6. DeltaNews Mississippi Valley State University. Jackson, Mississippi, United States. 1K followers ...", found_at: '2026-07-18T01:11:32.174Z', verified: 'TRUE' },
+  { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Pascal Louis Marie', contact_title_snippet: 'Pascal Louis Marie - Site Reliability Engineer at Apple', linkedin_url: 'https://www.linkedin.com/in/pascal-louis-marie-27b6985', snippet: 'Pascal Louis Marie · Site Reliability Engineer at Apple | overly AI enthusiast · View mutual connections with Pascal · Experience · Education · Licenses & ...', found_at: '2026-07-18T01:14:43.728Z', verified: 'TRUE' },
+  { company_canonical: 'emergent', company_display: 'Emergent', contact_name: 'Madhav Jha', contact_title_snippet: 'Madhav Jha - Making vibe coding a reality at Emergent', linkedin_url: 'https://www.linkedin.com/in/madhavjha', snippet: 'Making vibe coding a reality at Emergent · Experience: Emergent Labs · Education: Penn State University · Location: San Francisco Bay Area · 500+ ...', found_at: '2026-07-18T01:14:43.728Z', verified: 'TRUE' },
+  { company_canonical: 'auger', company_display: 'Auger', contact_name: 'Scott Auger', contact_title_snippet: 'Scott Auger - Lookin!', linkedin_url: 'https://www.linkedin.com/in/scottauger', snippet: 'Scott Auger. Lookin! Kiewit. Greater Tampa Bay Area. 8K followers 500+ connections. See your mutual connections. View mutual connections with Scott.', found_at: '2026-07-18T01:14:43.728Z', verified: 'TRUE' },
+  { company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', contact_name: 'Naman Goyal', contact_title_snippet: 'Naman Goyal - Thinking Machines Lab', linkedin_url: 'https://www.linkedin.com/in/ngoyal2707', snippet: 'Experience: Thinking Machines Lab · Education: Georgia Institute of Technology · Location: New York · 500+ connections on LinkedIn.', found_at: '2026-07-18T01:14:43.729Z', verified: 'TRUE' },
 ];
 
 function loadContactsData() {
@@ -1055,22 +1133,30 @@ function stripUrlProtocol(url) {
    pass would mangle names like "McMeekin", and the whole point of the
    unverified badge is "sanity-check this yourself," not "trust our
    cleanup." */
+/* Shows every unique-named candidate for a company (capped at
+   MAX_SHOWN), not just one — the search now routinely returns several
+   people per company and a meaningful fraction are surname coincidences
+   (e.g. "James Whale, CEO of Commune Communication" for the company
+   "Whale"). Rather than the app silently picking one and risking it
+   being wrong, it lists the candidates compactly and lets a human
+   compare and pick — which also means genuinely reaching out to more
+   than one person is just as easy as one. */
 function populateContactCard(c) {
   const cardEl = document.getElementById('contact-card');
+  const listEl = document.getElementById('contact-list');
   const emptyEl = document.getElementById('contact-empty-state');
   const websiteCta = document.getElementById('contact-website-cta');
   const websiteCaveat = document.getElementById('contact-website-caveat');
-  const contact = CONTACTS[c.company_canonical];
+  const contacts = CONTACTS[c.company_canonical] || [];
 
-  if (!contact) {
+  if (contacts.length === 0) {
     if (cardEl) cardEl.hidden = true;
     if (emptyEl) emptyEl.hidden = false;
     /* No named contact — accompany the "no contact yet" message with a
        CTA to the company's own website if the pipeline found one,
        rather than a dead end. That field has shown real false
-       positives already (e.g. one company matched to a generic Discord
-       invite link), so this is presented as a lead to verify, not a
-       confirmed fact — same posture as unverified contacts below. */
+       positives too, so this is presented as a lead to verify, not a
+       confirmed fact — same posture as unverified contacts. */
     if (websiteCta) {
       websiteCta.hidden = !c.company_url;
       if (c.company_url) websiteCta.href = c.company_url;
@@ -1080,35 +1166,29 @@ function populateContactCard(c) {
   }
   if (cardEl) cardEl.hidden = false;
   if (emptyEl) emptyEl.hidden = true;
+  if (!listEl) return;
 
-  const name = stripBidiMarks(contact.contact_name);
-  const initials = name.split(/\s+/).slice(0, 2).map((w) => w[0] || '').join('').toUpperCase() || '—';
-  let title = stripBidiMarks(contact.contact_title_snippet || '');
-  const namePrefix = new RegExp('^' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-–—‏]\\s*', 'i');
-  title = title.replace(namePrefix, '').trim();
-  const isVerified = String(contact.verified).trim().toUpperCase() === 'TRUE';
+  const MAX_SHOWN = 5;
+  listEl.innerHTML = contacts.slice(0, MAX_SHOWN).map((contact) => {
+    const name = stripBidiMarks(contact.contact_name);
+    const initials = name.split(/\s+/).slice(0, 2).map((w) => w[0] || '').join('').toUpperCase() || '—';
+    let title = stripBidiMarks(contact.contact_title_snippet || '');
+    const namePrefix = new RegExp('^' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-–—‏]\\s*', 'i');
+    title = title.replace(namePrefix, '').trim();
+    const isVerified = String(contact.verified).trim().toUpperCase() === 'TRUE';
+    const badgeHtml = isVerified ? '' : `<span class="contact-unverified-badge" title="Found via automated LinkedIn search, not human-confirmed">Unverified</span>`;
 
-  document.getElementById('contact-avatar').textContent = initials;
-  document.getElementById('contact-name').textContent = name;
-  document.getElementById('contact-title').textContent = title ? `${title} · ${c.company}` : c.company;
-
-  /* hidden attribute, not visibility — sits above the name and pushes
-     it down when present rather than reserving fixed space. A verified
-     and unverified contact card are naturally different heights now;
-     that's the intended, more graceful behavior. */
-  const badge = document.getElementById('contact-unverified-badge');
-  if (badge) badge.hidden = isVerified;
-
-  const linkedinSlug = contact.linkedin_url.replace(/^https?:\/\/[^/]+\/in\//, 'in/').replace(/\/$/, '');
-  document.getElementById('contact-linkedin-value').textContent = linkedinSlug;
-
-  const cta = document.getElementById('contact-cta');
-  if (cta) cta.href = contact.linkedin_url;
-
-  const fine = document.getElementById('contact-fine-print');
-  if (fine) {
-    fine.textContent = isVerified
-      ? 'Verified contact for this company.'
-      : 'Found via automated LinkedIn search, not yet human-verified — check the name against their profile before reaching out.';
-  }
+    return `
+      <li class="contact-list-item">
+        <div class="contact-list-avatar">${escapeXml(initials)}</div>
+        <div class="contact-list-info">
+          <p class="contact-list-name">${escapeXml(name)}${badgeHtml}</p>
+          <p class="contact-list-title">${escapeXml(title || c.company)}</p>
+        </div>
+        <a class="contact-list-linkedin" href="${contact.linkedin_url}" target="_blank" rel="noopener" title="Message ${escapeXml(name)} on LinkedIn">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" rx="3" fill="var(--linkedin-blue)" /><text x="8" y="11.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#ffffff">in</text></svg>
+        </a>
+      </li>
+    `;
+  }).join('');
 }

@@ -615,7 +615,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 8px 16px;
+  padding: 14px 16px 8px;
 }
 
 .leaderboard-scope[hidden] { display: none; }
@@ -1206,61 +1206,95 @@ body {
    row's top position is constant regardless of badge presence, and the
    avatar lands next to whichever text is first: the badge when present,
    the name when it isn't. */
-.contact-person-row {
+/* Suggested Contact is a list now, not a single fixed card — the
+   search routinely returns several candidate people per company, and a
+   meaningful fraction are surname coincidences, so the UI shows the
+   list and lets a human compare/pick instead of the app silently
+   guessing one. Also means reaching out to more than one person is
+   just as easy as one. */
+.contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-top: 12px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.contact-avatar {
-  width: 44px;
-  height: 44px;
+.contact-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: var(--accent-tint);
+}
+
+.contact-list-avatar {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: var(--accent);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--text-md);
+  font-size: 10px;
   font-weight: 700;
   flex-shrink: 0;
 }
 
-.contact-name {
+.contact-list-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-list-name {
   margin: 0;
-  font-size: var(--text-md);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: var(--text-sm);
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.contact-list-title {
+  margin: 2px 0 0;
+  font-size: var(--text-2xs);
+  font-weight: 400;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-list-linkedin {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-top: 3px;
 }
 
 /* Amber, not neutral — this is a "check this before you act on it" flag,
    not decoration. Hiding unverified contacts entirely would make the
    feature useless (most of what's found this way is still directionally
    right), but presenting it with the same confidence as a verified
-   contact would be dishonest.
-
-   Own line below the name (not inline) — some contact names are long
-   enough that an inline badge would wrap awkwardly or crowd the name.
-   Uses visibility (see populateContactCard), not display:none, so this
-   line's height is always reserved and the card isn't a different
-   height for a verified vs. unverified contact. */
+   contact would be dishonest. Inline with the name now (list items are
+   compact, no room for its own line). */
 .contact-unverified-badge {
   display: inline-flex;
   align-items: center;
-  width: fit-content;
-  margin-bottom: 4px;
-  padding: 2px 8px;
+  padding: 1px 6px;
   border-radius: var(--radius-full);
-  font-size: var(--text-2xs);
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.3px;
   text-transform: uppercase;
   background: var(--amber-tint);
   color: var(--amber-deep);
 }
-
-.contact-unverified-badge[hidden] { display: none; }
 
 .contact-empty-state {
   margin: 0;
@@ -1278,47 +1312,6 @@ body {
 .contact-empty-state .btn { margin-top: 14px; }
 .contact-empty-state .fine-print { margin-top: 8px; }
 .contact-empty-state[hidden] { display: none; }
-
-.contact-title {
-  margin: 2px 0 0;
-  font-size: var(--text-sm);
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-
-.contact-detail-box {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  background: var(--accent-tint);
-  margin-top: 12px;
-}
-
-.contact-detail-label {
-  font-size: var(--text-2xs);
-  font-weight: 600;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-
-.contact-detail-value {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.contact-detail-value-linkedin {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.contact-detail-value-linkedin svg { flex-shrink: 0; }
-
-.contact-card .btn-dark { margin-top: 12px; }
 
 /* ─────────────────────────────────────────
    Detail page (3-column, matching main dashboard)

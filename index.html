@@ -143,25 +143,10 @@
 
         </div>
 
-        <h3 class="section-label">Suggested Contact</h3>
+        <h3 class="section-label" id="contact-section-label">Suggested Contact</h3>
         <div class="contact-card" id="contact-card">
-          <div class="contact-person-row" style="margin-top: 0;">
-            <div class="contact-avatar" id="contact-avatar">—</div>
-            <div class="contact-person-info">
-              <span class="contact-unverified-badge" id="contact-unverified-badge" title="Found via automated LinkedIn search, not human-confirmed" hidden>Unverified</span>
-              <p class="contact-name" id="contact-name">—</p>
-              <p class="contact-title" id="contact-title">—</p>
-            </div>
-          </div>
-          <div class="contact-detail-box">
-            <span class="contact-detail-label">LinkedIn</span>
-            <span class="contact-detail-value contact-detail-value-linkedin">
-              <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><rect width="16" height="16" rx="3" fill="var(--linkedin-blue)" /><text x="8" y="11.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#ffffff">in</text></svg>
-              <span id="contact-linkedin-value">—</span>
-            </span>
-          </div>
-          <a class="btn btn-dark btn-full" id="contact-cta" href="#" target="_blank" rel="noopener">Message on LinkedIn</a>
-          <p class="fine-print" id="contact-fine-print">—</p>
+          <ul class="contact-list" id="contact-list"></ul>
+          <p class="fine-print">Automated LinkedIn search — sanity-check a name against their profile before reaching out. Unverified doesn't mean wrong, just not human-confirmed.</p>
         </div>
         <div class="contact-empty-state" id="contact-empty-state" hidden>
           <p>No contact found yet for this company — check back after the next scan.</p>
