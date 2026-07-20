@@ -40,17 +40,18 @@ const THEME = {
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
 
-/* Last-known-good snapshot (pipeline runs 59-185 — sparse/gapped run_ids
+/* Last-known-good snapshot (pipeline runs 59-192 — sparse/gapped run_ids
    throughout; run_id looks like an n8n execution ID shared across the
    whole instance, not a dedicated per-scan counter) — used only if the
    live fetch fails, so the page degrades gracefully instead of breaking.
    Full multi-run history (not just the latest run) so Momentum Trend
    charts still have real data to plot even in fallback mode. Refreshed
-   2026-07-18. No new discoveries or duplicate-naming issues - same 41
-   raw canonical companies as prior refreshes (38 after CANONICAL_ALIASES
-   merge). patent_signals is no longer a run-124-only anomaly — it's now
-   populated across 13 runs for 6 companies (anduril, attribute, auger,
-   emergent, pascal, whale). */
+   2026-07-18 (run 192 added). One new discovery this refresh:
+   `databricks` (Databricks) — no duplicate-naming issues, all other
+   run-192 rows are existing canonicals. 42 raw canonical companies now
+   (39 after CANONICAL_ALIASES merge). patent_signals populated across
+   13 runs for 6 companies (anduril, attribute, auger, emergent, pascal,
+   whale). */
 const FALLBACK_ROWS = [
   { run_id: '59', run_ts: '2026-07-14T09:42:07.029-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '9', reddit_signals: '0', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '', funding_signals: '', patent_signals: '', discovery_source: 'discovered', company_url: '' },
   { run_id: '59', run_ts: '2026-07-14T09:42:07.033-07:00', company_canonical: 'auger', company_display: 'Auger', news_signals: '10', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '2', exec_hire_signals: '', funding_signals: '', patent_signals: '', discovery_source: 'discovered', company_url: '' },
@@ -734,6 +735,21 @@ const FALLBACK_ROWS = [
   { run_id: '185', run_ts: '2026-07-17T18:12:36.318-07:00', company_canonical: 'launchmeloud', company_display: 'LaunchMeLoud', news_signals: '9', reddit_signals: '10', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://launchmeloud.com' },
   { run_id: '185', run_ts: '2026-07-17T18:12:36.320-07:00', company_canonical: 'undocapital', company_display: 'Undo Capital', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.undocapital.com' },
   { run_id: '185', run_ts: '2026-07-17T18:12:36.321-07:00', company_canonical: 'nautis', company_display: 'Nautis', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://nautiswatches.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.434-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://helsing.ai' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.436-07:00', company_canonical: 'pascal', company_display: 'Pascal', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '2', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://pascaldesign.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.437-07:00', company_canonical: 'emergent', company_display: 'Emergent', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://emergent.sh' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.438-07:00', company_canonical: 'databricks', company_display: 'Databricks', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '18', exec_hire_signals: '10', funding_signals: '10', patent_signals: '1', discovery_source: 'discovered', company_url: 'https://www.databricks.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.439-07:00', company_canonical: 'syntetica', company_display: 'Syntetica', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '6', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.syntetica.co' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.441-07:00', company_canonical: 'auger', company_display: 'Auger', news_signals: '10', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '2', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://auger.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.442-07:00', company_canonical: 'lama', company_display: 'Lama AI', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://developer.meta.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.443-07:00', company_canonical: 'jessebens', company_display: 'Jesse & Ben\'s', news_signals: '9', reddit_signals: '10', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.jesseandbens.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.444-07:00', company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', news_signals: '10', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '18', exec_hire_signals: '10', funding_signals: '10', patent_signals: '1', discovery_source: 'discovered', company_url: 'https://thinkingmachines.ai' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.445-07:00', company_canonical: 'virtu', company_display: 'Virtu AI', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.virtueai.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.446-07:00', company_canonical: 'attribute', company_display: 'Attribute', news_signals: '10', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '14', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://csrc.nist.gov' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.447-07:00', company_canonical: 'zml', company_display: 'ZML', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://discord.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.448-07:00', company_canonical: 'launchmeloud', company_display: 'LaunchMeLoud', news_signals: '9', reddit_signals: '10', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://launchmeloud.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.449-07:00', company_canonical: 'undocapital', company_display: 'Undo Capital', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.undocapital.com' },
+  { run_id: '192', run_ts: '2026-07-18T12:55:36.450-07:00', company_canonical: 'nautis', company_display: 'Nautis', news_signals: '10', reddit_signals: '10', linkedin_signals: '9', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://nautil.us' },
 ];
 
 let companies = [];
