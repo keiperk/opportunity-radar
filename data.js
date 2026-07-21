@@ -40,18 +40,26 @@ const THEME = {
   trendAccent: '#6f9d6a', // matches --trend-accent, used for the momentum trend chart
 };
 
-/* Last-known-good snapshot (pipeline runs 59-202 — sparse/gapped run_ids
+/* Last-known-good snapshot (pipeline runs 59-208 — sparse/gapped run_ids
    throughout; run_id looks like an n8n execution ID shared across the
    whole instance, not a dedicated per-scan counter) — used only if the
    live fetch fails, so the page degrades gracefully instead of breaking.
    Full multi-run history (not just the latest run) so Momentum Trend
    charts still have real data to plot even in fallback mode. Refreshed
-   2026-07-20 (run 202 added). One new discovery this refresh:
-   `trajectory` (Trajectory) — no duplicate-naming issues, all other
-   run-202 rows are existing canonicals. 43 raw canonical companies now
-   (40 after CANONICAL_ALIASES merge). patent_signals populated across
-   13 runs for 6 companies (anduril, attribute, auger, emergent, pascal,
-   whale). */
+   2026-07-20 (run 208 added). Two new discoveries this refresh:
+   `plazza` (Plazza) and `kredosai` (KredosAI) — no duplicate-naming
+   issues, all other run-208 rows are existing canonicals. 45 raw
+   canonical companies now (42 after CANONICAL_ALIASES merge).
+   patent_signals populated across 13 runs for 6 companies (anduril,
+   attribute, auger, emergent, pascal, whale). Data-quality note (not
+   fixed here, flagging for Claude1): the `venice` canonical's
+   company_display/company_url has flickered between "Venice AI"
+   (venice.ai, an actual startup) and plain "Venice" (a Venice-Italy
+   tourism site, visitvenezia.eu) since run 62 — looks like the
+   discovery LLM is conflating two unrelated real-world entities under
+   one canonical key. Not an aliasing fix (same key, not two keys to
+   merge); just noting it since it could blend unrelated signal data
+   into one company's history. */
 const FALLBACK_ROWS = [
   { run_id: '59', run_ts: '2026-07-14T09:42:07.029-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '9', reddit_signals: '0', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '', funding_signals: '', patent_signals: '', discovery_source: 'discovered', company_url: '' },
   { run_id: '59', run_ts: '2026-07-14T09:42:07.033-07:00', company_canonical: 'auger', company_display: 'Auger', news_signals: '10', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '2', exec_hire_signals: '', funding_signals: '', patent_signals: '', discovery_source: 'discovered', company_url: '' },
@@ -764,6 +772,19 @@ const FALLBACK_ROWS = [
   { run_id: '202', run_ts: '2026-07-19T22:26:14.813-07:00', company_canonical: 'launchmeloud', company_display: 'LaunchMeLoud', news_signals: '10', reddit_signals: '10', linkedin_signals: '10', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.launchmeloud.com' },
   { run_id: '202', run_ts: '2026-07-19T22:26:14.814-07:00', company_canonical: 'undocapital', company_display: 'Undo Capital', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.undocapital.com' },
   { run_id: '202', run_ts: '2026-07-19T22:26:14.816-07:00', company_canonical: 'trajectory', company_display: 'Trajectory', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '11', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://www.trajectoryindia.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.033-07:00', company_canonical: 'helsing', company_display: 'Helsing', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://helsing.ai' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.035-07:00', company_canonical: 'plazza', company_display: 'Plazza', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.theplazany.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.037-07:00', company_canonical: 'databricks', company_display: 'Databricks', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '17', exec_hire_signals: '10', funding_signals: '10', patent_signals: '1', discovery_source: 'discovered', company_url: 'https://www.databricks.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.038-07:00', company_canonical: 'jessebens', company_display: 'Jesse & Ben\'s', news_signals: '10', reddit_signals: '10', linkedin_signals: '10', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.jesseandbens.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.039-07:00', company_canonical: 'venice', company_display: 'Venice', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.visitvenezia.eu' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.040-07:00', company_canonical: 'kredosai', company_display: 'KredosAI', news_signals: '9', reddit_signals: '9', linkedin_signals: '9', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.kredosai.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.041-07:00', company_canonical: 'thinkingmachines', company_display: 'Thinking Machines', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '1', discovery_source: 'discovered', company_url: 'https://thinkingmachines.ai' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.042-07:00', company_canonical: 'virtu', company_display: 'Virtu AI', news_signals: '6', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.virtueai.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.043-07:00', company_canonical: 'zml', company_display: 'ZML', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '20', exec_hire_signals: '10', funding_signals: '10', patent_signals: '1', discovery_source: 'discovered', company_url: 'https://zml.ai' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.044-07:00', company_canonical: 'attribute', company_display: 'Attribute', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '30', hn_signals: '14', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://theattributes.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.045-07:00', company_canonical: 'launchmeloud', company_display: 'LaunchMeLoud', news_signals: '9', reddit_signals: '10', linkedin_signals: '10', github_signals: '0', hn_signals: '0', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.launchmeloud.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.046-07:00', company_canonical: 'trajectory', company_display: 'Trajectory', news_signals: '6', reddit_signals: '9', linkedin_signals: '10', github_signals: '30', hn_signals: '11', exec_hire_signals: '10', funding_signals: '10', patent_signals: '10', discovery_source: 'discovered', company_url: 'https://www.trajectoryindia.com' },
+  { run_id: '208', run_ts: '2026-07-20T13:54:25.046-07:00', company_canonical: 'refiant', company_display: 'Refiant AI', news_signals: '9', reddit_signals: '9', linkedin_signals: '10', github_signals: '0', hn_signals: '11', exec_hire_signals: '10', funding_signals: '10', patent_signals: '0', discovery_source: 'discovered', company_url: 'https://www.refiant.ai' },
 ];
 
 let companies = [];
