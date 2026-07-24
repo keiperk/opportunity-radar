@@ -1129,15 +1129,14 @@ function buildContactsMap(rows) {
   return map;
 }
 
-/* Last-known-good contacts snapshot (refreshed 2026-07-21) — used only
+/* Last-known-good contacts snapshot (refreshed 2026-07-22) — used only
    if the live fetch fails. Deduped by name within each company (not
    "keep first" — buildContactsMap groups all unique people per company
    now), so this can hold several rows per company. Refresh the same way
    as FALLBACK_ROWS: pull the contacts sheet, dedupe by company+name,
-   regenerate this array. Jumped from 13 to 21 companies with contacts
-   this refresh (allbirds, anduril, databricks, empiricalsecurity,
-   flex, humanoid, plazza, trajectory newly covered) — 96 deduped
-   contacts total, up from 62. */
+   regenerate this array. Same 21 companies as prior refresh; one new
+   contact landed (Maria E., a recruiter at Humanoid) — 97 deduped
+   contacts total, up from 96. */
 const FALLBACK_CONTACTS = [
   { company_canonical: 'pascal', company_display: 'Pascal', contact_name: 'Pascal Cordeau', contact_title_snippet: 'Pascal Cordeau - Senior Engineering Manager', linkedin_url: 'https://ca.linkedin.com/in/pascalcordeau', snippet: 'Pascal Cordeau · Senior Engineering Manager | Mechanical and Multidisciplinary Projects | Energy and Mining Markets · View mutual connections with Pascal · About.', found_at: '2026-07-17T19:18:19.967Z', verified: 'TRUE' },
   { company_canonical: 'emergent', company_display: 'Emergent', contact_name: 'Udeshna Boruah Kalita', contact_title_snippet: 'Udeshna Boruah Kalita - Talent Partner@ Emergent', linkedin_url: 'https://in.linkedin.com/in/udeshna-boruah-kalita-6b0459bb', snippet: 'Talent Partner@ Emergent | Build your Idea-​> Emergent.sh · With a 10 years + of experience in Talent Acquisition, I specialize in end-to-end recruitment, ...', found_at: '2026-07-17T19:18:19.968Z', verified: 'TRUE' },
@@ -1235,6 +1234,7 @@ const FALLBACK_CONTACTS = [
   { company_canonical: 'empiricalsecurity', company_display: 'Empirical Security', contact_name: 'Michael Roytman', contact_title_snippet: 'Michael Roytman - Co-Founder, CTO at Empirical Security', linkedin_url: 'https://www.linkedin.com/in/michael-roytman', snippet: 'Security Intelligence and Decision Support, tailored to your enterprise. Empirical Security is building the first enterprise-specific AI/ML models in ...', found_at: '2026-07-21T20:03:02.517Z', verified: 'TRUE' },
   { company_canonical: 'empiricalsecurity', company_display: 'Empirical Security', contact_name: 'Jay Jacobs', contact_title_snippet: 'Jay Jacobs - Founder at Empirical Security; Chief Data ...', linkedin_url: 'https://www.linkedin.com/in/jayjacobs1', snippet: 'Founder at Empirical Security; Chief Data Scientist Emeritus, Founder at Cyentia Institute · Information security data analysis and visualization.', found_at: '2026-07-21T20:03:02.517Z', verified: 'TRUE' },
   { company_canonical: 'lama', company_display: 'Lama AI', contact_name: 'Dotan Shahar', contact_title_snippet: 'Dotan Shahar - Lama AI', linkedin_url: 'https://www.linkedin.com/in/dotanshahar', snippet: 'I lead global engineering and post-sales organizations that bridge technology, product… · Experience: Lama AI · Location: New York City Metropolitan Area ...', found_at: '2026-07-21T20:03:02.518Z', verified: 'TRUE' },
+  { company_canonical: 'humanoid', company_display: 'Humanoid', contact_name: 'Maria E.', contact_title_snippet: 'Maria E. - Senior Technical Recruiter @ Humanoid', linkedin_url: 'https://ca.linkedin.com/in/maria209', snippet: 'Senior Technical Recruiter @ Humanoid · Talent Acquisition Professional with more than 9 years of experience in sourcing and hiring top talent for Fortune ...', found_at: '2026-07-22T07:00:06.064Z', verified: 'TRUE' },
 ];
 
 function loadContactsData() {
